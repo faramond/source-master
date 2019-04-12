@@ -6,7 +6,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const customers = await Customer.find().or([{ mobileNumber: req.query.mobileNumber }])
-            .sort('name').select({mobileNumber:1,userName:1,password:1});
+            .sort('name').select({mobileNumber:1,userName:1,password:1,challenge:1});
         res.send(customers);
     }
     catch (err) {

@@ -13,13 +13,13 @@ const services =
                 { id: 104, name: 'spa' }]
             ,
             bussinessHour: [
-                { monday: '09:30am - 08:30pm' },
-                { tuesday: '09:30am - 08:30pm' },
-                { wednesday: '09:30am - 08:30pm' },
-                { thursday: '09:30am - 08:30pm' },
-                { friday: '09:30am - 08:30pm' },
-                { saturday: 'closed' },
-                { sunday: 'closed' }
+                'monday 09:30am-08:30pm',
+                'tuesday 09:30am-08:30pm',
+                'wednesday 09:30am-08:30pm',
+                'thursday 09:30am-08:30pm',
+                'friday 09:30am-08:30pm',
+                'saturday closed',
+                'sunday closed' 
             ]
         },
         {
@@ -31,13 +31,14 @@ const services =
                 { id: 104, name: 'spa' }]
             ,
             bussinessHour: [
-                { monday: '09:30am - 08:30pm' },
-                { tuesday: '09:30am - 08:30pm' },
-                { wednesday: '09:30am - 08:30pm' },
-                { thursday: '09:30am - 08:30pm' },
-                { friday: '09:30am - 08:30pm' },
-                { saturday: 'closed' },
-                { sunday: 'closed' }]
+                'monday 09:30am-08:30pm',
+                'tuesday 09:30am-08:30pm',
+                'wednesday 09:30am-08:30pm',
+                'thursday 09:30am-08:30pm',
+                'friday 09:30am-08:30pm',
+                'saturday closed',
+                'sunday closed' 
+            ]
         },
         {
             id: 's03', salonName: 'Habib Hair and Beauty', sector: 'sector 29', distance: '26km', ratings: 4, address: 'B612 Earth Park East Gurgoan', mobile: 1234567,
@@ -48,13 +49,14 @@ const services =
                 { id: 104, name: 'spa' }]
             ,
             bussinessHour: [
-                { monday: '09:30am - 08:30pm' },
-                { tuesday: '09:30am - 08:30pm' },
-                { wednesday: '09:30am - 08:30pm' },
-                { thursday: '09:30am - 08:30pm' },
-                { friday: '09:30am - 08:30pm' },
-                { saturday: 'closed' },
-                { sunday: 'closed' }]
+                'monday 09:30am-08:30pm',
+                'tuesday 09:30am-08:30pm',
+                'wednesday 09:30am-08:30pm',
+                'thursday 09:30am-08:30pm',
+                'friday 09:30am-08:30pm',
+                'saturday closed',
+                'sunday closed' 
+            ]
         },
         {
             id: 's04', salonName: 'Hair Plus Salon', sector: 'sector 10', distance: '10km', ratings: 4, address: 'B612 Moon Park East Gurgoan', mobile: 1234567,
@@ -65,13 +67,14 @@ const services =
                 { id: 104, name: 'spa' }]
             ,
             bussinessHour: [
-                { monday: '09:30am - 08:30pm' },
-                { tuesday: '09:30am - 08:30pm' },
-                { wednesday: '09:30am - 08:30pm' },
-                { thursday: '09:30am - 08:30pm' },
-                { friday: '09:30am - 08:30pm' },
-                { saturday: 'closed' },
-                { sunday: 'closed' }]
+                'monday 09:30am-08:30pm',
+                'tuesday 09:30am-08:30pm',
+                'wednesday 09:30am-08:30pm',
+                'thursday 09:30am-08:30pm',
+                'friday 09:30am-08:30pm',
+                'saturday closed',
+                'sunday closed' 
+            ]
         },
         {
             id: 's05', salonName: 'Meadows Wellness', sector: 'sector 18', distance: '18km', ratings: 3.5, address: 'B612 Eco Sun East Gurgoan', mobile: 1234567,
@@ -82,13 +85,14 @@ const services =
                 { id: 104, name: 'spa' }]
             ,
             bussinessHour: [
-                { monday: '09:30am - 08:30pm' },
-                { tuesday: '09:30am - 08:30pm' },
-                { wednesday: '09:30am - 08:30pm' },
-                { thursday: '09:30am - 08:30pm' },
-                { friday: '09:30am - 08:30pm' },
-                { saturday: 'closed' },
-                { sunday: 'closed' }]
+                'monday 09:30am-08:30pm',
+                'tuesday 09:30am-08:30pm',
+                'wednesday 09:30am-08:30pm',
+                'thursday 09:30am-08:30pm',
+                'friday 09:30am-08:30pm',
+                'saturday closed',
+                'sunday closed' 
+            ]
         },
     ];
 
