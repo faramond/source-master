@@ -8,8 +8,8 @@ const home = require('./routes/home')
 
 const express = require('express');
 const app = express();
-//mongoose.connect('mongodb://localhost/mirror-sense_ews_poc')
-    mongoose.connect('mongodb://localhost/mirror-sense')
+mongoose.connect('mongodb://localhost/mirror-sense_ews_poc')
+//mongoose.connect('mongodb://localhost/mirror-sense')
     .then(() => console.log('Connected to MongoDB...'))
     .catch(err => console.error('Could not connect to MongoDB...'));
 

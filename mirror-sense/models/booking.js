@@ -12,12 +12,11 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         type: String,
         required: false,
         minlength: 1,
-        maxlength: 20
+        maxlength: 120
     },
     appointmentDate: {
         type: Date,
         required: false,
-
     },
     modeOfPayment: {
         type: String,
@@ -49,7 +48,7 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 15
     },
-    created: {
+     created: {
         type: Date, default: Date.now
     }
 

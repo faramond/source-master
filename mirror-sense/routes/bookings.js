@@ -40,6 +40,7 @@ router.post('/', async (req, res) => {
     }
 
 });
+
 router.patch('/:id', async (req, res) => {
     try {
         const booking = await Booking.findOneAndUpdate(req.params.id,
@@ -49,7 +50,7 @@ router.patch('/:id', async (req, res) => {
 
             }, { new: true });
 
-        if (!booking) return res.status(404).send({'message':'The customer with the given mobile was not found.'});
+        if (!booking) return res.status(404).send({'message':'The booking with the given _id  was not found.'});
 
         res.send(booking);
     }

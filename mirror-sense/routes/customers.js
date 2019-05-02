@@ -1,13 +1,12 @@
-const { Customer } = require('../models/customer');
+const {Customer} = require('../models/customer');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const customers = await Customer.find()
-        .or([{ userName: req.query.userName }, { mobileNumber: req.query.mobileNumber }, { email: req.query.email }]);
-
+        const customers = await Customer.find().or([{ userName: req.query.userName }, { mobileNumber: req.query.mobileNumber }, { email: req.query.email }])
+            .sort('name');
         res.send(customers);
     }
     catch (err) {
@@ -42,7 +41,6 @@ router.post('/', async (req, res) => {
     }
 
 });
-
 router.patch('/:id', async (req, res) => {
     try {
         const customer = await Customer.findByIdAndUpdate(req.params.id,
@@ -55,7 +53,7 @@ router.patch('/:id', async (req, res) => {
 
             }, { new: true });
 
-        if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
+        if (!customer) return res.status(404).send({'message':'The customer with the given ID was not found.'});
 
         res.send(customer);
     }
@@ -66,12 +64,11 @@ router.patch('/:id', async (req, res) => {
 
 
 });
-
 router.delete('/:id', async (req, res) => {
     try {
         const customer = await Customer.findByIdAndRemove(req.params.id);
 
-        if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
+        if (!customer) return res.status(404).send({'message':'The customer with the given ID was not found.'});
 
         res.send(customer);
     }

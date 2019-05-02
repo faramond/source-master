@@ -5,24 +5,23 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
     try {
-        const customers = await Customer.find().or([{ mobileNumber: req.query.mobileNumber }])
-            .sort('name').select({mobileNumber:1,userName:1,password:1,challenge:1});
-        res.send(customers);
-    }
+ const customers = await Customer.find().or([{ mobileNumber: req.query.mobileNumber }])
+            .sort('name');
+        res.send(customers);    }
     catch (err) {
         res.send({ 'message': err.message });
         console.log('login Get', err.message)
     }
 
 });
-router.patch('/:mobileNumber', async (req, res) => {
+router.patch('/:id', async (req, res) => {
     try {
-        const customer = await Customer.findOneAndUpdate(req.params.mobileNumber,
+        const customer = await Customer.findByIdAndUpdate(req.params.id,
             {
                 password:req.body.password,
                 updated: new Date(),
 
-            }, { new: true });
+            },{ new: true });
 
         if (!customer) return res.status(404).send({'message':'The customer with the given mobile was not found.'});
 
@@ -35,4 +34,4 @@ router.patch('/:mobileNumber', async (req, res) => {
 
 
 });
-module.exports = router; 
+module.exports = router;
