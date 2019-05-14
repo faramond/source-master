@@ -30,7 +30,7 @@ router.post('/ragister', (req, response) => {
             path: '/v1/domains/fullblazeconsulting.co.za/records',
             method: 'PATCH',
             headers: {
-                'Authorization': 'sso-key e4CVHF47FBSt_6LBmAPViks9qrBnbE1tW1H:6LBpunFVQYsYRiy8i9rBwH',
+                'Authorization': 'sso-key e4CVHF47FBSt_7CjwxxuCea6BX95cio2KZU:7Ck5MvF85pTo9KGs4yqm22',
                 'Content-Type': 'application/json',
                 'Content-Length': patchData.length
             }
@@ -42,14 +42,14 @@ router.post('/ragister', (req, response) => {
             console.log('headers:', resp.headers);
             console.log('status:', resp.statusCode);
             if (resp.statusCode === 422) {
-                response.status(resp.statusCode).contentType('application/json');
-                response.send(
+                response.status(resp.statusCode).contentType('application/json').send(
                     {
                         message: "domain not available",
                         suggestions: ['bhai' + domainName + 'patel.com', domainName + 'bhai.patel.com', domainName + '_patel.com']
                     }
                 );
             }
+
             if (resp.statusCode === 200) {
                 response.status(resp.statusCode).contentType('application/json');
                 response.send(
@@ -66,12 +66,12 @@ router.post('/ragister', (req, response) => {
                     }
                 );
             }
-            else
-                resp.on('data', (d) => {
-                    process.stdout.write(d);
-                    response.status(resp.statusCode).contentType('application/json');
-                    response.send(d);
-                });
+            // else
+            //     resp.on('data', (d) => {
+            //         console.log('tetete');
+            //         //process.stdout.write(d);
+            //         response.send(d);
+            //     });
 
         });
 
@@ -103,7 +103,7 @@ router.get('/ragister', (req, resp) => {
                 path: '/v1/domains/fullblazeconsulting.co.za/records/A',
                 method: 'GET',
                 headers: {
-                    'Authorization': 'sso-key e4CVHF47FBSt_6LBmAPViks9qrBnbE1tW1H:6LBpunFVQYsYRiy8i9rBwH',
+                    'Authorization': 'sso-key e4CVHF47FBSt_7CjwxxuCea6BX95cio2KZU:7Ck5MvF85pTo9KGs4yqm22',
                     'Content-Type': 'application/json',
                     
                 }
