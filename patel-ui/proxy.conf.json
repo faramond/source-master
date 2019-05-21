@@ -1,0 +1,11 @@
+{
+  "/blueprint/api": {
+    "target": "http://192.168.5.204:7001",
+    "secure": false
+  },
+
+  "/patel/api/": {
+    "target": "http://18.221.123.66:7000",
+    "secure":false
+  }
+}

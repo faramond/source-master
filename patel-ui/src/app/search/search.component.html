@@ -1,0 +1,104 @@
+<mat-toolbar color="primary">
+    <span *ngIf="!showpaymentScreen && !showCart && !showPaymentDetails" appStretch> Welcome to Patel.Com Get Your Own Personalized Website NOW</span>
+    <span *ngIf="showCart" appStretch>Cart Details</span>
+    <span *ngIf="showPaymentDetails" appStretch>Payment Details</span>
+    <span appStretch></span>
+    <button *ngIf="!showpaymentScreen && !showCart" [disabled]="cartValue===0" mat-icon-button (click)=onCart();>
+        <mat-icon [matBadge]="cartValue" matBadgeSize="medium" matBadgeOverlap="false">shopping_cart</mat-icon>
+    </button>
+    <button *ngIf="showCart" mat-icon-button (click)=onBack();>
+        <mat-icon>keyboard_backspace</mat-icon>
+    </button>
+</mat-toolbar>
+
+<mat-card *ngIf="!showpaymentScreen && !showCart && !showPaymentDetails">
+    <mat-card-content (keydown.enter)="onSearch()" [formGroup]="searchFormGroup" [class.handset]="shareService.handsetObserver | async">
+        <mat-form-field class="fieldMargin">
+            <input matInput type="text" placeholder="search your domains i.e name.patel.com" formControlName="search">
+        </mat-form-field>
+
+        <button mat-icon-button (click)="onSearch()" [disabled]="searchFormGroup.invalid">
+      <mat-icon color="primary">search</mat-icon>
+      </button>
+    </mat-card-content>
+</mat-card>
+<br/><br/>
+<mat-accordion *ngIf="!showpaymentScreen && !showCart && !showPaymentDetails">
+    <mat-expansion-panel style="width: 90%;
+    margin-left: 5%" *ngFor="let in of searchresult" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+        <mat-expansion-panel-header>
+            <mat-panel-title>
+                {{in.name}}
+            </mat-panel-title>
+            <mat-panel-description>
+                Click to buy or add to cart
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+        <h4>Price : {{in.price}} USD</h4>
+        <div class="buttonFlex">
+            <button mat-raised-button color="primary" type="button" (click)="onAddToCart(in)">
+                Add to cart 
+            </button> &nbsp;&nbsp;
+            <button mat-raised-button color="primary" type="button" (click)="onSingleBuy(in)">Buy</button>
+        </div>
+    </mat-expansion-panel>
+</mat-accordion>
+
+<mat-card *ngIf="showCart" style="width: 50%; margin-left: 22%;">
+    <mat-nav-list>
+        <mat-list role="list">
+            <span appStretch></span>
+            <h3 mat-subheader>Domain Names  :  Prices</h3>
+            <mat-list-item *ngFor="let check of shareService.cart; let i = index" role="listitem">{{check.name}} : {{check.price}} USD
+                <span appStretch></span>
+                <button mat-raised-button color="primary" type="button" (click)="onRemove(check.id)">Remove</button>
+            </mat-list-item>
+        </mat-list>
+    </mat-nav-list><br/><br/>
+    <div class="buttonFlex">
+        <button mat-raised-button color="primary" type="button" (click)="onPayment()">Buy</button>
+    </div>
+</mat-card>
+
+<mat-card *ngIf="showPaymentDetails" style="width: 50%; margin-left: 22%;">
+    <mat-card-content class="flexClass" [formGroup]="paymentFormGroup">
+        <mat-form-field class="fieldMargin">
+            <input matInput type="text" placeholder="First Name" formControlName="firstName">
+        </mat-form-field>
+        <mat-form-field class="fieldMargin">
+            <input matInput type="text" placeholder="Last Name" formControlName="lastName">
+        </mat-form-field>
+        <mat-form-field class="fieldMargin">
+            <input matInput type="number" placeholder="Mobile Number" formControlName="mobile">
+        </mat-form-field>
+        <mat-form-field class="fieldMargin">
+            <input matInput type="text" placeholder="E-mail" formControlName="email">
+        </mat-form-field>
+
+        <mat-checkbox formControlName="checkbox">Do you accept TnCs</mat-checkbox> <br/>
+        <!--<mat-card-content *ngIf="checkbox" class="flexClass" [formGroup]="paymentDetailsFormGroup">-->
+        <div class="flexClass" *ngIf="paymentFormGroup.get('checkbox').value === true">
+            <mat-form-field class="fieldMargin">
+                <input matInput type="number" placeholder="Card Number" formControlName="cardNumber">
+            </mat-form-field>
+            <mat-form-field class="fieldMargin">
+                <input matInput type="text" placeholder="Name on Card" formControlName="nameOnTheCard">
+            </mat-form-field>
+            <mat-form-field class="fieldMargin">
+                <input matInput type="number" placeholder="Cvv" formControlName="cvv">
+            </mat-form-field>
+            <mat-form-field class="fieldMargin">
+                <input matInput type="text" placeholder="Expiry date" formControlName="expire">
+            </mat-form-field>
+            <mat-form-field class="fieldMargin">
+                <input matInput readonly placeholder="Total amount to pay" formControlName="total">
+            </mat-form-field>
+        </div>
+    </mat-card-content>
+    <!--</mat-card-content>-->
+    <div *ngIf="paymentFormGroup.get('checkbox').value === true" class="buttonFlex">
+        <button mat-raised-button color="primary" type="button" (click)="onCancelPurchase()">Cancel</button>&nbsp;&nbsp;
+        <button mat-raised-button color="primary" type="button" (click)="onPurchase()">Purchase</button>
+    </div>
+</mat-card>
+<br/><br/>

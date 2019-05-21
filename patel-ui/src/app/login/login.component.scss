@@ -1,0 +1,25 @@
+@import 'src/styles.scss';
+
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: whitesmoke;
+}
+
+:host(.handset) {
+  padding-left: $app-margin;
+  padding-right: $app-margin;
+}
+
+mat-card-content.mat-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+img.mat-card-avatar {
+  height: 20px;
+  width: 20px;
+}

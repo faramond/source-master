@@ -1,0 +1,30 @@
+<mat-toolbar>
+    <span appStretch>Welcome {{name}}</span>
+    <a style="cursor: pointer" (click)="onLogout()">Logout</a>
+</mat-toolbar>
+
+<br/><br/>
+
+<mat-card>
+    <mat-card-content [formGroup]="formGroup" (keydown.enter)="formGroup.valid && onSubmit()">
+        <mat-form-field>
+            <input formControlName="domainName" matInput placeholder="Enter domain name" appFocus>
+        </mat-form-field>
+        <button mat-icon-button (click)="onSubmit()" [disabled]="formGroup.invalid">
+            <mat-icon color="primary">search</mat-icon>
+         </button>
+    </mat-card-content>
+    <span *ngIf="offer">
+        <h3>Offers available:</h3>
+        <h5>{{offer}}</h5>
+   </span>
+</mat-card>
+
+<mat-card *ngIf="suggestions.length>0">
+    <h3> The above requested domain is already taken. Please see the suggested domains below. </h3>
+    <mat-list *ngFor="let sugg of suggestions; let i = index;">
+        <mat-list-item>
+            {{i+1}}. {{sugg}}
+        </mat-list-item>
+    </mat-list>
+</mat-card>

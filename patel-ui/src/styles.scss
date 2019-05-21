@@ -1,0 +1,31 @@
+@import '~@angular/material/theming';
+
+$web-typography: mat-typography-config(
+  $font-family: 'Roboto, monospace'
+);
+@include mat-core($web-typography);
+$app-primary: mat-palette($mat-blue);
+$app-accent: mat-palette($mat-gray);
+$app-warn: mat-palette($mat-red);
+$app-theme: mat-light-theme($app-primary, $app-accent, $app-warn);
+@include angular-material-theme($app-theme);
+
+$app-margin: 10px;
+$app-light: silver;
+
+body {
+  margin: 0;
+}
+
+.app-progress {
+  align-items: center;
+  justify-content: center;
+}
+
+mat-dialog-container.mat-dialog-container {
+  background-color: lightgray;
+  border-radius: 5px;
+  max-width: 30vw;
+}
+
+

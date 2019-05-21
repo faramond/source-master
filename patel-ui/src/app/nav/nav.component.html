@@ -1,0 +1,25 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport="true" [attr.role]="handset ? 'dialog' : 'navigation'" [mode]="handset ? 'over' : 'side'"
+    [opened]="!handset">
+    <mat-toolbar color="primary">Cart</mat-toolbar>
+    <mat-nav-list *ngIf="shareService.check">
+      <mat-list *ngFor="let check of shareService.cart; let i = index" role="list">
+        <mat-list-item role="listitem">{{i+1}}. {{check.name}}
+          <span appStretch></span>
+          <button type="button" mat-icon-button (click)="navigatee(check.id)">
+        <mat-icon>navigate_next</mat-icon>
+      </button>
+        </mat-list-item>
+      </mat-list>
+    </mat-nav-list>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button type="button" mat-icon-button (click)="drawer.toggle()" *ngIf="handset">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>Patel Portal</span>
+    </mat-toolbar>
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

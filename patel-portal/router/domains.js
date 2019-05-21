@@ -18,7 +18,7 @@ router.get('/:domainName', async (req, res) => {
         let existingDomain = [];
         for (let key in domains)
          {
-            existingDomain.push(domains[key].domainName+'.patel.com');
+            existingDomain.push(domains[key].domainName);
         }
         return res.send(suggestion.getexistingDomainSugestions(req.params.domainName,existingDomain))
     }

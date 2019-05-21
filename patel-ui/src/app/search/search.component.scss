@@ -1,0 +1,33 @@
+@import 'src/styles.scss';
+
+mat-card-content.mat-card-content {
+  display: flex;
+}
+
+mat-card-content.mat-card-content mat-form-field.mat-form-field {
+   flex-grow: 1;
+}
+
+mat-card-content.mat-card-content.handset {
+  flex-direction: row;
+}
+
+.flexClass {
+    display: flex;
+    flex-direction: column;
+}
+
+.more-button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.dash-card-content {
+  text-align: center;
+}
+
+.buttonFlex {
+     display: flex;
+     justify-content: center;
+ }
