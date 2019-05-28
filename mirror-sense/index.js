@@ -1,25 +1,77 @@
-const mongoose = require('mongoose');
-const customers = require('./routes/customers');
-const bookings = require('./routes/bookings');
-const services = require('./routes/services');
-const salons = require('./routes/salons');
-const login = require('./routes/login')
-const home = require('./routes/home')
+require('dotenv').config({path:'.env'});
+require('./models/user_model')
+const winston = require('winston');
+// const mongoose = require('mongoose');
+// const customers = require('./routes/customers');
+// const bookings = require('./routes/bookings');
+// const services = require('./routes/services');
+// const salons = require('./routes/salons');
+// const login = require('./routes/login')
+// const home = require('./routes/home')
 
 const express = require('express');
 const app = express();
-mongoose.connect('mongodb://localhost/mirror-sense_ews_poc')
-//mongoose.connect('mongodb://localhost/mirror-sense')
-    .then(() => console.log('Connected to MongoDB...'))
-    .catch(err => console.error('Could not connect to MongoDB...'));
+//mongoose.connect('mongodb://localhost/mirror-sense_ews_poc')
+require('./startup/logging')();
+require('./startup/routes')(app);
+require('./startup/db')();
+require('./startup/config')();
+require('./startup/validation')();
 
-app.use(express.json());
-app.use('/mirror/api/customers', customers);
-app.use('/mirror/api/bookings', bookings);
-app.use('/mirror/api/services', services);
-app.use('/mirror/api/salons', salons);
-app.use('/mirror/api/login', login);
-app.use('/mirror/api', home);
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+const expressSession = require('express-session');
+const mongoStore = require('connect-mongo')({session: expressSession});
+const mongoose = require('mongoose');
+
+const config = require('./config.js');
+
+if(!config.API_KEY){
+    console.log("Please set your ACCOUNT_SECURITY_API_KEY environment constiable before proceeding.");
+    process.exit(1);
+}
+
+
+const dataBase = mongoose.connection;
+   dataBase.once('open', function (err) {
+      if(err){
+          console.log("Error Opening the DB Connection: ", err);
+          return;
+      }
+      app.use(expressSession({
+          secret: config.SECRET,
+          cookie: {maxAge: 60 * 60 * 1000},
+          store: new mongoStore({
+              db: mongoose.connection.db,
+              collection: 'sessions'
+          }),
+          resave: true,
+          saveUninitialized: true
+      }));
+      // const port = config.PORT || 5151;
+      // server.listen(port);
+      // console.log("Magic happening on port " + port);
+    });
+    
+    dataBase.on('error', console.error.bind(console, 'Connection Error:'));
+
+app.use(cookieParser());
+app.use(
+    expressSession(
+        {
+            'secret': config.SECRET,
+            resave: true,
+            saveUninitialized: true
+        }
+    )
+);
+
+app.use(bodyParser.json({}));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Listening on port ${port}...`));
+const server = app.listen(port, () => winston.info(`Listening on port ${port}...`));
+
+module.exports = server;

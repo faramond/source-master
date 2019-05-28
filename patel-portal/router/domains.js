@@ -6,6 +6,7 @@ let suggestion = require('../model/suggestions')
 
 router.get('/:domainName', async (req, res) => {
     try {
+        let domainName= req.params.domainName;
         let regex = new RegExp('.*' + req.params.domainName + '.*');
         console.log(regex);
         const domains = await Domain.find({ domainName: { $regex: regex, $options: 'i' } });
@@ -20,7 +21,10 @@ router.get('/:domainName', async (req, res) => {
          {
             existingDomain.push(domains[key].domainName);
         }
-        return res.send(suggestion.getexistingDomainSugestions(req.params.domainName,existingDomain))
+      
+      existingDomain.push();
+
+        return res.send(suggestion.getexistingDomainSugestions(req.params.domainName,existingDomain,domainName))
     }
  //    ,req.params.domainName+'patel.com')
     catch (err) {

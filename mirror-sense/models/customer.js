@@ -4,50 +4,43 @@ const mongoose = require('mongoose');
 const Customer = mongoose.model('Customer', new mongoose.Schema({
     challenge: {
         type: Number,
-        required: true,
+        default: null,
         minlength: 1,
-        maxlength: 4
+        maxlength: 10
     },
     fullName: {
         type: String,
-        required: true,
+        default: null,
         minlength: 2,
         maxlength: 50
     },
-    userName: {
-        type: String,
-        unique:true,
-        required: true,
-        minlength: 2,
-        maxlength: 50
-    },
-
-    mobileNumber: {
+   
+ mobileNumber: {
         type: Number,
         unique:true,
         required: true,
         minlength: 5,
-        maxlength: 50
+        maxlength: 15
     },
     password: {
         type: String,
         required: false,
         minlength: 2,
-        maxlength: 50
+        maxlength: 255
     },
     email: {
         type: String,
-        required: false,
-        minlength: 2,
-        maxlength: 50
+        default: null,
     },
     dob: {
-        type: Date
+        type: Date,
+        default: null,
 
     },
     gender: {
         type: String,
         required: false,
+        default: null,
         minlength: 1,
         maxlength: 8
     },
@@ -65,5 +58,15 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     }
 }));
 
+function validateUser(customer) {
+    const schema = {
+      fullName: Joi.string(),
+      mobileNumber: Joi.string().min(5).max(15).required(),
+      password: Joi.string().min(5).max(255).required()
+    };
+  
+    return Joi.validate(customer, schema);
+  }
 
 exports.Customer = Customer;
+exports.validate = validateUser;
