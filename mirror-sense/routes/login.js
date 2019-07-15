@@ -45,14 +45,23 @@ router.post('/', async (req, res) => {
 
         let user = await Customer.findOne({ mobileNumber: req.body.mobileNumber });
         if (user) return res.status(400).send({ 'message': 'MobileNumber already registered.' });
+       req.body.email= req.body.email===undefined?req.body.mobileNumber+'@null_email':req.body.email;
+       user = new Customer(_.pick(req.body, ['fullName', 'mobileNumber','countryCode', 'password','email']));
+      
+        // user =  new Customer({
+           
+        //     fullName: req.body.fullName,
+        //     mobileNumber: req.body.mobileNumber,
+        //     password: req.body.password,
+        //     email: emailAddress,
+        //     created: new Date(),
 
-        user = new Customer(_.pick(req.body, ['fullName', 'mobileNumber', 'password']));
-
+        // });
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
         console.log(user.password);
         await user.save();
-        res.status(201).send(_.pick(user, ['_id', 'mobileNumber', 'fullName']));
+        res.status(201).send(_.pick(user, ['_id','countryCode','mobileNumber', 'fullName','email']));
 
         // const token = user.generateAuthToken();
         // res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));

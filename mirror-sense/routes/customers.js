@@ -9,8 +9,12 @@ const storage =
 
 router.get('/', async (req, res) => {
     try {
+        
         console.log(req.query.mobileNumber)
-        const customers = await Customer.find().or([{ mobileNumber: req.query.mobileNumber }])
+        let queryString =req.query
+        console.log('query Name:',queryString);
+        
+        const customers = await Customer.find().or([{ mobileNumber:req.query.mobileNumber },{ email: req.query.email }])
             .sort('name');
         res.send(customers);
     }
@@ -23,13 +27,17 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
+   // let emailAddress= req.body.email = null;
+   req.body.email= req.body.email===undefined?req.body.mobileNumber+'@null_email':req.body.email;
+    console.log(req.body.email);
     try {
         let customer = new Customer({
             challenge: 1234,
             fullName: req.body.fullName,
             mobileNumber: req.body.mobileNumber,
+            countryCode: req.body.countryCode,
             password: req.body.password,
-            email: req.body.email,
+            email:req.body.email,
             dob: req.body.dob,
             gender: req.body.gender,
             profile: req.body.profile,
@@ -48,9 +56,30 @@ router.post('/', async (req, res) => {
 });
 router.patch('/:id', upload.single('profile'), async (req, res) => {
     try {
+      
         console.log(req.file);
+        if(req.file == undefined)
+        {
+            console.log("if");
+            const customer = await Customer.findByIdAndUpdate(req.params.id,
+                {
+                    
+                    email: req.body.email,
+                    dob: req.body.dob,
+                    gender: req.body.gender,
+                    updated: new Date(),
+    
+                }, { new: true });
+    
+            if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
+    
+            res.send(customer);
+        
+        }
+        
         const customer = await Customer.findByIdAndUpdate(req.params.id,
             {
+                
                 email: req.body.email,
                 dob: req.body.dob,
                 gender: req.body.gender,
@@ -60,9 +89,11 @@ router.patch('/:id', upload.single('profile'), async (req, res) => {
             }, { new: true });
 
         if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
-
+console.log('esle');
         res.send(customer);
+    
     }
+    
     catch (err) {
         res.send({ 'message': err.message });
         console.log('Customer Patch', err.message)

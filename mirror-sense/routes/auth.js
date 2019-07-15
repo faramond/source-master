@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
         if (!user) return res.status(400).send({ 'message': 'Invalid userName or password.' });
         const validPassword = await bcrypt.compare(req.body.password, user.password)
         if (!validPassword) return res.status(400).send({ 'message': 'Invalid userName or password.' });
-        res.status(201).send(_.pick(user, ['_id', 'mobileNumber','fullName','email','gender','dob','profile','created','updated']))
+        res.status(201).send(_.pick(user, ['_id','countryCode','mobileNumber','fullName','email','gender','dob','profile','created','updated']))
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
@@ -27,6 +27,7 @@ router.post('/', async (req, res) => {
 function validate(customer) {
     const schema = {
         mobileNumber: Joi.string().min(5).max(15).required(),
+        countryCode: Joi.string().min(2).max(15).required(),
         password: Joi.string().min(5).max(255).required()
     };
 
