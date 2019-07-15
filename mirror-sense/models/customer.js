@@ -18,8 +18,14 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
  mobileNumber: {
         type: Number,
         unique:true,
-        required: true,
+        required: false,
         minlength: 5,
+        maxlength: 15
+    },
+    countryCode: {
+        type: Number,
+        required: true,
+        minlength: 2,
         maxlength: 15
     },
     password: {
@@ -30,7 +36,7 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     },
     email: {
         type: String,
-        default: null,
+        unique:true,
     },
     dob: {
         type: Date,
@@ -62,6 +68,7 @@ function validateUser(customer) {
     const schema = {
       fullName: Joi.string(),
       mobileNumber: Joi.string().min(5).max(15).required(),
+      countryCode: Joi.string().min(2).max(15).required(),
       password: Joi.string().min(5).max(255).required()
     };
   
