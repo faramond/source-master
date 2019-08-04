@@ -1,7 +1,9 @@
 
 const express = require('express');
+const { mysqlCon} = require('../startup/db');
 
 const router = express.Router();
+
 
 const services =
     [
@@ -96,7 +98,8 @@ const services =
         },
     ];
 
-router.get('/', (req, resp) => {
+
+    router.get('/', (req, resp) => {
 
 
     resp.send(services);
