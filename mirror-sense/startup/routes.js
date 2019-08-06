@@ -1,5 +1,6 @@
 const express = require('express');
 const customers = require('../routes/customers');
+// const employee = require('../routes/employee');
 const bookings = require('../routes/bookings');
 const services = require('../routes/services');
 const salons = require('../routes/salons');
@@ -14,6 +15,7 @@ const users = require('../controllers/users.js');
 module.exports = function(app) {
   app.use(express.json());
   app.use('/mirror/api/customers', customers);
+  // app.use('/mirror/api/employee', employee);
   app.use('/mirror/api/bookings', bookings);
   app.use('/mirror/api/services', services);
   app.use('/mirror/api/salons', salons);
