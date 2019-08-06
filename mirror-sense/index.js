@@ -1,13 +1,8 @@
 require('dotenv').config({path:'.env'});
 require('./models/user_model')
 const winston = require('winston');
-// const mongoose = require('mongoose');
-// const customers = require('./routes/customers');
-// const bookings = require('./routes/bookings');
-// const services = require('./routes/services');
-// const salons = require('./routes/salons');
-// const login = require('./routes/login')
-// const home = require('./routes/home')
+const mysql = require('mysql')
+
 
 const express = require('express');
 const app = express();
@@ -71,7 +66,9 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT1 || 3000;
 const server = app.listen(port, () => winston.info(`Listening on port ${port}...`));
+
+
 
 module.exports = server;
