@@ -14,7 +14,7 @@ const connection = mysql.createConnection({
       return;
     }
 
-    console.log('connected as id ' + connection.threadId);
+    console.log('Connected to Mirror database as id ' + connection.threadId);
   });
 
 
