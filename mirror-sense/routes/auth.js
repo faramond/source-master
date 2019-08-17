@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post('/', async (req, res) => {
     try {
-        const { error } = validate(req.body);
+        const { error } = validateCustomer(req.body);
         if (error) return res.status(400).send(
             { 'message': error.details[0].message });
 
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
         console.log('Auth Post', err.message)
     }
 });
-function validate(customer) {
+function validateCustomer(customer) {
     const schema = {
         mobileNumber: Joi.string().min(5).max(15).required(),
         countryCode: Joi.string().min(2).max(15).required(),
