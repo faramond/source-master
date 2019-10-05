@@ -1,5 +1,6 @@
 const { Customer, validate } = require('../models/customer');
 const { Employee, validateEmp } = require('../models/employee');
+const { Wallet } = require('../models/wallet');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
@@ -62,6 +63,24 @@ router.post('/', async (req, res) => {
         user.password = await bcrypt.hash(user.password, salt);
         console.log(user.password);
         await user.save();
+        try {
+            let oldBalance = await Wallet.findOne({ mobile: req.body.countryCode + req.body.mobileNumber })
+            let walletData = { 
+            "mobile": req.body.countryCode + req.body.mobileNumber,
+            "addBalance": 0 ,
+            "oldBalance1":0,
+            "totalBalance":0,
+            "cusomter": user._id
+            } 
+            if (!oldBalance) 
+                data = new Wallet(walletData);
+                await data.save();
+            console.log(req.body.mobileNumber,' wallet created')
+            }
+        catch (err) {
+            res.status(400).send({ 'message': "Wallet" + err.message });
+            console.log('Wallet Error', err.message)
+        }
         res.status(201).send(_.pick(user, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email']));
 
         // const token = user.generateAuthToken();

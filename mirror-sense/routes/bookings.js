@@ -19,17 +19,8 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        let booking = new Booking({
-            salonName: req.body.salonName,
-            locality: req.body.locality,
-            appointmentDate: req.body.appointmentDate,
-            modeOfPayment: req.body.modeOfPayment,
-            amountToPay: req.body.amountToPay,
-            userName: req.body.userName,
-            mobileNumber: req.body.mobileNumber,
-            created: new Date(),
-
-        });
+        req.body.isServed = false;
+        let booking = new Booking(req.body);
         booking = await booking.save();
 
         res.send(booking);
@@ -43,9 +34,11 @@ router.post('/', async (req, res) => {
 
 router.patch('/:id', async (req, res) => {
     try {
+        // req.body.updated = new Date()
         const booking = await Booking.findOneAndUpdate(req.params.id,
             {
                 isServed:req.body.isServed,
+                status:req.body.status,
                 updated: new Date(),
 
             }, { new: true });

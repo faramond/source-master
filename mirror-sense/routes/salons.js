@@ -1,69 +1,168 @@
 
 const express = require('express');
 const mysql = require('mysql')
-var mysqlCon = require('../startup/mysqlCon');
+const multer = require('multer');
+const upload = require('../storage/image')
+let { Salon } = require('../models/salon');
+let { avgRating } = require('../lib/ratings');
+let { ServiceCategory } = require('../models/serviceCategory');
 const router = express.Router();
 
-router.get('/service/:id', async (req, res) => {
+router.get('/', async (req, res) => {
+
     try {
-        console.log('in here' + req.params.id);
+        if (req.query.company) {
+            let salon = await Salon.find({ company: req.query.company }).select('salonName address.addressLine address.addressLine1 address.town address.phone geometry');
+            res.status(200).send(salon);
+        }
+        if (!req.query.serviceType) {
+            let salon = await Salon.aggregate([{ $geoNear: { near: { type: 'Point', coordinates: [parseFloat(req.query.long), parseFloat(req.query.lat)] }, spherical: true, distanceField: "dist.calculated" } }])
+            res.status(200).send(salon);
+        }
+        else {
+            let queryString = req.query
+            let serviceCategory = await ServiceCategory.findOne({ serviceType: req.query.serviceType }).populate('salon');
+            let salon = await Salon.aggregate([{ $geoNear: { near: { type: 'Point', coordinates: [parseFloat(req.query.long), parseFloat(req.query.lat)] }, spherical: true, distanceField: "dist.calculated" } }])
+            let result = [];
+            for (let i = 0; i < serviceCategory.salons.length; i++) {
 
-        mysqlCon.query('select * from Salon where ServicesTypeID= ? ',
-            [req.params.id], (err, rows, fields) => {
-                if (!err)
-                    res.send(rows);
-                else
-                    console.log(err);
+                for (let j = 0; j < salon.length; j++) {
+                    console.log(serviceCategory.salons[i] + '   1')
+
+                    if (serviceCategory.salons[i].toString() === salon[j]._id.toString()) {
+                        result.push(salon[j])
+                        console.log(salon[j]._id + '   Final')
+                        break;
+                    }
+                }
+
+
             }
+            console.log(result);
+            res.send(result).status(200);
+        }
 
-        )
 
     }
+
     catch (err) {
-        res.send(err.message)
+        res.send({ 'message': err.message });
+        console.log('Customer Get', err)
     }
+
 });
 
 router.get('/:id', async (req, res) => {
     try {
-        console.log('in here salon by service' + req.params.id);
-        let sqlString = "select sa.salonnm,cp.Company_Address,cp.Company_Address1,cp.ImagePhoto,cp.Company_Phone,cp.hour_end_fri,cp.hour_end_mon,cp.hour_end_sat,cp.hour_end_sun,cp.hour_end_thu,cp.hour_end_tue,cp.hour_end_wed,cp.hour_start_fri,cp.hour_start_mon,cp.hour_start_sat,cp.hour_start_sun,cp.hour_start_thu,cp.hour_start_tue,cp.hour_start_wed,cp.open_fri,cp.open_mon,cp.open_sat,cp.open_sun,cp.open_thu,cp.open_tue,cp.open_wed from Salon sa, Company_Profile cp where sa.salonid = cp.salonid and sa.salonid=?";
-        mysqlCon.query(sqlString,
-            [req.params.id], (err, rows, fields) => {
-                if (!err)
-                    res.send(rows);
-                else
-                    console.log(err);
-            }
-        )
+        let queryString = req.query
+        let salon = await Salon.findOne().populate('serviceCategory');
+        res.send(salon).status(200);
     }
-
     catch (err) {
-        res.send(err.message)
+        res.send({ 'message': err.message });
+        console.log('Salon Get', err)
     }
-
 });
 
-
-router.get('/:longitude/:latitude', async (req, res) => {
+router.get('/review/:id', async (req, res) => {
     try {
-        console.log('in here salon by service' + req.params.id);
-        let sqlString = "select * from( select cp.Company_ID, cp.Company_Name, cp.MonthlyFee, cp.Company_Address, cp.Company_Address1, cp.Company_Postcode, cp.Company_Phone, cp.Company_Email, cp.NewsletterEmail, cp.RegCode, cp.ImagePhoto, cp.Town, cp.State, cp.blnShow, cp.isHQ, cp.CurrencyID, cp.salonid, cp.createdt, cp.lastdt, cp.createby, cp.status, cp.Flag, cp.open_mon, cp.open_tue, cp.open_wed, cp.open_thu, cp.open_fri, cp.open_sat, cp.open_sun, cp.hour_start_mon, cp.hour_start_tue, cp.hour_start_wed, cp.hour_start_thu, cp.hour_start_fri, cp.hour_start_sat, cp.hour_start_sun, cp.hour_end_mon, cp.hour_end_tue, cp.hour_end_wed, cp.hour_end_thu,cp.hour_end_fri, cp.hour_end_sat, cp.hour_end_sun, cp.CalendarID,cl.Latitude as lat,cl.Longitude as lon, 111.111 *DEGREES(ACOS(LEAST(COS(RADIANS(?)) * COS(RADIANS(cl.Latitude)) * COS(RADIANS(? - cl.Longitude)) + SIN(RADIANS(10.7607663)) * SIN(RADIANS(cl.Latitude)), 1.0))) AS distance_in_km from Company_Profile cp, CompanyLocation cl where cl.CompanyID=cp.Company_ID ) as main_company_table order by distance_in_km;";
-        mysqlCon.query(sqlString,
-            [req.params.longitude,req.params.latitude], (err, rows, fields) => {
-                if (!err)
-                    res.send(rows);
-                else
-                    console.log(err);
-            }
-        )
-    }
 
+        const salon = await Salon.findOne().select('reviews');
+        console.log(salon);
+        let ratings = avgRating(salon);
+        console.log('ratings:', ratings);
+       // ratings.reviews.push(salon);
+        console.log('salon:', salon.reviews);
+        res.send(ratings).status(200);
+    }
     catch (err) {
-        res.send(err.message)
+        res.send({ 'message': err.message });
+        console.log('Salon Get', err)
     }
-
 });
 
 
-module.exports = router; 
+
+
+
+router.post('/', async (req, res) => {
+    try {
+        console.log('in');
+        let salon = await Salon.find()
+        req.body.salonID = 'S' + (100 + salon.length)
+        console.log(req.body.salonID);
+        data = new Salon(req.body);
+        await data.save();
+        res.status(201).send(data)
+
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Company Data', err.message)
+    }
+});
+
+router.post('/review/:id', async (req, res) => {
+    try {
+        if (!req.body.reviews[0].rating) res.status(422).send({ 'message': 'Rating is mandatory' });
+        else {
+            let data = await Salon.findOneAndUpdate(req.params.id, {
+                
+                $addToSet: { reviews: req.body.reviews } },
+                { new: true },
+                function (err, doc) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            console.log(data);
+            // await data.save();
+            res.status(201).send(data)
+
+        }
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Company Data', err.message)
+    }
+});
+
+router.patch('/:id', upload.array('images', 2), async (req, res) => {
+    try {
+        if (!req.files) {
+            let salon = await Salon.findByIdAndUpdate(req.params.id, {
+                $set: req.body
+
+            }, { new: true });
+
+            res.status(200).send(salon)
+        }
+        else {
+            for (let key in req.files) {
+                if (req.files[key].originalname.includes('logo')) {
+                    let salon = await Salon.findByIdAndUpdate(req.params.id, {
+                        logo: req.files[key].path
+
+                    }, { new: true });
+                }
+                else {
+                    let salon = await Salon.findByIdAndUpdate(req.params.id, {
+                        salonImage: req.files[key].path
+
+                    }, { new: true });
+                }
+            }
+            res.status(200).send({ 'message': 'files uploded' })
+        }
+
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Company Data', err.message)
+    }
+});
+
+
+module.exports = router;
+
+

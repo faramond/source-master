@@ -8,6 +8,18 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 100
     },
+    serviceName: {
+        type: String,
+        required: true,
+        minlength: 1,
+        maxlength: 100
+    },
+    dealName: {
+        type: String,
+        required: true,
+        minlength: 1,
+        maxlength: 100
+    },
     locality: {
         type: String,
         required: false,
@@ -30,6 +42,12 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 8
     },
+    status: {
+        type: String,
+        required: false,
+        minlength: 1,
+        maxlength: 20
+    },
     isServed: {
         type: Boolean,
         required: false,
@@ -47,6 +65,12 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         required: false,
         minlength: 1,
         maxlength: 15
+    },
+    mirrorStar: {
+        type: String,
+        required: false,
+        default: null 
+        
     },
      created: {
         type: Date, default: Date.now

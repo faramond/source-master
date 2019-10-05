@@ -6,9 +6,18 @@ const salons = require('../routes/salons');
 const login = require('../routes/login');
 const auth = require('../routes/auth');
 const home = require('../routes/home');
+const populate = require('../routes/populate');
+const hot = require('../routes/hot');
+const star = require('../routes/mirrorStar');
+const payment = require('../routes/payment');
+const reward = require('../routes/reward');
+const wallet = require('../routes/wallet');
+const happening = require('../routes/happening');
 const verification = require('../routes/verification')
+const setting = require('../routes/settings')
 const error = require('../middleware/error');
 const users = require('../controllers/users.js');
+
 
 
 module.exports = function(app) {
@@ -20,8 +29,16 @@ module.exports = function(app) {
   app.use('/mirror/api/registration', login);
   app.use('/mirror/api/auth', auth);
   app.use('/mirror/api', home);
+  app.use('/mirror/api/data', populate);
+  app.use('/mirror/api/hot', hot);
+  app.use('/mirror/api/star', star);
   app.use('/uploads',express.static('./uploads'));
   app.use('/mirror/api/verification',verification);
+  app.use('/mirror/api/payment', payment);
+  app.use('/mirror/api/reward', reward);
+  app.use('/mirror/api/wallet', wallet);
+  app.use('/mirror/api/happening', happening);
+  app.use('/mirror/api/setting', setting);
 
   
   
