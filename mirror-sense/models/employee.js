@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
+const { reviewsAndRatings } = require('../models/reviewsAndRatings')
 
 const Employee = mongoose.model('Employee', new mongoose.Schema({
 
@@ -72,7 +73,22 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         required: false,
         minlength: 1,
         maxlength: 3
-    }
+    },
+    saloonName: {
+        type: String,
+        default: null,
+        minlength: 2,
+        maxlength: 50
+    },
+    image: {
+         type: String 
+    },
+    followers:[{
+        name : String,
+        image : String
+    }],
+    reviewsAndRatings: reviewsAndRatings
+    
 }));
 
 function validateEmp(employee) {
