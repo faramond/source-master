@@ -58,7 +58,7 @@ router.patch('/:id', upload.single('profile'), async (req, res) => {
 
         if (!employee) return res.status(404).send({ 'message': 'The employee with the given ID was not found.' });
 console.log('esle');
-        res.send(customer);
+        res.send(employee);
     
     }
     
@@ -128,13 +128,6 @@ router.post('/booking', async (req, res) => {
     }
 );
 
-
-
-
-
-
-
-
 router.get('/leave', async (req, res) => {
     try {
         
@@ -195,13 +188,6 @@ router.patch('/leave/:id', async (req, res) => {
  
     }
 );
-
-
-
-
-
-
-
 
 router.get('/post', async (req, res) => {
     try {

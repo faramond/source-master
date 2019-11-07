@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
-const { reviewsAndRatings } = require('../models/reviewsAndRatings')
+const { ReviewsAndRatings } = require('../models/reviewsAndRatings')
 
 const Employee = mongoose.model('Employee', new mongoose.Schema({
 
@@ -10,16 +10,16 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         minlength: 2,
         maxlength: 50
     },
-   
- mobileNumber: {
-        type: Number,
-        unique:true,
+
+    mobileNumber: {
+        type: String,
+        unique: true,
         required: false,
         minlength: 5,
         maxlength: 15
     },
     countryCode: {
-        type: Number,
+        type: String,
         required: true,
         minlength: 2,
         maxlength: 15
@@ -32,7 +32,7 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
     },
     email: {
         type: String,
-        unique:true,
+        unique: true,
     },
     dob: {
         type: Date,
@@ -41,11 +41,9 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
     },
     gender: {
         type: String,
-        required: false,
-        default: null,
-        minlength: 1,
-        maxlength: 8
+       
     },
+
     profile: {
         type: String,
 
@@ -74,34 +72,43 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         minlength: 1,
         maxlength: 3
     },
-    saloonName: {
+    salonName: {
         type: String,
         default: null,
         minlength: 2,
         maxlength: 50
     },
-    image: {
-         type: String 
+    salon: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'salon',
+        default: null
     },
-    followers:[{
-        name : String,
-        image : String
+
+    image: {
+        type: String
+    },
+    followers: [{
+        name: String,
+        image: String
     }],
-    reviewsAndRatings: reviewsAndRatings
+    bio: String,
+    specilality: [String],
     
+
 }));
 
 function validateEmp(employee) {
     const schema = {
-      fullName: Joi.string(),
-      mobileNumber: Joi.string().min(5).max(15).required(),
-      countryCode: Joi.string().min(2).max(15).required(),
-      password: Joi.string().min(5).max(255).required(),
-      address: Joi.string().min(5).max(100)
+        fullName: Joi.string(),
+        mobileNumber: Joi.string().min(5).max(15).required(),
+        countryCode: Joi.string().min(2).max(15).required(),
+        password: Joi.string().min(5).max(255).required(),
+       
     };
-  
+
     return Joi.validate(employee, schema);
-  }
+}
 
 exports.Employee = Employee;
 exports.validateEmp = validateEmp;

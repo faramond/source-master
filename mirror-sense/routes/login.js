@@ -1,6 +1,8 @@
 const { Customer, validate } = require('../models/customer');
 const { Employee, validateEmp } = require('../models/employee');
 const { Wallet } = require('../models/wallet');
+const { MirrorStar } = require('../models/mirrorStar');
+const { Salon } = require('../models/salon');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
@@ -65,18 +67,18 @@ router.post('/', async (req, res) => {
         await user.save();
         try {
             let oldBalance = await Wallet.findOne({ mobile: req.body.countryCode + req.body.mobileNumber })
-            let walletData = { 
-            "mobile": req.body.countryCode + req.body.mobileNumber,
-            "addBalance": 0 ,
-            "oldBalance1":0,
-            "totalBalance":0,
-            "cusomter": user._id
-            } 
-            if (!oldBalance) 
-                data = new Wallet(walletData);
-                await data.save();
-            console.log(req.body.mobileNumber,' wallet created')
+            let walletData = {
+                "mobile": req.body.countryCode + req.body.mobileNumber,
+                "addBalance": 0,
+                "oldBalance1": 0,
+                "totalBalance": 0,
+                "cusomter": user._id
             }
+            if (!oldBalance)
+                data = new Wallet(walletData);
+            await data.save();
+            console.log(req.body.mobileNumber, ' wallet created')
+        }
         catch (err) {
             res.status(400).send({ 'message': "Wallet" + err.message });
             console.log('Wallet Error', err.message)
@@ -125,18 +127,32 @@ router.patch('/employee/:id', async (req, res) => {
 });
 router.post('/employee', async (req, res) => {
     try {
-        const { error } = validate(req.body);
-        if (error) return res.status(400).send(
-            { 'message': error.details[0].message });
-
-        let employee= await Employee.findOne({ mobileNumber: req.body.mobileNumber });
+       // const { error } = validateEmp(req.body);
+       // if (error) return res.status(400).send(
+       // { 'message': error.details[0].message });
+        let employee = await Employee.findOne({ mobileNumber: req.body.mobileNumber });
         if (employee) return res.status(400).send({ 'message': 'MobileNumber already registered.' });
         req.body.email = req.body.email === undefined ? req.body.mobileNumber + '@null_email' : req.body.email;
-        employee = new Employee(_.pick(req.body, ['fullName', 'mobileNumber', 'countryCode', 'password', 'email']));
+        employee = new Employee(_.pick(req.body, ['fullName', 'mobileNumber', 'countryCode', 'password', 'email','bio','salon']));
         const salt = await bcrypt.genSalt(10);
         employee.password = await bcrypt.hash(employee.password, salt);
         console.log(employee.password);
         await employee.save();
+        let salon = await Salon.findOne({_id: req.body.salon })
+        console.log('salon finde', Salon)
+        let mirrorStar = await MirrorStar.findOne({ employee: employee.id })
+        console.log('mirror start', mirrorStar)
+        if (mirrorStar == undefined) {
+            mirrorStar = new MirrorStar({
+                salonID: salon.salonID,
+                starName: req.body.fullName,
+                bio: req.body.bio,
+                salon: salon.id,
+                employee: employee.id
+            })
+            await mirrorStar.save();
+        }
+
         res.status(201).send(_.pick(employee, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email']));
 
 

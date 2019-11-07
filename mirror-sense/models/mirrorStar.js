@@ -20,7 +20,7 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
         default: null
 
     },
-    avgRating: Number ,
+    avgRating: Number,
     reviews: [{
         reviewer: String,
         review: String,
@@ -45,6 +45,16 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
         default: null
     },
 
+    employee: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'employee',
+        default: null
+    },
+    followers: [{
+        name: String,
+        image: String
+    }],
     image: {
         type: String,
         default: null

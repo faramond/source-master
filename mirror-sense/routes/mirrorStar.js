@@ -32,9 +32,50 @@ router.post('/', async (req, res) => {
     }
 });
 
+
+router.get('/followers', async (req, res) => {
+    try {
+        data = await MirrorStar.find().or([{employee: req.query.employee},{_id: req.query.star}]).select('followers')
+        res.status(200).send(data)
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Whats Hot Error', err.message)
+    }
+
+});
+
+
+router.post('/followers/:id', async (req, res) => {
+    try {
+
+        let data = await MirrorStar.findByIdAndUpdate(req.params.id, {
+
+            $addToSet: { followers: req.body.followers }
+        },
+        { new: true },
+
+    function (err, doc) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        console.log(data);
+        // await data.save();
+        res.status(201).send(data)
+
+
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Post Data', err.message)
+    }
+});
+
+
 router.get('/:id', async (req, res) => {
     try {
-        data = await MirrorStar.find({ salon: req.params.id })
+        data = await MirrorStar.findOne().or([{ salon: req.params.id },{ employee: req.params.id }])
         res.status(200).send(data)
     }
     catch (err) {
@@ -65,6 +106,9 @@ router.get('/', async (req, res) => {
     }
 
 });
+
+
+
 
 router.patch('/:id', upload.array('images', 2), async (req, res) => {
     try {
