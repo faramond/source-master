@@ -16,15 +16,23 @@ const Post = mongoose.model('Post', new mongoose.Schema({
         minlength: 5,
         maxlength: 15
     },
-    email: {
-        type: String,
-        unique:true,
-    },
-    description: {
+  description: {
         type: String,
         default: null,
         minlength: 10,
-        maxlength: 250
+        maxlength: 400
+    },
+    employee: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'employee',
+        default: null
+    },
+    mirrorstar: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'mirrorstar',
+        default: null
     },
     created: {
         type: Date, default: Date.now

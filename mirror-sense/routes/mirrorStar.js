@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
 
 router.get('/followers', async (req, res) => {
     try {
-        data = await MirrorStar.find().or([{employee: req.query.employee},{_id: req.query.star}]).select('followers')
+        data = await MirrorStar.find().or([{employee: req.query.employee},{_id: req.query.star}]).select('coverImage image followers')
         res.status(200).send(data)
     }
     catch (err) {

@@ -44,7 +44,7 @@ router.post('/employee', async (req, res) => {
         if (!employee) return res.status(400).send({ 'message': 'Invalid userName or password.' });
         const validPassword = await bcrypt.compare(req.body.password, employee.password)
         if (!validPassword) return res.status(400).send({ 'message': 'Invalid userName or password.' });
-        res.status(201).send(_.pick(employee, ['_id','countryCode','mobileNumber','fullName','email','gender','dob','profile','created','updated','dateOfJoining','address']))
+        res.status(201).send(_.pick(employee, ['_id','countryCode','mobileNumber','fullName','email','gender','dob','profile','created','updated','dateOfJoining','address','mirrorstar']))
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });

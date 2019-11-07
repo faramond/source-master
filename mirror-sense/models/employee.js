@@ -84,6 +84,12 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         ref: 'salon',
         default: null
     },
+    mirrorstar: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'mirrorstar',
+        default: null
+    },
 
     image: {
         type: String

@@ -152,9 +152,17 @@ router.post('/employee', async (req, res) => {
             })
             await mirrorStar.save();
         }
+        console.log(mirrorStar.id);
+        employee.mirrorstar = mirrorStar.id
 
-        res.status(201).send(_.pick(employee, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email']));
+        res.status(201).send(_.pick(employee, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email','mirrorstar']));
 
+         employee = await Employee.findByIdAndUpdate(employee.id,
+            {
+                mirrorstar: employee.mirrorstar,
+                updated: new Date(),
+
+            }, { new: true });
 
     }
     catch (err) {

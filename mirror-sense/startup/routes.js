@@ -13,6 +13,7 @@ const star = require('../routes/mirrorStar');
 const payment = require('../routes/payment');
 const reward = require('../routes/reward');
 const wallet = require('../routes/wallet');
+const posts = require('../routes/posts');
 const happening = require('../routes/happening');
 const verification = require('../routes/verification')
 const setting = require('../routes/settings')
@@ -41,6 +42,7 @@ module.exports = function(app) {
   app.use('/mirror/api/wallet', wallet);
   app.use('/mirror/api/happening', happening);
   app.use('/mirror/api/setting', setting);
+  app.use('/mirror/api/post', posts);
 
   
   
