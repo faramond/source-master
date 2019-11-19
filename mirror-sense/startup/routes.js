@@ -27,11 +27,13 @@ const verification = require('../routes/verification')
 const setting = require('../routes/settings')
 const error = require('../middleware/error');
 const users = require('../controllers/users.js');
+const bodyParser = require('body-parser');
 
 
-
-module.exports = function(app) {
+module.exports = function (app) {
   app.use(express.json());
+  app.use(bodyParser.json())
+  app.use(bodyParser.json({ limit: '50mb' }))
   app.use('/mirror/api/customers', customers);
   app.use('/mirror/api/employees', employees);
   app.use('/mirror/api/bookings', bookings);
@@ -51,8 +53,8 @@ module.exports = function(app) {
   app.use('/mirror/api/data', populate);
   app.use('/mirror/api/hot', hot);
   app.use('/mirror/api/star', star);
-  app.use('/uploads',express.static('./uploads'));
-  app.use('/mirror/api/verification',verification);
+  app.use('/uploads', express.static('./uploads'));
+  app.use('/mirror/api/verification', verification);
   app.use('/mirror/api/payment', payment);
   app.use('/mirror/api/reward', reward);
   app.use('/mirror/api/wallet', wallet);
@@ -61,7 +63,9 @@ module.exports = function(app) {
   app.use('/mirror/api/post', posts);
 
   
-  
+
+
+
   // app.use('/api/users', users);
   // app.use('/api/auth', auth);
   // app.use('/api/returns', returns);
@@ -77,10 +81,10 @@ module.exports = function(app) {
  */
 function requirePhoneVerification(req, res, next) {
   if (req.session.ph_verified) {
-      console.log("Phone Verified");
-      next();
+    console.log("Phone Verified");
+    next();
   } else {
-      console.log("Phone Not Verified");
-      res.redirect("/verification");
+    console.log("Phone Not Verified");
+    res.redirect("/verification");
   }
 }

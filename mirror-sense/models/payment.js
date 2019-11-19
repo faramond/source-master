@@ -74,6 +74,12 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         ref: 'Employee',
         default: null
     },
+    mirrorstar: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'mirrorstar',
+        default: null
+    },
     created: {
 
        type: Date, default: Date.now

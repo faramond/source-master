@@ -19,11 +19,13 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
+        let booking = await Booking.find()
+        req.body.bookingID = '#' + (000000 + booking.length),
         req.body.isServed = false;
-        let booking = new Booking(req.body);
-        booking = await booking.save();
+        let bookingData = new Booking(req.body);
+        bookingData = await bookingData.save();
 
-        res.send(booking);
+        res.send(bookingData);
     }
     catch (err) {
         res.send({ 'message': err.message });

@@ -75,7 +75,7 @@ router.post('/followers/:id', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
     try {
-        data = await MirrorStar.findOne().or([{ salon: req.params.id },{ employee: req.params.id }])
+        data = await MirrorStar.find().or([{ salon: req.params.id },{ employee: req.params.id }])
         res.status(200).send(data)
     }
     catch (err) {
