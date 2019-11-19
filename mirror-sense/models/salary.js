@@ -8,12 +8,15 @@ const Salary = mongoose.model('Salary', new mongoose.Schema({
         minlength: 2,
         maxlength: 50
     },
-    employeeSalary: {
-        type: Number,
-        required: false,
-        minlength: 1,
-        maxlength: 7
-    },
+    employeeSalary: [{
+        amount: {type: Number,
+                required: false,
+                minlength: 1,
+                maxlength: 7},
+        dateFrom: {type: Date},
+        dateTo: {type: Date}
+
+    }],
  mobileNumber: {
         type: Number,
         unique:true,

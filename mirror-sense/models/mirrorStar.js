@@ -55,6 +55,12 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
         name: String,
         image: String
     }],
+    courses: [{
+        type: String
+    }],
+    events: [{
+        type: String
+    }],
     image: {
         type: String,
         default: null

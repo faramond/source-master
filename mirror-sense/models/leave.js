@@ -12,7 +12,6 @@ const Leave = mongoose.model('Leave', new mongoose.Schema({
    
  mobileNumber: {
         type: Number,
-        unique:true,
         required: false,
         minlength: 5,
         maxlength: 15
@@ -51,11 +50,16 @@ const Leave = mongoose.model('Leave', new mongoose.Schema({
         minlength: 1,
         maxlength: 3
     },
-    leaveLeaft: {
+    leaveLeft: {
         type: Number,
         required: false,
         minlength: 1,
         maxlength: 3
+    },
+    appllied: {
+        type: Boolean,
+        required: false,
+        default: false
     },
     created: {
         type: Date, default: Date.now

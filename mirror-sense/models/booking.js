@@ -8,6 +8,11 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 100
     },
+    bookingID: {
+        type: String,
+        default: null,
+        unique: true,
+    },
     serviceName: {
         type: String,
         required: true,
@@ -48,12 +53,6 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 20
     },
-    isServed: {
-        type: Boolean,
-        required: false,
-        default: false
-
-    },
     userName: {
         type: String,
         required: false,
@@ -78,5 +77,14 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
 
 }));
 
+function validateBooking(booking) {
+    const schema = {
+      fullName: Joi.string(),
+      mobileNumber: Joi.string().min(5).max(15).required()
+    };
+  
+    return Joi.validate(booking, schema);
+  }
 
 exports.Booking = Booking;
+exports.validateBooking = validateBooking;
