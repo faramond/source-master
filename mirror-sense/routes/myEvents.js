@@ -12,7 +12,7 @@ const router = express.Router();
         .select({ events: 1, starName: 1 })
 /*for(i=0;i<c.length;i++)
 {
-    const [d] = await Events.find().or([{ _id: c[i] }])
+    const [d] = await Events.find().or([{ id: c[i] }])
     //e.[i]= d;
     
 
@@ -32,16 +32,17 @@ res.send([c]);
 router.get('/', async (req, res) => {
     try {
         
-
+       let result = [];
         
-        const event = await MirrorStar.find().or([{ _id:req.query._id}])
+        let event = await MirrorStar.find().or([{ _id:req.query._id}])
         .select({ events: 1})
         for(i=0;i<event.length;i++)
     {
-    const d = await Events.find().or([{ _id: event[i] }])
+    let d = await Events.find().or([{ id: event[i].toString() }])
+        result.push(d)
         
-        res.send(d);
     }
+    res.send(result);
 }
     
     catch (err) {

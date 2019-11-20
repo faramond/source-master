@@ -8,6 +8,19 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         type: Number,
         default: null
     },
+    customerName: {
+        type: String,
+        required: true,
+        minlength: 1,
+        maxlength: 100
+    },
+    service: {
+        type: String,
+        required: true,
+        minlength: 1,
+        maxlength: 100
+    },
+
     app_code: {
         type: Number,
         default: null
@@ -78,6 +91,12 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'mirrorstar',
+        default: null
+    },
+    salon: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'salon',
         default: null
     },
     created: {
