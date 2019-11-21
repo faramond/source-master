@@ -69,7 +69,7 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         type: Number,
         default: null
     },
-    cusomter: {
+    customer: {
 
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Customer',
