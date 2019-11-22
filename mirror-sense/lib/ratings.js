@@ -33,7 +33,7 @@ function avgRating(ratings) {
         "numberOfThries": numberOfThries,
         "numberOfTwos": numberOfTwos,
         "numberOfOnes": numberOfOnes,
-        "reviews": []
+        "reviews": ratingArray.reviews
     }
 }
 
