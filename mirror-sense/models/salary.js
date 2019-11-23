@@ -19,6 +19,7 @@ const Salary = mongoose.model('Salary', new mongoose.Schema({
     }],
  mobileNumber: {
         type: Number,
+        unique: true,
         required: false,
         minlength: 5,
         maxlength: 15
@@ -35,6 +36,12 @@ const Salary = mongoose.model('Salary', new mongoose.Schema({
     profile: {
         type: String,
 
+    },
+    employee: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'employee',
+        default: null
     },
     created: {
         type: Date, default: Date.now

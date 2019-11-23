@@ -18,6 +18,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         data = await Setting.find()
+        .select({ termsAndConditions: 1 })
         res.status(200).send(data)
     }
     catch (err) {
@@ -26,5 +27,16 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.get('/aboutUS', async (req, res) => {
+    try {
+        data = await Setting.find()
+        .select({ aboutUS: 1 })
+        res.status(200).send(data)
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Setting Error', err.message)
+    }
+});
 
 module.exports = router; 

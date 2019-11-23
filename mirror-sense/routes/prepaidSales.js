@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
         
         
         const prepaidSales = await PrepaidSales.find()
-        .or([{date:{$gte:(req.query.dateFrom),$lte:(req.query.dateTo)}}])
+        .or([{date:{$gte:(req.query.dateFrom),$lte:((req.query.dateTo)+"T23:59:59.000Z")}}])
         
         res.send(prepaidSales);
     }

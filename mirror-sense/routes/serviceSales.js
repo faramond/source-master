@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
         
         
         const serviceSales = await ServiceSales.find()
-        .or([{date:{$gte:(req.query.dateFrom),$lte:(req.query.dateTo)}}])
+        .or([{date:{$gte:(req.query.dateFrom),$lte:((req.query.dateTo)+"T23:59:59.000Z")}}])
         
         res.send(serviceSales);
     }

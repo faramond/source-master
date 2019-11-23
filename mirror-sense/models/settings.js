@@ -2,7 +2,7 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 const Setting = mongoose.model('Setting', new mongoose.Schema({
 
-    tearms: {
+    termsAndConditions: {
         type: String,
         default: null
 
@@ -30,4 +30,3 @@ const Setting = mongoose.model('Setting', new mongoose.Schema({
 }));
 
 exports.Setting = Setting;
-//exports.validateEmp = validateEmp;

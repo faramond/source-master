@@ -34,15 +34,15 @@ router.get('/', async (req, res) => {
         
        let result = [];
         
-        let event = await MirrorStar.find().or([{ _id:req.query._id}])
+        let event = await MirrorStar.findOne().or([{ _id:req.query._id}])
         .select({ events: 1})
         for(i=0;i<event.length;i++)
-    {
+   /* {
     let d = await Events.find().or([{ id: event[i].toString() }])
         result.push(d)
         
-    }
-    res.send(result);
+    }*/
+    res.send(event);
 }
     
     catch (err) {

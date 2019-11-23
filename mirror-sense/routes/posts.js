@@ -29,15 +29,17 @@ router.get('/', async (req, res) => {
     }
 
 });
-router.patch('/:id', upload.single('image'), async (req, res) => {
+router.patch('/:id', upload.array('photos'), async (req, res) => {
    // req.body.email= req.body.email===undefined?req.body.mobileNumber+'@null_email':req.body.email;
      //console.log(req.body.email);
+
+     console.log(req.files);
      try {
          let post = await Post.findByIdAndUpdate(req.params.id,
             {
              fullName: req.body.fullName,
              description: req.body.description,
-             image: req.file.path,
+             photos: req.files,
              created: new Date()
  
             }, { new: true});

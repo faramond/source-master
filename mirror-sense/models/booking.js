@@ -65,6 +65,13 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 15
     },
+    email: {
+        type: String,
+        required: false,
+        minlength: 1,
+        maxlength: 25
+
+    },
     mirrorStar: {
         type: String,
         required: false,
