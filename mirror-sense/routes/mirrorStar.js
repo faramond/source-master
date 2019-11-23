@@ -166,7 +166,7 @@ router.get('/review/:id', async (req, res) => {
 router.post('/post/:id', async (req, res) => {
     try {
 
-        let data = await MirrorStar.findOneAndUpdate(req.params.id, {
+        let data = await MirrorStar.findByIdAndUpdate(req.params.id, {
 
             $addToSet: { post: req.body.post }
         },
@@ -193,7 +193,7 @@ router.post('/review/:id', async (req, res) => {
     try {
         if (!req.body.reviews[0].rating) res.status(422).send({ 'message': 'Rating is mandatory' });
         else {
-            let data = await MirrorStar.findOneAndUpdate(req.params.id, {
+            let data = await MirrorStar.findByIdAndUpdate(req.params.id, {
                 
                 $addToSet: { reviews: req.body.reviews } },
                 { new: true },

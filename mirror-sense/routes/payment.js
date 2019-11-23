@@ -9,11 +9,19 @@ const router = express.Router();
 let data;
 router.post('/', async (req, res) => {
     try {
-        data = new Payment(req.body);
-        await data.save();
-        res.status(201).send(data)
+        if (!req.body.customer || req.body.customer == "") {
+            res.send({ 'message': 'cusotomerId mandatory' });
         }
-     catch (err) {
+        if (!req.body.salon || req.body.salon == "") {
+            res.send({ 'message': 'salon mandatory' });
+        }
+        else {
+            data = new Payment(req.body);
+            await data.save();
+            res.status(201).send(data)
+        }
+    }
+    catch (err) {
         res.status(400).send({ 'message': err.message });
         console.log('Payment Error', err.message)
     }
