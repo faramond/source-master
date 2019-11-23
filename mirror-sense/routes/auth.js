@@ -1,6 +1,6 @@
 const { Customer } = require('../models/customer');
 const { Employee } = require('../models/employee');
-const { MirrorStar }= require('../models/mirrorstar');
+const { MirrorStar }= require('../models/mirrorStar');
 const Joi = require('joi');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
