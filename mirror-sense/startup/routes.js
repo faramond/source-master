@@ -64,6 +64,7 @@ module.exports = function (app) {
   app.use('/mirror/api/hot', hot);
   app.use('/mirror/api/star', star);
   app.use('/uploads', express.static('./uploads'));
+  app.use('/salary', express.static('./salary'));
   app.use('/mirror/api/verification', verification);
   app.use('/mirror/api/payment', payment);
   app.use('/mirror/api/reward', reward);

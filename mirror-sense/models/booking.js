@@ -53,6 +53,10 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 20
     },
+    isServed: {
+        type: Boolean,
+        default: false,
+    },
     userName: {
         type: String,
         required: false,

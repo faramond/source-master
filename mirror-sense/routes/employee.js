@@ -1,4 +1,5 @@
 const { Employee } = require('../models/employee');
+const { MirrorStar } = require('../models/mirrorStar');
 const { Booking } = require('../models/booking');
 const { Salary } = require('../models/salary');
 const { Post } = require('../models/post');
@@ -29,7 +30,7 @@ router.patch('/:id', upload.single('profile'), async (req, res) => {
         if(req.file == undefined)
         {
             console.log("if");
-            const employee = await Employee.findByIdAndUpdate(req.params.id,
+            const employee = await MirrorStar.findByIdAndUpdate(req.params.id,
                 {
                     
                     email: req.body.email,
@@ -45,7 +46,7 @@ router.patch('/:id', upload.single('profile'), async (req, res) => {
         
         }
         
-        const employee = await Employee.findByIdAndUpdate(req.params.id,
+        const employee = await MirrorStar.findByIdAndUpdate(req.params.id,
             {
                 
                 email: req.body.email,
@@ -64,7 +65,7 @@ console.log('esle');
     
     catch (err) {
         res.send({ 'message': err.message });
-        console.log('Employee Patch', err.message)
+        console.log('MirrorStar Patch', err.message)
     }
 
 
@@ -74,7 +75,7 @@ console.log('esle');
 
 router.get('/courseForm/', async (req, res) => {
     try {
-        data = await Employee.find().or([{ mobileNumber: req.query.mobileNumber }])
+        data = await MirrorStar.find().or([{ mobileNumber: req.query.mobileNumber }])
         .select({ fullName: 1, email: 1, mobileNumber: 1 }) 
         res.status(200).send(data);
     }
@@ -85,5 +86,34 @@ router.get('/courseForm/', async (req, res) => {
 
 });
 
+
+router.post('/followers/:id',upload.single('image'), async (req, res) => {
+    try {
+
+        let data = await Employee.findByIdAndUpdate(req.params.id, {
+
+            $addToSet: { followers: [{
+                name: req.body.name,
+                image: req.file.path
+            }] }
+        },
+        { new: true },
+
+    function (err, doc) {
+                if (err) {
+                    console.log(err);
+                }
+            });
+        console.log(data);
+        // await data.save();
+        res.status(201).send(data)
+
+
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Post Data', err.message)
+    }
+});
 
 module.exports = router; 

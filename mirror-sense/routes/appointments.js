@@ -76,7 +76,7 @@ router.get('/Completed', async (req, res) => {
         
         const employee = await Booking.find().or([{ servedBy:req.query.mirrorStar }])
             .or([{ status: "completed" }]).or([{ status: "cancelled" }]) 
-            .select({bookinID: 1,appointmentDate: 1, service: 1, userName: 1, mobileNumber: 1, email: 1, amountToPay: 1, status: 1})     
+            .select({bookingID: 1,appointmentDate: 1, serviceName: 1, userName: 1, mobileNumber: 1, email: 1, amountToPay: 1, status: 1})     
             .sort('appointmentDate');
         res.send(employee);
     }

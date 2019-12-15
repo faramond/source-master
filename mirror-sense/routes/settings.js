@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         data = await Setting.find()
-        .select({ termsAndConditions: 1 })
+        .select({ termsAndConditions: 1, aboutUS: 1 })
         res.status(200).send(data)
     }
     catch (err) {

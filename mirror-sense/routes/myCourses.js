@@ -5,25 +5,25 @@ const express = require('express');
 const router = express.Router();
 
 
+
 router.get('/', async (req, res) => {
     try {
         
-        const  c = await MirrorStar.find().or([{ mirrorstar:req.query.mirrorstar }])
-        .select({ courses: 1});
-for(i=0;i<c.length;i++)
-{
-    const  d = await Courses.find().or([{ _id: c[i] }])
-    res.send(d);
-
-}
-
-
-       
+       let result = [];
+        let course = await MirrorStar.find().or([{ _id:req.query._id}])
+        .select({ courses: 1})
+        for(let key in course[0].courses)
+    { 
+    let data = await Courses.find().or([{ _id: course[0].courses[key].toString() }])
+        result.push(data)
+        
     }
+    res.send(result);
+}
     
     catch (err) {
         res.send({ 'message': err.message });
-        console.log('courses', err.message)
+        console.log('myCourse', err.message)
     }
 
 });

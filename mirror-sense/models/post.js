@@ -21,6 +21,41 @@ const Post = mongoose.model('Post', new mongoose.Schema({
         minlength: 10,
         maxlength: 400
     },
+    likes: [{
+          image: {type: String},
+          name: {type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50},
+            mirrorStar:{type: String,
+                default: null,
+                minlength: 2,
+                maxlength: 50}
+
+    }],
+    likeCounter: {type: Number,
+                   default: 0
+                },
+    comments: [{
+        name: {type: String,
+               default: null,
+               minlength: 2,
+               maxlength: 50
+              },
+        comment: {type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+           },
+           mirrorStar:{type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50},
+        image: {type: String} 
+    }],
+    commentCounter: {type: Number,
+                  default: 0
+                 },
     employee: {
 
         type: mongoose.Schema.Types.ObjectId,
@@ -40,7 +75,9 @@ const Post = mongoose.model('Post', new mongoose.Schema({
         type: String 
    },
    photos:[{
-       image : String
+    
+           type: String
+       
     }]
 
 }));

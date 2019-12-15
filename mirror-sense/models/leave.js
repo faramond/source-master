@@ -12,32 +12,46 @@ const Leave = mongoose.model('Leave', new mongoose.Schema({
    
  mobileNumber: {
         type: Number,
-        required: false,
+        required: true,
+        unique: true,
         minlength: 5,
         maxlength: 15
     },
+    leaveDetails: [{
+        leaveType: {
+            type: String,
+            required: false,
+            minlength: 2,
+            maxlength: 50
+        },
+        subject: {
+            type: String,
+            required: false,
+            minlength: 2,
+            maxlength: 50
+        },
+        description: {
+            type: String,
+            required: false,
+            minlength: 2,
+            maxlength: 50
+        },
+        dateFrom: {
+            type: Date
+        },
+        dateTo: {
+            type: Date
+        },
+        created: {
+            type: Date, default: Date.now
+        }
+
+    }],
     email: {
         type: String,
         unique:true,
     },
-    leaveSubject: {
-        type: String,
-        required: false,
-        minlength: 2,
-        maxlength: 50
-    },
-    description: {
-        type: String,
-        required: false,
-        minlength: 2,
-        maxlength: 50
-    },
-    dateFrom: {
-        type: Date
-    },
-    dateTo: {
-        type: Date
-    },
+
     totalLeave: {
         type: Number,
         required: false,
@@ -55,15 +69,8 @@ const Leave = mongoose.model('Leave', new mongoose.Schema({
         required: false,
         minlength: 1,
         maxlength: 3
-    },
-    appllied: {
-        type: Boolean,
-        required: false,
-        default: false
-    },
-    created: {
-        type: Date, default: Date.now
     }
+    
 }));
 
 

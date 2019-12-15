@@ -14,7 +14,8 @@ const Salary = mongoose.model('Salary', new mongoose.Schema({
                 minlength: 1,
                 maxlength: 7},
         dateFrom: {type: Date},
-        dateTo: {type: Date}
+        dateTo: {type: Date},
+        salarySlip: {type: String}
 
     }],
  mobileNumber: {
@@ -36,7 +37,7 @@ const Salary = mongoose.model('Salary', new mongoose.Schema({
     profile: {
         type: String,
 
-    },
+    }, 
     employee: {
 
         type: mongoose.Schema.Types.ObjectId,

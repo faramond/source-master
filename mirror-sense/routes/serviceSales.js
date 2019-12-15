@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try {
-        let serviceSales = ServiceSales.find()
+        let serviceSales = await ServiceSales.find()
         req.body.serviceSalesID = '#' + (000000 + serviceSales.length) + 'ds';
         let serviceSalesData = new ServiceSales(req.body);
         serviceSalesData = await serviceSalesData.save();
