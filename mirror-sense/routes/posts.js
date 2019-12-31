@@ -14,7 +14,7 @@ const upload  = require('../storage/image');
 let data;
 router.get('/', async (req, res) => {
     try {
-        
+
         let queryString =req.query.mobileNumber
         
         const post = await Post.find().or([{ mobileNumber:req.query.mobileNumber },{ mirrorstar:req.query.mirrorstar },{ employee:req.query.employee }])
@@ -45,11 +45,14 @@ router.get('/all', async (req, res) => {
 router.patch('/:id', upload.array('photos'), async (req, res) => {
      try {
          let pics = [];
+         let data = JSON.parse(req.body.unchanged);
+ 
+         
          for(i=0;i<req.files.length;i++)
          pics.push(req.files[i].path);
          
-         for(i=0;i<req.body.change;i++)
-         pics.push(req.body.unchanged[i]);
+         for(i=0;i<data.length;i++)
+         pics.push(data[i]);
 
          let post = await Post.findByIdAndUpdate(req.params.id,
             {
@@ -195,6 +198,20 @@ router.patch('/likes/:id', async (req, res) => {
            if (!post) return res.status(404).send({ 'message': 'Post not found.' });
         res.send({ 'message': 'comment deleted.' });
     }
+    catch (err) {
+        res.send({ 'message': err.message });
+    }
+
+});
+router.get('/comments/:id', async (req, res) => {
+    try {
+        
+        
+        const post = await Post.findOne().or([{ _id:req.params.id }])
+        .select({ comments: 1 })
+        res.send(post);
+    }
+    
     catch (err) {
         res.send({ 'message': err.message });
     }

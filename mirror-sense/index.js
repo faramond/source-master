@@ -66,6 +66,14 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+process
+  .on('unhandledRejection', (reason, p) => {
+    console.error(reason, 'Unhandled Rejection at Promise', p);
+  })
+  .on('uncaughtException', err => {
+    console.error(err, 'Uncaught Exception thrown');
+    //process.exit(1);
+  });
 const port = process.env.PORT1 || 3000;
 const server = app.listen(port, () => winston.info(`Listening on port ${port}...`));
 

@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
+let { customerUpload } = require('../lib/uploadToSQL');
 
 router.get('/', async (req, res) => {
     try {
@@ -84,7 +85,8 @@ router.post('/', async (req, res) => {
             console.log('Wallet Error', err.message)
         }
         res.status(201).send(_.pick(user, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email']));
-
+        
+        customerUpload(user);
         // const token = user.generateAuthToken();
         // res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
     }
@@ -133,7 +135,7 @@ router.post('/employee', async (req, res) => {
         let employee = await Employee.findOne({ mobileNumber: req.body.mobileNumber });
         if (employee) return res.status(400).send({ 'message': 'MobileNumber already registered.' });
         req.body.email = req.body.email === undefined ? req.body.mobileNumber + '@null_email' : req.body.email;
-        employee = new Employee(_.pick(req.body, ['fullName', 'mobileNumber', 'countryCode', 'password', 'email','bio','salon']));
+        employee = new Employee(_.pick(req.body, ['fullName', 'mobileNumber', 'countryCode', 'password', 'email','bio','salon','gender']));
         const salt = await bcrypt.genSalt(10);
         employee.password = await bcrypt.hash(employee.password, salt);
         console.log(employee.password);

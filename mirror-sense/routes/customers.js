@@ -4,8 +4,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const upload  = require('../storage/image')
-// const storage= dis
-const storage = 
+const { customerUpdate } = require('../lib/uploadToSQL');
 
 router.get('/', async (req, res) => {
     try {
@@ -56,8 +55,8 @@ router.post('/', async (req, res) => {
 });
 router.patch('/:id', upload.single('profile'), async (req, res) => {
     try {
-      
-        console.log(req.file);
+         photo = req.file;
+        console.log(photo,"k");
         if(req.file == undefined)
         {
             console.log("if");
@@ -91,6 +90,8 @@ router.patch('/:id', upload.single('profile'), async (req, res) => {
         if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
 console.log('esle');
         res.send(customer);
+        
+        customerUpdate(customer,photo);
     
     }
     

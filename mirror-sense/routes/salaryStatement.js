@@ -5,40 +5,13 @@ const router = express.Router();
 const multer = require('multer');
 const salaryS  = require('../storage/salarySlip');
 
-    router.get('/', async (req, res) => {
-        try {
-    
-    
-            const salary = await Salary.find({ mobileNumber: req.query.mobileNumber }).select({ employeeSalary: 1 })
-            let salaryList=[];
-            console.log(salary);
 
-            // for(let key in salary.employeeSalary)
-            // {
-            //     console.log("inside for loop");
-            //     console.log(employeeSalary[key].dateFrom,"inside 1 for loop",employeeSalary[key].dateTo);
 
-            //     if(employeeSalary[key].dateFrom >=(req.query.createdFrom) && employeeSalary[key].dateTo <= req.query.dateTo)
-            // {
-            //     console.log("inside if loop");
-            //     salaryList.push(employeeSalary[key])
-            // }
-            // }
-
-            res.send(salary);
-        }
-    
-    catch (err) {
-        res.send({ 'message': err.message });
-        console.log('Salary statement', err.message)
-    }
-
-});
 
 router.post('/',salaryS.single('salarySlip'), async (req, res) => {
 console.log(req);
     try {
-        let salary = await Salary.findOne({ mobileNumber: req.body.mobileNumber });
+        let salary = await Salary.findOne().or([{ mobileNumber: req.body.mobileNumber },{mirrorstar: req.body.mirrorstar}]);
         if (!salary) {
             salary = new Salary({
              employeeName: req.body.employeeName,
@@ -109,7 +82,7 @@ router.patch('/:id', salaryS.single('salarySlip'), async (req, res) => {
 });
 
 
-router.get('/check/', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
 
         console.log("shuru");
@@ -117,19 +90,21 @@ router.get('/check/', async (req, res) => {
         let salaryList=[];
         console.log(salary);
 
-         //for(let key in salary[0].employeeSalary)
-         for(i=0;i<salary.length;i++)
+         for(let key in salary[0].employeeSalary)
+         
          {
              console.log("inside for loop");
-             console.log(req.body.dateFrom+"T00:00:00.000Z","loop");
+             console.log(req.query.dateFrom+"T00:00:00.000Z","loop");
             
-             let data1 = salary[0].employeeSalary[i].dateFrom;
-             let data2 = req.body.dateFrom+"T00:00:00.000Z"; 
+             let data1 = new Date(salary[0].employeeSalary[key].dateFrom);
+             let data2 = new Date(req.query.dateFrom+"T00:00:00.000Z"); 
+             let data3 = new Date(salary[0].employeeSalary[key].dateTo);
+             let data4 = new Date(req.query.dateTo+"T00:00:00.000Z"); 
              console.log(data2,data1,"g");
-             if(data1 == data2) //&& salary[0].employeeSalary[i].dateTo <= (req.query.dateTo))
+             if((data1.getTime() >= data2.getTime()) && (data3.getTime() <= data4.getTime()))
          {
              console.log("inside if loop");
-             salaryList.push(salary[0].employeeSalary[i])
+             salaryList.push(salary[0].employeeSalary[key])
          };
         };
         console.log(salaryList,"outside if loop");

@@ -55,7 +55,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         let queryString = req.query
-        let salon = await Salon.findOne().populate('serviceCategory');
+        let salon = await Salon.findOne({_id: req.params.id}).populate('serviceCategory');
         res.send(salon).status(200);
     }
     catch (err) {

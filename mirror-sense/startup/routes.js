@@ -33,6 +33,7 @@ const setting = require('../routes/settings')
 const error = require('../middleware/error');
 const users = require('../controllers/users.js');
 const bodyParser = require('body-parser');
+const sample = require('../routes/sample');
 
 
 module.exports = function (app) {
@@ -72,6 +73,7 @@ module.exports = function (app) {
   app.use('/mirror/api/happening', happening);
   app.use('/mirror/api/setting', setting);
   app.use('/mirror/api/post', posts);
+  app.use('/mirror/api/sample', sample);
 
   
 

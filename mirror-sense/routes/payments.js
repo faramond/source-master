@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
         
         
         const payment = await Payment
-        .find({ mobile:req.query.mobile })
+        .find().or([{ mobile:req.query.mobile },{mirrorstar: req.body.mirrorstar}])
         .and({created:{$gte:(req.query.createdFrom),$lte:((req.query.createdTo)+"T23:59:59.000Z")}})
         .select({ order_id: 1, customerName: 1, created: 1, amount: 1, channel: 1, service: 1 })
         res.send(payment);
