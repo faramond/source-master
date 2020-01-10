@@ -51,6 +51,12 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
         ref: 'employee',
         default: null
     },
+    StylistID : {
+        type: Number,
+        default: null,
+        minlength: 1,
+        maxlength: 10
+    },
     followers: [{
         name: String,
         image: String
@@ -68,7 +74,22 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
     coverImage: {
         type: String,
         default: null
-    }
+    },
+    likes: [{
+        image: {type: String},
+        name: {type: String,
+          default: null,
+          minlength: 2,
+          maxlength: 50},
+          customer:{type: String,
+              default: null,
+              minlength: 2,
+              maxlength: 50}
+
+  }],
+  likeCounter: {type: Number,
+                 default: 0
+              }
 }));
 
 

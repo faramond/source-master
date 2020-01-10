@@ -61,7 +61,13 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     updated: {
         type: Date
 
-    }
+    },
+    likedMirrorStar: [{
+        type: String
+    }],
+    likedSalon: [{
+        type: String
+    }]
 }));
 
 function validateUser(customer) {

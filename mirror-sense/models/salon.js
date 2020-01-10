@@ -8,7 +8,7 @@ const Salon = mongoose.model('Salon', new mongoose.Schema({
         default: null
     },
     salonID: {
-        type: String,
+        type: Number,
         default: null,
         unique: true,
     },
@@ -148,7 +148,22 @@ const Salon = mongoose.model('Salon', new mongoose.Schema({
         type: String,
         default: null,
 
-    }
+    },
+    likes: [{
+        image: {type: String},
+        name: {type: String,
+          default: null,
+          minlength: 2,
+          maxlength: 50},
+          customer:{type: String,
+              default: null,
+              minlength: 2,
+              maxlength: 50}
+
+  }],
+  likeCounter: {type: Number,
+                 default: 0
+              }
 }));
 
 async function createSalon(Salon) {

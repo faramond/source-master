@@ -14,13 +14,24 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         minlength: 1,
         maxlength: 100
     },
-    service: {
+    services: [{
         type: String,
-        required: true,
-        minlength: 1,
+        required: false,
+        minlength: 0,
+        maxlength: 100
+    }],
+    dealID : {
+        type: Number,
+        default: null,
+        minlength: 0,
+        maxlength: 10
+    },
+    dealName: {
+        type: String,
+        required: false,
+        minlength: 0,
         maxlength: 100
     },
-
     app_code: {
         type: Number,
         default: null
@@ -95,9 +106,14 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
     },
     salon: {
 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'salon',
+        type: Number,
         default: null
+    },
+    StylistID : {
+        type: Number,
+        default: null,
+        minlength: 1,
+        maxlength: 10
     },
     created: {
 

@@ -3,21 +3,16 @@ const express = require('express');
 const router = express.Router();
 const app = express();
 app.use(express.json());
+const { createNewConnection } = require('../lib/connection');
 
 
 
-var con = mysql.createConnection({
-  host: "103.57.190.72",
-  port: "3306",
-  user: "vnsense_sa",
-  password: "salonpro",
-  database: "vnsense_salonpro"
-});
 
 
 
 
 function customerUpload(customer) {
+  let con = createNewConnection();
        var date = new Date(customer.created).toISOString().slice(0, 19).replace('T', ' ');
         con.connect(function(err) {
             if (err) throw err;
@@ -26,15 +21,14 @@ function customerUpload(customer) {
             con.query(sql,[customer.fullName, customer.countryCode, customer.mobileNumber, date], function (err, result) {
               if (err) throw err;
               console.log("1 record inserted");
+              con.end(function(err) {
+                if (err) {
+                  return console.log('error:' + err.message);
+                }
+                console.log('Close the database connection.');
+              });
             });
           });
-
-         /* con.end(function(err) {
-            if (err) {
-              return console.log('error:' + err.message);
-            }
-            console.log('Close the database connection.');
-          });*/
       
         
     
@@ -42,6 +36,7 @@ function customerUpload(customer) {
 }
 
 function customerUpdate(customer,photo) {
+  let con = createNewConnection();
   console.log(photo,"a");
 
   var gender;
@@ -67,7 +62,79 @@ function customerUpdate(customer,photo) {
 }
 
 
+  function  getEmployee(ID, callback){
+  try { 
+    let con = createNewConnection();
+    id= parseInt(ID); 
+     con.connect(function(err) {
+        if (err) throw err;
+        console.log("Connected!");
+        var sql = "select FullName,StylistID,PhoneNumber,Password,PhotoDir,Email,DOB,Gender,CreatedOn,DateReg,DateResign,Address,AboutMe from Employee where Branch_ID=? and Usernm!='admin'";
+         con.query(sql,[id], function (err, result, fields) {
+          if (err) throw err;
+          console.log("fetch successful");
+         con.end(function(err) {
+          if (err) {
+            return console.log('error:' + err.message);
+          }
+          console.log('Connection Closed');
+        });
+        return  callback(result);
+        });
+      
+
+      });
+      
+    
+}
+catch (err) {
+    res.status(400).send({ 'message': err.message });
+    console.log('Bookings', err.message)
+}
+}
+
+function  bookingUpload(bookingData){
+  try { 
+    let con = createNewConnection();
+    id= parseInt(bookingData.StylistID);
+    id_1= parseInt(bookingData.salonID);
+    id_2= parseInt(bookingData.salonid);
+    var date = new Date(bookingData.appointmentDate).toISOString().slice(0, 19).replace('T', ' ');
+    var date_1 = new Date(bookingData.created).toISOString().slice(0, 19).replace('T', ' ');
+    var data = bookingData.servicesName[0];
+    for(i=1;i<bookingData.servicesName.length;i++){
+      data = (data + ',' + bookingData.servicesName[i]);}
+      console.log(data,"a");
+
+     con.connect(function(err) {
+        if (err) throw err;
+        console.log("Connected!");
+        var sql =  "INSERT INTO Appointment ( App_Date, StylistID, Customer, Service, Done, PhoneNumber, Salon_ID, Branch_ID, Status, CreatedOn) VALUES ( ?,?,?,?,?,?,?,?,?,?)";
+         con.query(sql,[date,id,0,data,0,bookingData.mobileNumber,id_2,id_1,0,date_1], function (err, result, fields) {
+          if (err) throw err;
+          console.log("fetch successful");
+         con.end(function(err) {
+          if (err) {
+            return console.log('error:' + err.message);
+          }
+          console.log('Connection Closed');
+        });
+        
+        });
+      
+
+      });
+      
+    
+}
+catch (err) {
+    res.status(400).send({ 'message': err.message });
+    console.log('Bookings', err.message)
+}
+}
 
 
 exports.customerUpload = customerUpload;
 exports.customerUpdate = customerUpdate;
+exports.getEmployee = getEmployee;
+exports.bookingUpload = bookingUpload;

@@ -2,6 +2,18 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 
 const Booking = mongoose.model('Booking', new mongoose.Schema({
+    salonID: {
+        type: Number,
+        required: true,
+        minlength: 1,
+        maxlength: 100
+    },
+    salonid: {
+        type: Number,
+        required: true,
+        minlength: 1,
+        maxlength: 100
+    },
     salonName: {
         type: String,
         required: true,
@@ -13,22 +25,28 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         default: null,
         unique: true,
     },
-    serviceName: {
+    servicesName: [{
         type: String,
-        required: true,
-        minlength: 1,
+        required: false,
+        minlength: 0,
         maxlength: 100
+    }],
+    dealID : {
+        type: Number,
+        default: null,
+        minlength: 0,
+        maxlength: 10
     },
     dealName: {
         type: String,
-        required: true,
-        minlength: 1,
+        required: false,
+        minlength: 0,
         maxlength: 100
     },
     locality: {
         type: String,
         required: false,
-        minlength: 1,
+        minlength: 0,
         maxlength: 120
     },
     appointmentDate: {
@@ -75,6 +93,12 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 25
 
+    },
+    StylistID : {
+        type: Number,
+        default: null,
+        minlength: 1,
+        maxlength: 10
     },
     mirrorStar: {
         type: String,

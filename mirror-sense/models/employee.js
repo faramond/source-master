@@ -49,7 +49,11 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
 
     },
     created: {
-        type: Date, default: Date.now
+        type: Date,
+
+    },
+    dateReg: {
+        type: Date,
 
     },
     updated: {
@@ -63,7 +67,7 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         type: String,
         required: false,
         default: null,
-        minlength: 1,
+        minlength: 0,
         maxlength: 50
     },
     leave: {
@@ -78,6 +82,12 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         minlength: 2,
         maxlength: 50
     },
+    salonID :{
+        type: Number,
+        default: null,
+        minlength: 1,
+        maxlength: 10
+    },
     salon: {
 
         type: mongoose.Schema.Types.ObjectId,
@@ -90,6 +100,12 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         ref: 'mirrorstar',
         default: null
     },
+    StylistID : {
+        type: Number,
+        default: null,
+        minlength: 1,
+        maxlength: 10
+    },
 
     image: {
         type: String
@@ -100,6 +116,21 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
     }],
     bio: String,
     specilality: [String],
+    likes: [{
+        image: {type: String},
+        name: {type: String,
+          default: null,
+          minlength: 2,
+          maxlength: 50},
+          customer:{type: String,
+              default: null,
+              minlength: 2,
+              maxlength: 50}
+
+  }],
+  likeCounter: {type: Number,
+                 default: 0
+              }
     
 
 }));
