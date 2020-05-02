@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
          con.connect(function(err) {
             if (err) throw err;
             console.log("Connected!");
-            var sql = "Select offer_set.promotion_heading, offer_set.original_price, offer_set.offer_price , OfferImage.ImageLoc as promotionImageLoc ,offer_set.Offer_ID, offer_set.salon_name, offer_set.Salon_Id from OfferImage , ( select  ofr.subject as promotion_heading,ofr.OriPrice as original_price,ofr.OfferPrice as offer_price,ofr.Offer_ID, sl.salonnm as salon_name ,ofr.Salon_ID as Salon_Id from  Offer ofr,Salon sl where  (sysdate() between ofr.StartDate and ofr.EndDate) and  ofr.Salon_ID=sl.salonid and ofr.Status=0 and ofr.blnApproved=1 order by ofr.Priority )  offer_set where OfferImage.Offer_ID= offer_set.Offer_ID limit 1";
+            var sql = "Select offer_set.promotion_heading, offer_set.original_price, offer_set.offer_price , OfferImage.ImageLoc as promotionImageLoc ,offer_set.Offer_ID, offer_set.salon_name, offer_set.Salon_Id from OfferImage , ( select  ofr.subject as promotion_heading,ofr.OriPrice as original_price,ofr.OfferPrice as offer_price,ofr.Offer_ID, sl.salonnm as salon_name ,ofr.Salon_ID as Salon_Id from  Offer ofr,Salon sl where  (sysdate() between ofr.StartDate and ofr.EndDate) and  ofr.Salon_ID=sl.salonid and ofr.Status=0 and ofr.blnApproved=1 order by ofr.Priority )  offer_set where OfferImage.Offer_ID= offer_set.Offer_ID group by offer_set.Offer_ID";
             con.query(sql, function (err, result, fields) {
               if (err) throw err;
               console.log("fetch successful");

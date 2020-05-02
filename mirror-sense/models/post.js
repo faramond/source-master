@@ -18,7 +18,6 @@ const Post = mongoose.model('Post', new mongoose.Schema({
   description: {
         type: String,
         default: null,
-        minlength: 10,
         maxlength: 400
     },
     likes: [{
@@ -51,7 +50,10 @@ const Post = mongoose.model('Post', new mongoose.Schema({
             default: null,
             minlength: 2,
             maxlength: 50},
-        image: {type: String} 
+        image: {type: String},
+        created: {
+            type: Date, default: Date.now
+        }
     }],
     commentCounter: {type: Number,
                   default: 0

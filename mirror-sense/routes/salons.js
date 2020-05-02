@@ -59,6 +59,7 @@ const { createNewConnection2 } = require('../lib/connection');
 
 router.get('/', async (req, res) => {
     try { 
+        if(req.query.ServicesTypeID){
         
         let con = createNewConnection();
         let conn = await createNewConnection2();
@@ -73,8 +74,11 @@ router.get('/', async (req, res) => {
                 if (err) throw err;
                 console.log("fetch successful");
                 for(i=0;i<result.length;i++){
-                result[i].avgRating = '';
-                result[i].NoOfReveiews = '';}
+                    var id = result[i].Company_ID;
+                    const salon = await Salon.findOne( {salonID: id}).select({reviews:1,avgRating:1});
+                    if (!salon) return res.status(404).send({ 'message': 'Salon not found for reviews' });
+                    result[i].avgRating = salon.avgRating;
+                    result[i].NoOfReveiews = salon.reviews.length;}
              res.send(result);
              con.end(function(err) {
               if (err) {
@@ -85,23 +89,9 @@ router.get('/', async (req, res) => {
             
             }); 
         });
-
-
-          
-          
-        
-    }
-    catch (err) {
-        res.status(400).send({ 'message': err.message });
-        console.log('Bookings', err.message)
     }
 
-});
-
-
-router.get('/all', async (req, res) => {
-    try { 
-        
+    else{
         let con = createNewConnection();
         let conn = await createNewConnection2();
         lat= parseInt(req.query.lat);
@@ -110,19 +100,16 @@ router.get('/all', async (req, res) => {
             con.connect(function(err) {
             if (err) throw err;
             console.log("Connected!");
-            var sql = 'select * from( select cp.Company_ID, cp.Company_Name, cp.Company_Address, cp.Company_Address1, cp.salonid, cp.status, cl.Latitude as lat,cl.Longitude as lon, 111.111 *DEGREES(ACOS(LEAST(COS(RADIANS(?))  * COS(RADIANS(cl.Latitude)) * COS(RADIANS(?- cl.Longitude))  + SIN(RADIANS(?)) * SIN(RADIANS(cl.Latitude)), 1.0))) AS distance_in_km from Company_Profile cp, Salon sl, CompanyLocation cl  where cl.CompanyID=cp.Company_ID and cp.salonid=sl.salonid) as main_company_table order by distance_in_km';
-            var sql_1 = "Select ImageLoc as Salon_Logo from BranchImages where Branch_ID = ?";
+            var sql = 'select * from( select cp.Company_ID, cp.Company_Name, cp.Company_Address, cp.Company_Address1, cp.salonid, cp.status, cp.Logo, cl.Latitude as lat,cl.Longitude as lon, 111.111 *DEGREES(ACOS(LEAST(COS(RADIANS(?))  * COS(RADIANS(cl.Latitude)) * COS(RADIANS(?- cl.Longitude))  + SIN(RADIANS(?)) * SIN(RADIANS(cl.Latitude)), 1.0))) AS distance_in_km from Company_Profile cp, Salon sl, CompanyLocation cl  where cl.CompanyID=cp.Company_ID and cp.salonid=sl.salonid) as main_company_table order by distance_in_km';
             con.query(sql,[lat,long,lat], async function (err, result, fields) {
                 if (err) throw err;
                 console.log("fetch successful");
-
                 for(i=0;i<result.length;i++){
                     var id = result[i].Company_ID;
-                    const [rows, fields] =  await conn.execute(sql_1,[id])
-                      result[i].logo = rows;
-                      result[i].avgRating = '';
-                      result[i].NoOfReveiews = '';
-                }
+                    const salon = await Salon.findOne( {salonID: id}).select({reviews:1,avgRating:1});
+                    if (!salon) return res.status(404).send({ 'message': 'Salon not found for reviews' });
+                    result[i].avgRating = salon.avgRating;
+                    result[i].NoOfReveiews = salon.reviews.length;}
              res.send(result);
              con.end(function(err) {
               if (err) {
@@ -133,6 +120,7 @@ router.get('/all', async (req, res) => {
             
             }); 
         });
+    }
 
 
           
@@ -145,6 +133,7 @@ router.get('/all', async (req, res) => {
     }
 
 });
+
 
 
 /*router.get('/:id', async (req, res) => {
@@ -161,7 +150,7 @@ router.get('/all', async (req, res) => {
 
 
 router.get('/services', async (req, res) => {
-    try { 
+    try { if(req.query.ServicesTypeID){
         let con = createNewConnection();
         id= parseInt(req.query.company_ID);
         id_1= parseInt(req.query.ServicesTypeID); 
@@ -182,7 +171,29 @@ router.get('/services', async (req, res) => {
             });
           
 
-          });
+          });}
+          else{
+            let con = createNewConnection();
+            id= parseInt(req.query.company_ID);
+             con.connect(function(err) {
+                if (err) throw err;
+                console.log("Connected!");
+                var sql = "Select ServicesID,ServicesName,Charge from Services where Salon_ID=?";
+                con.query(sql,[id], function (err, result, fields) {
+                  if (err) throw err;
+                  console.log("fetch successful");
+                 res.send(result);
+                 con.end(function(err) {
+                  if (err) {
+                    return console.log('error:' + err.message);
+                  }
+                  console.log('Connection Closed');
+                });
+                });
+              
+    
+              });
+          }
           
         
     }
@@ -193,37 +204,6 @@ router.get('/services', async (req, res) => {
 
 });
 
-router.get('/allServices', async (req, res) => {
-    try { 
-        let con = createNewConnection();
-        id= parseInt(req.query.company_ID);
-         con.connect(function(err) {
-            if (err) throw err;
-            console.log("Connected!");
-            var sql = "Select ServicesID,ServicesName,Charge from Services where Salon_ID=?";
-            con.query(sql,[id], function (err, result, fields) {
-              if (err) throw err;
-              console.log("fetch successful");
-             res.send(result);
-             con.end(function(err) {
-              if (err) {
-                return console.log('error:' + err.message);
-              }
-              console.log('Connection Closed');
-            });
-            });
-          
-
-          });
-          
-        
-    }
-    catch (err) {
-        res.status(400).send({ 'message': err.message });
-        console.log('Bookings', err.message)
-    }
-
-});
 
 router.get('/otherBranches', async (req, res) => {
     try { 
@@ -233,7 +213,7 @@ router.get('/otherBranches', async (req, res) => {
          con.connect(function(err) {
             if (err) throw err;
             console.log("Connected!");
-            var sql = "SELECT  Company_Name as Branch_Name,Company_Address as Branch_Address,Company_Phone as Branch_Phone, cl.Latitude as Latitude, cl.Longitude as Longitude FROM Company_Profile cp, CompanyLocation cl , Salon sl Where cp.salonid=sl.salonid and cl.CompanyID=cp.Company_ID and sl.salonid= ?";
+            var sql = "SELECT  Company_ID as Branch_ID,Company_Name as Branch_Name,Company_Address as Branch_Address,Company_Phone as Branch_Phone, cl.Latitude as Latitude, cl.Longitude as Longitude FROM Company_Profile cp, CompanyLocation cl , Salon sl Where cp.salonid=sl.salonid and cl.CompanyID=cp.Company_ID and sl.salonid= ?";
             con.query(sql,[id], function (err, result, fields) {
               if (err) throw err;
               console.log("fetch successful");
@@ -268,19 +248,33 @@ router.get('/:Company_ID', async (req, res) => {
          con.connect(function(err) {
             if (err) throw err;
             console.log("Connected!");
-            var sql ="SELECT Company_Name as branch_name, Company_Address as branch_address, cl.Latitude as Lat, cl.Longitude as Lon, Company_Phone as branch_phone, if(open_mon=1,concat(hour_start_mon,'-',hour_end_mon),'closed') as monday_time, if(open_tue=1,concat(hour_start_tue,'-',hour_end_tue),'closed') as tuesday_time, if(open_wed=1,concat(hour_start_wed,'-',hour_end_wed),'closed') as wednesday_time, if(open_thu=1,concat(hour_start_thu,'-',hour_end_thu),'closed') as thursday_time, if(open_fri=1,concat(hour_start_fri,'-',hour_end_fri),'closed') as friday_time, if(open_sat=1,concat(hour_start_sat,'-',hour_end_sat),'closed') as saturday_time, if(open_sun=1,concat(hour_start_sun,'-',hour_end_sun),'closed') as sunday_time FROM Company_Profile cp, CompanyLocation cl Where cp.Company_ID= cl.CompanyID and Company_ID= ? ";
+            var sql ="SELECT Company_Name as branch_name, Company_Address as branch_address,salonid, cl.Latitude as Lat, cl.Longitude as Lon, Company_Phone as branch_phone, if(open_mon=1,concat(hour_start_mon,'-',hour_end_mon),'closed') as monday_time, if(open_tue=1,concat(hour_start_tue,'-',hour_end_tue),'closed') as tuesday_time, if(open_wed=1,concat(hour_start_wed,'-',hour_end_wed),'closed') as wednesday_time, if(open_thu=1,concat(hour_start_thu,'-',hour_end_thu),'closed') as thursday_time, if(open_fri=1,concat(hour_start_fri,'-',hour_end_fri),'closed') as friday_time, if(open_sat=1,concat(hour_start_sat,'-',hour_end_sat),'closed') as saturday_time, if(open_sun=1,concat(hour_start_sun,'-',hour_end_sun),'closed') as sunday_time FROM Company_Profile cp, CompanyLocation cl Where cp.Company_ID= cl.CompanyID and Company_ID= ? ";
             var sql_1 = "Select ImageLoc as image_location from BranchImages where Branch_ID= ?";
             con.query(sql,[id], function (err, result, fields) {
               if (err) throw err;
               console.log("fetch successful");
               //response.salonDetails = result;
-              con.query(sql_1,[id], function (err, result_1, fields) {
+              con.query(sql_1,[id], async function (err, result_1, fields) {
                 if (err) throw err;
                 console.log("fetch successful");
+                const salon = await Salon.findOne( {salonID: id}).select({reviews:1,avgRating:1});
+                    if (!salon) return res.status(404).send({ 'message': 'Salon not found for reviews' });
+              if(result != null && result != [] && result != ''){
                result[0].image = result_1;
-               result[0].ratings = [];
-               result[0].review = [];
-               res.send(result[0]);
+               result[0].avgRatings = salon.avgRating;
+               result[0].NoOfReview = salon.reviews.length;
+               {const customer = await Customer.findOne().or({ _id:req.query.customer }).select({likedSalon: 1});
+               if (!customer) return res.status(404).send({ 'message': 'Customer not found' });
+               result[0].isLiked = 'false';
+               for(i=0;i<customer.likedSalon.length;i++){
+                  if(req.params.Company_ID === customer.likedSalon[i]){
+                   result[0].isLiked = 'true';}
+               }}
+
+               res.send(result[0]);}
+               else{
+                 return res.send(result);
+               }
              con.end(function(err) {
               if (err) {
                 return console.log('error:' + err.message);
@@ -302,23 +296,6 @@ router.get('/:Company_ID', async (req, res) => {
 
 });
 
-
-router.get('/review/:Company_ID', async (req, res) => {
-    try {
-
-        const salon = await Salon.findOne({salonID: req.params.Company_ID}).select({reviews: 1});
-        console.log(salon);
-        let ratings = avgRating(salon);
-        console.log('ratings:', ratings);
-       // ratings.reviews.push(salon);
-        console.log('salon:', salon.reviews);
-        res.send(ratings).status(200);
-    }
-    catch (err) {
-        res.send({ 'message': err.message });
-        console.log('Salon Get', err)
-    }
-});
 
 
 
@@ -360,8 +337,19 @@ router.post('/review/:Company_ID', async (req, res) => {
                         console.log(err);
                     }
                 });
-           // console.log(data);
-            // await data.save();
+           
+                let obj = {};
+            obj.reviews = data.reviews;
+            let temp = avgRating(obj);
+            let salonRating = await Salon.findOneAndUpdate({salonID: req.params.Company_ID}, {
+                avgRating : temp.avgRating }
+                , { new: true },
+                function (err, doc) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+
             res.status(201).send(data)
 
         }
@@ -407,6 +395,93 @@ router.patch('/:id', upload.array('images', 2), async (req, res) => {
     }
 });
 
+router.patch('/likes/:Company_ID', async (req, res) => {
+ 
+
+    try {
+        //var result;
+      let check = await Salon.find({ salonID: req.params.Company_ID }).select({ likes: 1 });
+      if (!check) return res.status(404).send({ 'message': 'Salon not found' })
+
+      for(i=0;i<check.length;i++) 
+      if( (check[0].likes.length != 0 )  && (check[0].likes[i].customer == req.query.customer)){
+          let salonData = await Salon.findOneAndUpdate({salonID: req.params.Company_ID},
+              {$pull: { likes: { customer: req.query.customer}},
+          
+              $inc: {likeCounter: -1}
+          },
+              ); 
+              if (!salonData) return res.status(404).send({ 'message': 'Salon not found' });
+
+
+      let data = await Customer.findByIdAndUpdate({_id: req.query.customer},
+        {$pull: { likedSalon: req.params.Company_ID}}
+      );
+      if (!data) return res.status(404).send({ 'message': 'Customer not found' });
+      result = "False";
+      res.send({ 'message': 'Salon unliked',result });
+      
+      break;
+    }
+    else
+    {
+      let name = await Customer.findOne( {_id: req.query.customer}).select({ fullName: 1});
+      let image = await Customer.findOne( {_id: req.query.customer}).select({ profile: 1});
+   let salonData = await Salon.findOneAndUpdate({salonID: req.params.Company_ID},
+         {$addToSet: { likes: {
+             name: name.fullName,
+             image: image.profile,
+             customer: req.query.customer
+       }, },
+       $inc: {likeCounter: 1}
+         },
+         
+          { new: true});
+         if (!salonData) return res.status(404).send({ 'message': 'Salon not found' });
+
+      
+      let data = await Customer.findByIdAndUpdate({_id: req.query.customer},
+        {$addToSet: { likedSalon: req.params.Company_ID }},
+        { new: true});
+        if (!data) return res.status(404).send({ 'message': 'Customer not found' });
+        result = "True";
+        res.send({ 'message': 'Salon liked',result });
+
+      break;
+
+    };
+  }
+    catch (err) {
+        res.send({ 'message': err.message });
+    }
+
+});
+
+router.get('/review/:Company_ID', async (req, res) => {
+    try {
+
+        const salon = await Salon.findOne( {salonID: req.params.Company_ID}).select('reviews');
+        let ratings = avgRating(salon);
+        res.send(ratings.reviews).status(200);
+    }
+    catch (err) {
+        res.send({ 'message': err.message });
+        console.log('Salon Review Get', err)
+    }
+});
+
+router.get('/rating/:Company_ID', async (req, res) => {
+    try {
+
+        const salon = await Salon.findOne( {salonID: req.params.Company_ID}).select('reviews');
+        let ratings = avgRating(salon);
+        res.send(ratings).status(200);
+    }
+    catch (err) {
+        res.send({ 'message': err.message });
+        console.log('Salon Rating Get', err)
+    }
+});
 
 module.exports = router;
 

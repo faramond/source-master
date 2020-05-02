@@ -7,6 +7,7 @@ const app = express();
 app.use(express.json());
 const { createNewConnection } = require('../lib/connection');
 let { bookingUpload } = require('../lib/uploadToSQL');
+const { createNewConnection2 } = require('../lib/connection');
 
 
 /*router.get('/', async (req, res) => {
@@ -155,15 +156,81 @@ router.get('/otherBranches', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
+      if (!req.query.status || req.query.status == "") {
+       return res.send({ 'message': 'Status is mandatory' });
+    }
+    if (!req.query.isServed || req.query.isServed == "") {
+        return res.send({ 'message': 'isServed is mandatory' });
+    }
+       if(req.query.status === "requested"){
         const bookings = await Booking.find().or([{ userName: req.query.userName }, { mobileNumber: req.query.mobileNumber }])
-        .and({ isServed: req.query.isServed })    
-        .sort('name');
+        .and({ status: req.query.status })     
+        .sort('appointmentDate');
         res.send(bookings);
+      }
+      else{
+        const bookings = await Booking.find()
+        .or( {isServed: req.query.isServed})
+        .or({status: req.query.status})
+        .and({mobileNumber: req.query.mobileNumber})     
+        //.sort('name');
+        res.send(bookings);
+      }
+        
     }
     catch (err) {
         res.send({ 'message': err.message });
         console.log('Booking Get', err.message)
     }
+
+});
+
+router.get('/details', async (req, res) => {
+  try {
+      let conn = await createNewConnection2();
+      var sql = "Select ImageLoc as image_location from BranchImages where Branch_ID= ?";
+      photo = [];
+      let bookings = await Booking.find().or([{ _id: req.query.id }])
+      .select({salonName: 1,appointmentDate: 1,locality: 1,servicesName: 1,created: 1,modeOfPayment: 1,salonID: 1 });    
+      
+      if(bookings != null && bookings != [] && bookings != ''){
+        ID = parseInt(bookings[0].salonID);
+      let [rows, fields] =  await conn.execute(sql,[ID]);
+      if( rows != null && rows != [] && rows != ''){
+        for(j=0;j<rows.length;j++){
+          photo.push(rows[j].image_location);}
+        }
+        bookings = JSON.stringify(bookings);
+        bookings = JSON.parse(bookings);
+        bookings[0].image = photo;
+      }
+      res.send(bookings);
+  }
+  catch (err) {
+      res.send({ 'message': err.message });
+      console.log('Booking Get', err.message)
+  }
+
+});
+
+router.patch('/:id', async (req, res) => {
+  try {
+      const booking = await Booking.findByIdAndUpdate({_id:req.params.id},
+          {
+              status: "Cancelled",
+              updated: new Date(),
+
+          }, { new: true });
+
+      if (!booking) return res.status(404).send({'message':'The booking with the given _id  was not found.'});
+
+      res.send(booking);
+  }
+  catch (err) {
+      res.send({ 'message': err.message });
+      console.log('Booking Patch', err.message)
+  }
+
 
 });
 
@@ -180,7 +247,7 @@ router.post('/', async (req, res) => {
         let bookingData = new Booking(req.body);
         bookingData = await bookingData.save();
 
-       // bookingUpload(bookingData);
+        bookingUpload(bookingData);
         res.send(bookingData);
     }
     catch (err) {

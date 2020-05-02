@@ -67,7 +67,11 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     }],
     likedSalon: [{
         type: String
-    }]
+    }],
+    AccountNo: {
+        type: Number,
+        default: 0
+    }
 }));
 
 function validateUser(customer) {

@@ -109,7 +109,10 @@ const Salon = mongoose.model('Salon', new mongoose.Schema({
             index: "2dsphere"
         }
     },
-    avgRating: Number ,
+    avgRating: {
+        type: Number,
+        default: 0
+    },
     reviews: [{
         reviewer: String,
         review: String,

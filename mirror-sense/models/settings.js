@@ -23,6 +23,10 @@ const Setting = mongoose.model('Setting', new mongoose.Schema({
         default: null
 
     },
+    FAQ: [{
+        Question: {type: String},
+        Answer: {type: String}
+    }],
     created: {
         type: Date, default: Date.now
     }

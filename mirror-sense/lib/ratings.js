@@ -3,7 +3,7 @@ const app = express();
 app.use(express.json());
 
 function avgRating(ratings) {
-
+    
     let ratingArray = JSON.stringify(ratings);
     ratingArray = JSON.parse(ratingArray);
     console.log("ratingArray", ratingArray.reviews);

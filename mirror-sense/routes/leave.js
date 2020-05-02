@@ -7,14 +7,17 @@ const router = express.Router();
 
 
 router.get('/', async (req, res) => {
-    try {console.log(req,"a");
+    try {
         let data = [];
          const leave = await Leave.find().or([{ mobileNumber:req.query.mobileNumber }])
         .select({ leaveDetails: 1 });
-        console.log(leave,"b");
+        if(leave != [] && leave != null && leave != ""){
         for(i=(leave[0].leaveDetails.length-1);i>=0;i--)
         data.push(leave[0].leaveDetails[i]);console.log("c");
-        res.send(data);
+        res.send(data);}
+        else{
+            res.send('not yet applioed');
+        }
     }
     
     catch (err) {

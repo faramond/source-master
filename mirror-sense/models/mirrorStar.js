@@ -20,7 +20,10 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
         default: null
 
     },
-    avgRating: Number,
+    avgRating:{
+        type: Number,
+        default: 0
+    },
     reviews: [{
         reviewer: String,
         review: String,

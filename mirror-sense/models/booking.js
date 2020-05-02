@@ -78,8 +78,6 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
     userName: {
         type: String,
         required: false,
-        minlength: 1,
-        maxlength: 25
     },
     mobileNumber: {
         type: Number,
@@ -90,8 +88,6 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
     email: {
         type: String,
         required: false,
-        minlength: 1,
-        maxlength: 25
 
     },
     StylistID : {
@@ -105,6 +101,12 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         required: false,
         default: null 
         
+    },
+    customer: {
+
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Customer',
+        default: null
     },
      created: {
         type: Date, default: Date.now

@@ -33,6 +33,7 @@ const setting = require('../routes/settings')
 const error = require('../middleware/error');
 const users = require('../controllers/users.js');
 const bodyParser = require('body-parser');
+const membership = require('../routes/membership');
 const sample = require('../routes/sample');
 
 
@@ -66,6 +67,7 @@ module.exports = function (app) {
   app.use('/mirror/api/star', star);
   app.use('/uploads', express.static('./uploads'));
   app.use('/salary', express.static('./salary'));
+  app.use('/receipt', express.static('./receipt'));
   app.use('/mirror/api/verification', verification);
   app.use('/mirror/api/payment', payment);
   app.use('/mirror/api/reward', reward);
@@ -73,7 +75,13 @@ module.exports = function (app) {
   app.use('/mirror/api/happening', happening);
   app.use('/mirror/api/setting', setting);
   app.use('/mirror/api/post', posts);
-  app.use('/mirror/api/sample', sample);
+  app.use('/mirror/api/membership', membership);
+  app.use('/language', sample);
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "http://localhost:4200/");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
 
   
 

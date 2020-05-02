@@ -84,6 +84,18 @@ router.get('/MirrorStar', async (req, res) => {
     }
 
 });
+router.get('/all', async (req, res) => {
+    try { 
+        data = await MirrorStar.find()
+        res.status(200).send(data)
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Whats Hot Error', err.message)
+    }
+
+});
+
 router.get('/:id', async (req, res) => {
     try { 
         data = await MirrorStar.find().or([{ salon: req.params.id },{ employee: req.params.id }])
@@ -98,9 +110,21 @@ router.get('/:id', async (req, res) => {
 
 
 router.get('/detail/:id', async (req, res) => {
-    try {
+    try { 
+        temp = {};
         data = await MirrorStar.findOne({_id : req.params.id})
-        res.status(200).send(data)
+        temp = JSON.stringify(data);
+        temp = JSON.parse(temp);
+        const customer = await Customer.findOne().or({ _id:req.query.customer }).select({likedMirrorStar: 1});
+               if (!customer) return res.status(404).send({ 'message': 'Customer not found' });
+               temp.isLiked = 'false';
+               for(i=0;i<customer.likedMirrorStar.length;i++){
+                  if(req.params.id === customer.likedMirrorStar[i]){
+                   temp.isLiked = 'true';}
+               }
+        let ratings = avgRating(data);
+        temp.ratings = ratings;
+        res.status(200).send(temp)
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
@@ -215,8 +239,14 @@ router.post('/review/:id', async (req, res) => {
                         console.log(err);
                     }
                 });
-            console.log(data);
-            // await data.save();
+           // console.log(data.reviews);
+            let obj = {};
+            obj.reviews = data.reviews;
+            let temp = avgRating(obj);
+            let mirrorStar = await MirrorStar.findByIdAndUpdate(req.params.id, {
+                avgRating : temp.avgRating }
+                , { new: true });
+
             res.status(201).send(data)
 
         }
@@ -232,6 +262,7 @@ router.patch('/likes/:id', async (req, res) => {
 
     try {
       let check = await MirrorStar.find({ _id: req.params.id }).select({ likes: 1 });
+      if (!check) return res.status(404).send({ 'message': 'Mirror star not found' });
 
       for(i=0;i<check.length;i++) 
       if( (check[0].likes.length != 0 )  && (check[0].likes[i].customer == req.query.customer)){
@@ -245,11 +276,12 @@ router.patch('/likes/:id', async (req, res) => {
 
 
       let data = await Customer.findByIdAndUpdate({_id: req.query.customer},
-        {$pull: { likedMirrorStar: req.query.customer}}
+        {$pull: { likedMirrorStar: req.params.id}}
       );
       if (!data) return res.status(404).send({ 'message': 'Customer not found' });
 
-      res.send({ 'message': 'Mirror Star unliked' });
+      result = "False";
+      res.send({ 'message': 'Mirror Star unliked',result });
       
       break;
     }
@@ -274,8 +306,9 @@ router.patch('/likes/:id', async (req, res) => {
         {$addToSet: { likedMirrorStar: req.params.id }},
         { new: true});
         if (!data) return res.status(404).send({ 'message': 'Customer not found' });
-       
-        res.send({ 'message': 'Mirror Star liked' });
+
+       result = "True";
+        res.send({ 'message': 'Mirror Star liked',result });
 
       break;
 

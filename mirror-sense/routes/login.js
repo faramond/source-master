@@ -87,7 +87,18 @@ router.post('/', async (req, res) => {
         }
         res.status(201).send(_.pick(user, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email']));
         
-        customerUpload(user);
+        //customerUpload(user, async function(result){
+            
+          //  const customer = await Customer.findByIdAndUpdate(user._id,
+          //      {
+                    
+            //        AccountNo: result.insertId
+    
+            //    }, { new: true });
+    
+          //  if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
+
+     //   });
         // const token = user.generateAuthToken();
         // res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
     }
