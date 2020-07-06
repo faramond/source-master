@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         data = await Setting.find()
-        .select({ termsAndConditions: 1, aboutUS: 1 })
+            .select({ termsAndConditions: 1, aboutUS: 1 })
         res.status(200).send(data)
     }
     catch (err) {
@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
 router.get('/aboutUS', async (req, res) => {
     try {
         data = await Setting.find()
-        .select({ aboutUS: 1 })
+            .select({ aboutUS: 1 })
         res.status(200).send(data)
     }
     catch (err) {
@@ -46,7 +46,7 @@ router.get('/aboutUS', async (req, res) => {
 router.get('/terms', async (req, res) => {
     try {
         data = await Setting.find()
-        .select({ termsAndConditions: 1 })
+            .select({ termsAndConditions: 1 })
         res.status(200).send(data)
     }
     catch (err) {
@@ -58,7 +58,7 @@ router.get('/terms', async (req, res) => {
 router.get('/help', async (req, res) => {
     try {
         data = await Setting.find()
-        .select({ help: 1 })
+            .select({ help: 1 })
         res.status(200).send(data)
     }
     catch (err) {
@@ -70,7 +70,7 @@ router.get('/help', async (req, res) => {
 router.get('/privacyPolicy', async (req, res) => {
     try {
         data = await Setting.find()
-        .select({ privacyPolicy: 1 })
+            .select({ privacyPolicy: 1 })
         res.status(200).send(data)
     }
     catch (err) {
@@ -83,8 +83,8 @@ router.get('/faq', async (req, res) => {
     try {
         faq = [];
         data = await Setting.find()
-        .select({ FAQ: 1 })
-        if(data != null && data != [] && data != ''){
+            .select({ FAQ: 1 })
+        if (data != null && data != [] && data != '') {
             faq = data[0].FAQ;
         }
         res.status(200).send(faq)
@@ -103,32 +103,34 @@ router.get('/transaction/history/:id', async (req, res) => {
 
         let conn = await createNewConnection2();
         var sql = "Select Logo from Company_Profile where Company_ID= ?";
-            data = await Payment.find().or([{ customer: req.params.id }, { employee: req.params.id }, { mirrorstar: req.params.id }])
-            for (let key in data) {
-         if(data[key].salon !=null) 
-         {    ID= parseInt(data[key].salon);  
-            salon = await Salon.findOne({salonID: data[key].salon});
-            let [rows, fields] =  await conn.execute(sql,[ID]);
-            if( rows != null && rows != [] && rows != ''){
-                photo =rows[0].Logo;}
-            if (salon != undefined) {
-                response = {
-                    'salonName': salon.salonName,
-                    'salonId': salon.salonID,
-                    'salonLogo': photo,
-                    "txn_ID":data[key].txn_ID,
-                    'amount': data[key].amount,
-                    'currency': '$',
-                    "status_code":data[key].status_code,
-                    "brand":"advise",
-                    "mobile":data[key].mobile,
-                    'date': data[key].created
+        data = await Payment.find().or([{ customer: req.params.id }, { employee: req.params.id }, { mirrorstar: req.params.id }])
+            .sort({ created: -1 });
+        for (let key in data) {
+            if (data[key].salon != null) {
+                ID = parseInt(data[key].salon);
+                salon = await Salon.findOne({ salonID: data[key].salon });
+                let [rows, fields] = await conn.execute(sql, [ID]);
+                if (rows != null && rows != [] && rows != '') {
+                    photo = rows[0].Logo;
                 }
-                historyResponse.push(response);
-            }
+                if (salon != undefined) {
+                    response = {
+                        'salonName': salon.salonName,
+                        'salonId': salon.salonID,
+                        'salonLogo': photo,
+                        "txn_ID": data[key].txn_ID,
+                        'amount': data[key].amount,
+                        'currency': '$',
+                        "status_code": data[key].status_code,
+                        "brand": "advise",
+                        "mobile": data[key].mobile,
+                        'date': data[key].created
+                    }
+                    historyResponse.push(response);
+                }
 
+            }
         }
-    }
         res.status(200).send(historyResponse)
     }
     catch (err) {
@@ -140,27 +142,26 @@ router.get('/transaction/history', async (req, res) => {
     try {
         data = await Payment.find({ mobile: req.query.mobile })
         for (let key in data) {
-           if(data[key].salon!=null)
-           { 
-            salon = await Salon.findOne({ id: data[key].salon });
-            if (salon != undefined) {
-                response = {
-                    'salonName': salon.salonName,
-                    'salonId': salon.salonId,
-                    'salonImage': salon.salonImage,
-                    "txn_ID":data[key].txn_ID,
-                    'amount': data[key].amount,
-                    'currency': '$',
-                    "status_code":data[key].status_code,
-                    "brand":"advise",
-                    "mobile":data[key].mobile,
-                    'date': data[key].created
+            if (data[key].salon != null) {
+                salon = await Salon.findOne({ id: data[key].salon });
+                if (salon != undefined) {
+                    response = {
+                        'salonName': salon.salonName,
+                        'salonId': salon.salonId,
+                        'salonImage': salon.salonImage,
+                        "txn_ID": data[key].txn_ID,
+                        'amount': data[key].amount,
+                        'currency': '$',
+                        "status_code": data[key].status_code,
+                        "brand": "advise",
+                        "mobile": data[key].mobile,
+                        'date': data[key].created
+                    }
+                    historyResponse.push(response);
                 }
-                historyResponse.push(response);
-            }
 
+            }
         }
-    }
         res.status(200).send(historyResponse)
     }
     catch (err) {

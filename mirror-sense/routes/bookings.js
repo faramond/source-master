@@ -1,4 +1,5 @@
-const {Booking} = require('../models/booking');
+const { Booking } = require('../models/booking');
+let { Salon } = require('../models/salon');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -155,105 +156,121 @@ router.get('/otherBranches', async (req, res) => {
 });*/
 
 router.get('/', async (req, res) => {
-    try {
-      if (!req.query.status || req.query.status == "") {
-       return res.send({ 'message': 'Status is mandatory' });
+  try {
+    if (!req.query.status || req.query.status == "") {
+      return res.send({ 'message': 'Status is mandatory' });
     }
     if (!req.query.isServed || req.query.isServed == "") {
-        return res.send({ 'message': 'isServed is mandatory' });
+      return res.send({ 'message': 'isServed is mandatory' });
     }
-       if(req.query.status === "requested"){
-        const bookings = await Booking.find().or([{ userName: req.query.userName }, { mobileNumber: req.query.mobileNumber }])
-        .and({ status: req.query.status })     
+    if (req.query.status === "requested") {
+      const bookings = await Booking.find().or([{ userName: req.query.userName }, { mobileNumber: req.query.mobileNumber }])
+        .and({ status: req.query.status })
         .sort('appointmentDate');
-        res.send(bookings);
-      }
-      else{
-        const bookings = await Booking.find()
-        .or( {isServed: req.query.isServed})
-        .or({status: req.query.status})
-        .and({mobileNumber: req.query.mobileNumber})     
-        //.sort('name');
-        res.send(bookings);
-      }
-        
+      res.send(bookings);
     }
-    catch (err) {
-        res.send({ 'message': err.message });
-        console.log('Booking Get', err.message)
+    else {
+      const bookings = await Booking.find()
+        .or({ isServed: true })
+        .or({ status: "cancelled" })
+        .and({ mobileNumber: req.query.mobileNumber })
+        .sort({ appointmentDate: -1 });
+      res.send(bookings);
     }
+
+  }
+  catch (err) {
+    res.send({ 'message': err.message });
+    console.log('Booking Get', err.message)
+  }
 
 });
 
 router.get('/details', async (req, res) => {
   try {
-      let conn = await createNewConnection2();
-      var sql = "Select ImageLoc as image_location from BranchImages where Branch_ID= ?";
-      photo = [];
-      let bookings = await Booking.find().or([{ _id: req.query.id }])
-      .select({salonName: 1,appointmentDate: 1,locality: 1,servicesName: 1,created: 1,modeOfPayment: 1,salonID: 1 });    
-      
-      if(bookings != null && bookings != [] && bookings != ''){
-        ID = parseInt(bookings[0].salonID);
-      let [rows, fields] =  await conn.execute(sql,[ID]);
-      if( rows != null && rows != [] && rows != ''){
-        for(j=0;j<rows.length;j++){
-          photo.push(rows[j].image_location);}
+    let conn = await createNewConnection2();
+    var sql = "Select ImageLoc as image_location from BranchImages where Branch_ID= ?";
+    photo = [];
+    let bookings = await Booking.find().or([{ _id: req.query.id }])
+      .select({ salonName: 1, appointmentDate: 1, locality: 1, servicesName: 1, dealName: 1, mirrorStar: 1, amountToPay: 1, created: 1, modeOfPayment: 1, salonID: 1 });
+
+    if (bookings != null && bookings != [] && bookings != '') {
+      ID = parseInt(bookings[0].salonID);
+      let [rows, fields] = await conn.execute(sql, [ID]);
+      if (rows != null && rows != [] && rows != '') {
+        for (j = 0; j < rows.length; j++) {
+          photo.push(rows[j].image_location);
         }
-        bookings = JSON.stringify(bookings);
-        bookings = JSON.parse(bookings);
-        bookings[0].image = photo;
       }
-      res.send(bookings);
+      bookings = JSON.stringify(bookings);
+      bookings = JSON.parse(bookings);
+      bookings[0].image = photo;
+    }
+    const salon = await Salon.findOne({ salonID: ID }).select({ reviews: 1, avgRating: 1 });
+    if (!salon) {
+      bookings[0].avgRating = 0;
+      bookings[0].NoOfReveiews = 0;
+    }
+    else {
+      bookings[0].avgRating = salon.avgRating;
+      bookings[0].NoOfReveiews = salon.reviews.length;
+    }
+    res.send(bookings);
   }
   catch (err) {
-      res.send({ 'message': err.message });
-      console.log('Booking Get', err.message)
+    res.send({ 'message': err.message });
+    console.log('Booking Get', err.message)
   }
 
 });
 
 router.patch('/:id', async (req, res) => {
   try {
-      const booking = await Booking.findByIdAndUpdate({_id:req.params.id},
-          {
-              status: "Cancelled",
-              updated: new Date(),
+    const booking = await Booking.findByIdAndUpdate({ _id: req.params.id },
+      {
+        status: "cancelled",
+        updated: new Date(),
 
-          }, { new: true });
+      }, { new: true });
 
-      if (!booking) return res.status(404).send({'message':'The booking with the given _id  was not found.'});
+    if (!booking) return res.status(404).send({ 'message': 'The booking with the given _id  was not found.' });
 
-      res.send(booking);
+    res.send(booking);
   }
   catch (err) {
-      res.send({ 'message': err.message });
-      console.log('Booking Patch', err.message)
+    res.send({ 'message': err.message });
+    console.log('Booking Patch', err.message)
   }
 
 
 });
 
 router.post('/', async (req, res) => {
-    try {
-        let booking = await Booking.find()
-        req.body.bookingID = '#' + (000000 + booking.length),
-        req.body.isServed = false;
-        req.body.status = "requested";
-        req.body.salonID = req.body.Company_ID;
-        req.body.salonName = req.body.Company_Name;
-        req.body.locality = req.body.Company_Address;
+  console.log(req.body.servicesName, "service");
+  try {
+    if ((req.body.servicesName == [] || req.body.servicesName == "") && (req.body.dealID == null || req.body.dealID == "")) { return res.send({ 'message': 'service or deal required' }); }
 
-        let bookingData = new Booking(req.body);
-        bookingData = await bookingData.save();
+    if (req.body.dealID) {
+      if (req.body.dealName == "" || req.body.dealName == null) { return res.send({ 'message': 'deal name required' }) }
+    }
+    let booking = await Booking.find()
+    req.body.bookingID = '#' + (000000 + booking.length),
+      req.body.isServed = false;
+    req.body.status = "requested";
+    req.body.salonID = req.body.Company_ID;
+    req.body.salonName = req.body.Company_Name;
+    req.body.locality = req.body.Company_Address;
 
-        bookingUpload(bookingData);
-        res.send(bookingData);
-    }
-    catch (err) {
-        res.send({ 'message': err.message });
-        console.log('Booking Post', err.message)
-    }
+    let bookingData = new Booking(req.body);
+    bookingData = await bookingData.save();
+
+    bookingUpload(bookingData);
+    res.send(bookingData);
+  }
+  catch (err) {
+    res.send({ 'message': err.message });
+    console.log('Booking Post', err.message)
+  }
 
 });
 

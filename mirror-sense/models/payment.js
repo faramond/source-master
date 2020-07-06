@@ -10,7 +10,11 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
     },
     customerName: {
         type: String,
-        required: true,
+        minlength: 1,
+        maxlength: 100
+    },
+    employeeName: {
+        type: String,
         minlength: 1,
         maxlength: 100
     },
@@ -31,6 +35,12 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         required: false,
         minlength: 0,
         maxlength: 100
+    },
+    educationCourseID : {
+        type: Number,
+        default: null,
+        minlength: 0,
+        maxlength: 10
     },
     app_code: {
         type: Number,

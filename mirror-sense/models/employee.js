@@ -13,22 +13,21 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
 
     mobileNumber: {
         type: String,
-        unique: true,
         required: false,
         minlength: 5,
         maxlength: 15
     },
+    Usernm: {
+        type: String,
+        unique: true,
+        required: false,
+    },
     countryCode: {
         type: String,
-        required: true,
-        minlength: 2,
-        maxlength: 15
     },
     password: {
         type: String,
         required: false,
-        minlength: 2,
-        maxlength: 255
     },
     email: {
         type: String,
@@ -41,7 +40,7 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
     },
     gender: {
         type: String,
-       
+
     },
 
     profile: {
@@ -56,7 +55,7 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         type: Date,
 
     },
-    updated: {
+    UpdatedOn: {
         type: Date
     },
     dateOfJoining: {
@@ -67,8 +66,6 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         type: String,
         required: false,
         default: null,
-        minlength: 0,
-        maxlength: 50
     },
     leave: {
         type: Number,
@@ -82,11 +79,13 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         minlength: 2,
         maxlength: 50
     },
-    salonID :{
+    salonID: {
         type: Number,
         default: null,
-        minlength: 1,
-        maxlength: 10
+    },
+    branchID: {
+        type: Number,
+        default: null,
     },
     salon: {
 
@@ -100,11 +99,9 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         ref: 'mirrorstar',
         default: null
     },
-    StylistID : {
+    StylistID: {
         type: Number,
         default: null,
-        minlength: 1,
-        maxlength: 10
     },
 
     image: {
@@ -117,31 +114,36 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
     bio: String,
     specilality: [String],
     likes: [{
-        image: {type: String},
-        name: {type: String,
-          default: null,
-          minlength: 2,
-          maxlength: 50},
-          customer:{type: String,
-              default: null,
-              minlength: 2,
-              maxlength: 50}
+        image: { type: String },
+        name: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        },
+        customer: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        }
 
-  }],
-  likeCounter: {type: Number,
-                 default: 0
-              }
-    
+    }],
+    likeCounter: {
+        type: Number,
+        default: 0
+    }
+
 
 }));
 
 function validateEmp(employee) {
     const schema = {
         fullName: Joi.string(),
-        mobileNumber: Joi.string().min(5).max(15).required(),
+        Usernm: Joi.string().required(),
         countryCode: Joi.string().min(2).max(15).required(),
         password: Joi.string().min(5).max(255).required(),
-       
+
     };
 
     return Joi.validate(employee, schema);

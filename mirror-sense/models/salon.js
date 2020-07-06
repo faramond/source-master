@@ -10,7 +10,10 @@ const Salon = mongoose.model('Salon', new mongoose.Schema({
     salonID: {
         type: Number,
         default: null,
-        unique: true,
+    },
+    branchID: {
+        type: Number,
+        default: null,
     },
     blnShow: {
         type: String,
@@ -21,47 +24,51 @@ const Salon = mongoose.model('Salon', new mongoose.Schema({
         default: null
     },
     address: {
-        addressLine: {
-            type: String,
-            default: null
-
-        },
-        addressLine1: {
-            type: String,
-            default: null
-
-        },
-        postCode: {
-            type: Number,
-            default: null
-
-        },
-        phone: {
-            type: String,
-            default: null
-
-        },
-        email: {
-            type: String,
-            default: null
-
-        },
-        regCode: {
-            type: String,
-            default: null
-
-        },
-        town: {
-            type: String,
-            default: null
-
-        },
-        state: {
-            type: String,
-            default: null
-
-        },
+        type: String,
+        default: null
     },
+    /* address: {
+         addressLine: {
+             type: String,
+             default: null
+ 
+         },
+         addressLine1: {
+             type: String,
+             default: null
+ 
+         },
+         postCode: {
+             type: Number,
+             default: null
+ 
+         },
+         phone: {
+             type: String,
+             default: null
+ 
+         },
+         email: {
+             type: String,
+             default: null
+ 
+         },
+         regCode: {
+             type: String,
+             default: null
+ 
+         },
+         town: {
+             type: String,
+             default: null
+ 
+         },
+         state: {
+             type: String,
+             default: null
+ 
+         },
+     },*/
     businessHour: {
         monday: {
             type: String,
@@ -153,20 +160,25 @@ const Salon = mongoose.model('Salon', new mongoose.Schema({
 
     },
     likes: [{
-        image: {type: String},
-        name: {type: String,
-          default: null,
-          minlength: 2,
-          maxlength: 50},
-          customer:{type: String,
-              default: null,
-              minlength: 2,
-              maxlength: 50}
+        image: { type: String },
+        name: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        },
+        customer: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        }
 
-  }],
-  likeCounter: {type: Number,
-                 default: 0
-              }
+    }],
+    likeCounter: {
+        type: Number,
+        default: 0
+    }
 }));
 
 async function createSalon(Salon) {

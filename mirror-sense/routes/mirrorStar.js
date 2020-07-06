@@ -7,6 +7,7 @@ const _ = require('lodash');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
+var request = require('request');
 
 let data;
 router.post('/', async (req, res) => {
@@ -36,12 +37,12 @@ router.post('/', async (req, res) => {
 
 router.get('/followers', async (req, res) => {
     try {
-        data = await MirrorStar.find().or([{employee: req.query.employee},{_id: req.query.star}]).select('coverImage image followers')
+        data = await MirrorStar.findOne().or([{ employee: req.query.employee }, { _id: req.query.star }]).select({ likes: 1 })
         res.status(200).send(data)
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
-        console.log('Whats Hot Error', err.message)
+        console.log('followers Error', err.message)
     }
 
 });
@@ -54,9 +55,9 @@ router.post('/followers/:id', async (req, res) => {
 
             $addToSet: { followers: req.body.followers }
         },
-        { new: true },
+            { new: true },
 
-    function (err, doc) {
+            function (err, doc) {
                 if (err) {
                     console.log(err);
                 }
@@ -74,9 +75,10 @@ router.post('/followers/:id', async (req, res) => {
 });
 
 router.get('/MirrorStar', async (req, res) => {
-    try { 
-        data = await MirrorStar.find({salonID: req.query.Company_ID})
+    try {
+        data = await MirrorStar.find({ salonID: req.query.Company_ID })
         res.status(200).send(data)
+
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
@@ -85,9 +87,10 @@ router.get('/MirrorStar', async (req, res) => {
 
 });
 router.get('/all', async (req, res) => {
-    try { 
+    try {
         data = await MirrorStar.find()
         res.status(200).send(data)
+
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
@@ -97,9 +100,10 @@ router.get('/all', async (req, res) => {
 });
 
 router.get('/:id', async (req, res) => {
-    try { 
-        data = await MirrorStar.find().or([{ salon: req.params.id },{ employee: req.params.id }])
+    try {
+        data = await MirrorStar.find().or([{ salon: req.params.id }, { employee: req.params.id }])
         res.status(200).send(data)
+
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
@@ -110,21 +114,34 @@ router.get('/:id', async (req, res) => {
 
 
 router.get('/detail/:id', async (req, res) => {
-    try { 
+    try {
         temp = {};
-        data = await MirrorStar.findOne({_id : req.params.id})
-        temp = JSON.stringify(data);
-        temp = JSON.parse(temp);
-        const customer = await Customer.findOne().or({ _id:req.query.customer }).select({likedMirrorStar: 1});
-               if (!customer) return res.status(404).send({ 'message': 'Customer not found' });
-               temp.isLiked = 'false';
-               for(i=0;i<customer.likedMirrorStar.length;i++){
-                  if(req.params.id === customer.likedMirrorStar[i]){
-                   temp.isLiked = 'true';}
-               }
-        let ratings = avgRating(data);
-        temp.ratings = ratings;
-        res.status(200).send(temp)
+        data = await MirrorStar.findOne({ _id: req.params.id });
+        if (data) {
+            temp = JSON.stringify(data);
+            temp = JSON.parse(temp);
+            const customer = await Customer.findOne().or({ _id: req.query.customer }).select({ likedMirrorStar: 1 });
+            if (!customer) return res.status(404).send({ 'message': 'Customer not found' });
+            temp.isLiked = 'false';
+            for (i = 0; i < customer.likedMirrorStar.length; i++) {
+                if (req.params.id === customer.likedMirrorStar[i]) {
+                    temp.isLiked = 'true';
+                }
+            }
+            let ratings = avgRating(data);
+            if (ratings != [] && ratings != {} && ratings != "" && ratings != null) {
+                temp.ratings = ratings;
+                res.status(200).send(temp)
+            }
+            else {
+                temp.ratings = {};
+                res.status(200).send(temp)
+            }
+        }
+        else {
+            res.send({ 'message': 'mirrorstar not found' });
+        }
+
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
@@ -136,6 +153,7 @@ router.get('/', async (req, res) => {
     try {
         data = await MirrorStar.find({ avgRating: { $gt: parseInt(req.query.avgRating) } })
         res.status(200).send(data)
+
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
@@ -178,20 +196,19 @@ router.patch('/:id', upload.array('images', 2), async (req, res) => {
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
-        console.log('Happening Data', err.message)
+        console.log('image upload', err.message)
     }
 });
 
 router.get('/review/:id', async (req, res) => {
     try {
 
-        const mirrorStar = await MirrorStar.findOne( {_id: req.params.id}).select('reviews');
-        console.log(mirrorStar);
+        const mirrorStar = await MirrorStar.findOne({ _id: req.params.id }).select('reviews');
+        if (!mirrorStar) return res.send({ 'message': 'star not found' })
         let ratings = avgRating(mirrorStar);
-        console.log('ratings:', ratings);
         // ratings.reviews.push(salon);
-        console.log('salon:', mirrorStar.reviews);
         res.send(ratings).status(200);
+
     }
     catch (err) {
         res.send({ 'message': err.message });
@@ -228,24 +245,44 @@ router.post('/post/:id', async (req, res) => {
 
 router.post('/review/:id', async (req, res) => {
     try {
+        let name = await Customer.findOne({ _id: req.query.customer }).select({ fullName: 1 });
+        if (!name) return res.send({ 'message': 'customer not found: check customer _id passed' })
+        let image = await Customer.findOne({ _id: req.query.customer }).select({ profile: 1 });
+        if (!image) {
+            image = { profile: '' }
+        }
+
         if (!req.body.reviews[0].rating) res.status(422).send({ 'message': 'Rating is mandatory' });
         else {
             let data = await MirrorStar.findByIdAndUpdate(req.params.id, {
-                
-                $addToSet: { reviews: req.body.reviews } },
+
+                $addToSet: {
+                    reviews: {
+                        reviewer: name.fullName,
+                        image: image.profile,
+                        rating: req.body.reviews[0].rating,
+                        review: req.body.reviews[0].review
+                    }
+                }
+            },
                 { new: true },
                 function (err, doc) {
                     if (err) {
                         console.log(err);
                     }
                 });
-           // console.log(data.reviews);
             let obj = {};
             obj.reviews = data.reviews;
             let temp = avgRating(obj);
+            if (!temp) res.send({ 'message': 'can not get avgRating' })
             let mirrorStar = await MirrorStar.findByIdAndUpdate(req.params.id, {
-                avgRating : temp.avgRating }
-                , { new: true });
+                avgRating: temp.avgRating
+            }
+                , { new: true }, function (err, doc) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
 
             res.status(201).send(data)
 
@@ -253,67 +290,74 @@ router.post('/review/:id', async (req, res) => {
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });
-        console.log('Company Data', err.message)
+        console.log('star review', err.message)
     }
 });
 
 router.patch('/likes/:id', async (req, res) => {
- 
+
 
     try {
-      let check = await MirrorStar.find({ _id: req.params.id }).select({ likes: 1 });
-      if (!check) return res.status(404).send({ 'message': 'Mirror star not found' });
+        let flag = false;
+        let check = await MirrorStar.findOne({ _id: req.params.id }).select({ likes: 1 });
+        if (!check) return res.status(404).send({ 'message': 'Mirror star not found' });
 
-      for(i=0;i<check.length;i++) 
-      if( (check[0].likes.length != 0 )  && (check[0].likes[i].customer == req.query.customer)){
-          let mStar = await MirrorStar.findByIdAndUpdate(req.params.id,
-              {$pull: { likes: { customer: req.query.customer}},
-          
-              $inc: {likeCounter: -1}
-          },
-              ); 
-              if (!mStar) return res.status(404).send({ 'message': 'Mirror star not found' });
+        if (check.likes.length != 0) {
+            for (i = 0; i < check.likes.length; i++) {
+                if ((check.likes[i].customer == req.query.customer)) {
+                    let mStar = await MirrorStar.findByIdAndUpdate(req.params.id,
+                        {
+                            $pull: { likes: { customer: req.query.customer } },
+
+                            $inc: { likeCounter: -1 }
+                        },
+                    );
+                    if (!mStar) return res.status(404).send({ 'message': 'Mirror star not found' });
 
 
-      let data = await Customer.findByIdAndUpdate({_id: req.query.customer},
-        {$pull: { likedMirrorStar: req.params.id}}
-      );
-      if (!data) return res.status(404).send({ 'message': 'Customer not found' });
+                    let data = await Customer.findByIdAndUpdate({ _id: req.query.customer },
+                        { $pull: { likedMirrorStar: req.params.id } }
+                    );
+                    if (!data) return res.status(404).send({ 'message': 'Customer not found' });
 
-      result = "False";
-      res.send({ 'message': 'Mirror Star unliked',result });
-      
-      break;
+                    result = "False";
+                    res.send({ 'message': 'Mirror Star unliked', result });
+
+                    flag = true;
+                    break;
+                }
+            }
+        }
+        if (!flag) {
+            let name = await Customer.findOne({ _id: req.query.customer }).select({ fullName: 1 });
+            if (!name) return res.status(404).send({ 'message': 'Customer not found' });
+            let image = await Customer.findOne({ _id: req.query.customer }).select({ profile: 1 });
+            let mStar = await MirrorStar.findByIdAndUpdate(req.params.id,
+                {
+                    $addToSet: {
+                        likes: {
+                            name: name.fullName,
+                            image: image.profile,
+                            customer: req.query.customer
+                        },
+                    },
+                    $inc: { likeCounter: 1 }
+                },
+
+                { new: true });
+            if (!mStar) return res.status(404).send({ 'message': 'Mirror Star not found' });
+
+
+            let data = await Customer.findByIdAndUpdate({ _id: req.query.customer },
+                { $addToSet: { likedMirrorStar: req.params.id } },
+                { new: true });
+            if (!data) return res.status(404).send({ 'message': 'Customer not found' });
+
+            result = "True";
+            res.send({ 'message': 'Mirror Star liked', result });
+
+        };
     }
-    else
-    {
-      let name = await Customer.findOne( {_id: req.query.customer}).select({ fullName: 1});
-      let image = await Customer.findOne( {_id: req.query.customer}).select({ profile: 1});
-   let mStar = await MirrorStar.findByIdAndUpdate(req.params.id,
-         {$addToSet: { likes: {
-             name: name.fullName,
-             image: image.profile,
-             customer: req.query.customer
-       }, },
-       $inc: {likeCounter: 1}
-         },
-         
-          { new: true});
-         if (!mStar) return res.status(404).send({ 'message': 'Mirror Star not found' });
-
-      
-      let data = await Customer.findByIdAndUpdate({_id: req.query.customer},
-        {$addToSet: { likedMirrorStar: req.params.id }},
-        { new: true});
-        if (!data) return res.status(404).send({ 'message': 'Customer not found' });
-
-       result = "True";
-        res.send({ 'message': 'Mirror Star liked',result });
-
-      break;
-
-    };
-  }
     catch (err) {
         res.send({ 'message': err.message });
     }
