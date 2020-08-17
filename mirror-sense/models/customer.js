@@ -14,10 +14,10 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
         minlength: 2,
         maxlength: 50
     },
-   
- mobileNumber: {
+
+    mobileNumber: {
         type: Number,
-        unique:true,
+        unique: true,
         required: false,
         minlength: 5,
         maxlength: 15
@@ -36,7 +36,7 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     },
     email: {
         type: String,
-        unique:true,
+        unique: true,
     },
     dob: {
         type: Date,
@@ -53,6 +53,10 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
     profile: {
         type: String,
 
+    },
+    deviceID: {
+        type: String,
+        default: null
     },
     created: {
         type: Date, default: Date.now
@@ -76,14 +80,14 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
 
 function validateUser(customer) {
     const schema = {
-      fullName: Joi.string(),
-      mobileNumber: Joi.string().min(5).max(15).required(),
-      countryCode: Joi.string().min(2).max(15).required(),
-      password: Joi.string().min(5).max(255).required()
+        fullName: Joi.string(),
+        mobileNumber: Joi.string().min(5).max(15).required(),
+        countryCode: Joi.string().min(2).max(15).required(),
+        password: Joi.string().min(5).max(255).required()
     };
-  
+
     return Joi.validate(customer, schema);
-  }
+}
 
 exports.Customer = Customer;
 exports.validate = validateUser;

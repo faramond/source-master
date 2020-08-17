@@ -1,8 +1,5 @@
 
 const express = require('express');
-const mysql2 = require('mysql2/promise');
-const mysql = require('mysql');
-const multer = require('multer');
 const upload = require('../storage/image')
 let { Salon } = require('../models/salon');
 let { Customer } = require('../models/customer');

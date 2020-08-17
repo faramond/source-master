@@ -8,6 +8,7 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 var request = require('request');
+const { createNewConnection } = require('../lib/connection');
 
 let data;
 router.post('/', async (req, res) => {
@@ -72,6 +73,65 @@ router.post('/followers/:id', async (req, res) => {
         res.status(400).send({ 'message': err.message });
         console.log('Post Data', err.message)
     }
+});
+
+router.get('/sorted', async (req, res) => {
+    try {
+
+        let con = createNewConnection();
+        lat = parseInt(req.query.lat);
+        long = parseInt(req.query.long);
+        serviceType = parseInt(req.query.serviceType);
+
+        con.getConnection(function (err, connection) {
+            if (err) {
+                console.log('Mirrorstar sort error', err.message)
+                return res.status(400).send({ 'message': err.message });
+
+            };
+            console.log("Connected!");
+            var sql = "Select * from ( select FullName as starName, StylistID, PhotoDir as image, CompanyLocation.Latitude as emp_latitude , CompanyLocation.Longitude as emp_longitude, 111.111 *DEGREES(ACOS(LEAST(COS(RADIANS(?)) * COS(RADIANS(CompanyLocation.Latitude)) * COS(RADIANS(?- CompanyLocation.Longitude)) + SIN(RADIANS(?)) * SIN(RADIANS(CompanyLocation.Latitude)), 1.0))) AS distance_in_km from Employee , CompanyLocation where Usernm!='admin' and CompanyLocation.CompanyID=Employee.Branch_ID ) tbl order by tbl.distance_in_km ";
+            connection.query(sql, [lat, long, lat], async function (err, result, fields) {
+                if (err) {
+                    console.log('Mirrorstar sort error', err.message)
+                    return res.status(400).send({ 'message': err.message });
+
+                };
+                console.log("fetch successful");
+                console.log(result)
+                if (result != [] && result != "" && result != null) {
+                    for (i = 0; i < result.length; i++) {
+                        var id = result[i].StylistID;
+                        const star = await MirrorStar.findOne({ StylistID: id }).select({ reviews: 1, avgRating: 1 });
+                        if (!star) {
+                            result = JSON.stringify(result);
+                            result = JSON.parse(result);
+                            result[i].avgRating = 0;
+                            result[i].NoOfReveiews = 0;
+                        }
+                        else {
+                            result = JSON.stringify(result);
+                            result = JSON.parse(result);
+                            result[i].avgRating = star.avgRating;
+                            result[i].NoOfReveiews = star.reviews.length;
+                        }
+                    }
+                }
+                else {
+                    res.send({ 'message': 'Mirrorstar not found' })
+                }
+                res.send(result);
+                connection.release();
+
+
+            });
+        });
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Mirrorstar sort error', err.message)
+    }
+
 });
 
 router.get('/MirrorStar', async (req, res) => {
@@ -363,6 +423,9 @@ router.patch('/likes/:id', async (req, res) => {
     }
 
 });
+
+
+
 
 
 

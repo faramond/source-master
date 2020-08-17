@@ -41,5 +41,23 @@ async function createNewConnection2() {
   }
 }
 
+function createNewConnectionMerchant() {
+  try {
+    console.log("connection called");
+    var con = mysql.createPool({
+      host: "103.57.190.72",
+      port: "3306",
+      user: "mysense_sa",
+      password: "salonpro",
+      database: "mysense_salonpro"
+    });
+    return con;
+  }
+  catch (err) {
+    console.log('Sql Connection', err.message)
+  }
+}
+
 exports.createNewConnection = createNewConnection;
 exports.createNewConnection2 = createNewConnection2;
+exports.createNewConnectionMerchant = createNewConnectionMerchant;

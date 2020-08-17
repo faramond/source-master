@@ -19,6 +19,15 @@ router.post('/', async (req, res) => {
         if (!user) return res.status(400).send({ 'message': 'Invalid userName or password.' });
         const validPassword = await bcrypt.compare(req.body.password, user.password)
         if (!validPassword) return res.status(400).send({ 'message': 'Invalid userName or password.' });
+        let id = await Customer.findByIdAndUpdate(user._id,
+            {
+                deviceID: req.body.deviceID,
+                updated: new Date(),
+
+            }, { new: true });
+
+        if (!id) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
+
         res.status(201).send(_.pick(user, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email', 'gender', 'dob', 'profile', 'created', 'updated']))
     }
     catch (err) {
