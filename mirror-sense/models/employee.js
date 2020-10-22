@@ -55,6 +55,10 @@ const Employee = mongoose.model('Employee', new mongoose.Schema({
         type: Date,
 
     },
+    deviceID: {
+        type: String,
+        default: null
+    },
     UpdatedOn: {
         type: Date
     },

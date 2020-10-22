@@ -15,7 +15,8 @@ function createNewConnection() {
       port: "3306",
       user: "vnsense_sa",
       password: "salonpro",
-      database: "vnsense_salonpro"
+      database: "vnsense_salonpro",
+      connectionLimit: 100,
     });
     return con;
   }
@@ -58,6 +59,23 @@ function createNewConnectionMerchant() {
   }
 }
 
+function createNewConnection3() {
+  try {
+    console.log("connection called");
+    return mysql.createConnection({
+      host: "103.57.190.72",
+      port: "3306",
+      user: "vnsense_sa",
+      password: "salonpro",
+      database: "vnsense_salonpro"
+    });
+  }
+  catch (err) {
+    console.log('Sql Connection', err.message)
+  }
+}
+
 exports.createNewConnection = createNewConnection;
 exports.createNewConnection2 = createNewConnection2;
 exports.createNewConnectionMerchant = createNewConnectionMerchant;
+exports.createNewConnection3 = createNewConnection3;

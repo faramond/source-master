@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
           return res.status(400).send({ 'message': err.message });
         };
         console.log("fetch successful");
-        res.send(result);
+        res.status(200).send(result);
         connection.release();
       });
 
@@ -86,10 +86,10 @@ router.get('/details', async (req, res) => {
           }
 
 
-          res.send(response);
+          res.status(200).send(response);
         }
         else {
-          res.send({ 'message': 'offer not found' })
+          res.status(200).send(response)
         }
         connection.release();
       });
@@ -123,7 +123,7 @@ router.get('/booking', async (req, res) => {
           return res.status(400).send({ 'message': err.message });
         };
         console.log("fetch successful");
-        res.send(result);
+        res.status(200).send(result);
         connection.release();
       });
 

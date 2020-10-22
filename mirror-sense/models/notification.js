@@ -3,11 +3,18 @@ const mongoose = require('mongoose');
 
 const Notification = mongoose.model('Notification', new mongoose.Schema({
 
-    description: {
+    employee: {
         type: String,
-        default: null,
-        minlength: 2,
-        maxlength: 50
+        default: null
+    },
+    customer: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'customer',
+        default: null
+    },
+    data: {
+        type: String,
+        required: true
     },
     created: {
         type: Date, default: Date.now

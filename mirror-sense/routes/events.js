@@ -137,7 +137,7 @@ router.get('/details/:id', async (req, res) => {
 
 
           }
-          let event = await MirrorStar.findOne({ _id: req.query._id })
+          /*let event = await MirrorStar.findOne({ _id: req.query._id })
             .select({ events: 1 })
           if (event != [] && event != "" && event != null) {
             for (key in event.events) {
@@ -147,8 +147,8 @@ router.get('/details/:id', async (req, res) => {
               }
 
             }
-          }
-          response.isPurchased = isPurchased;
+          }*/
+          response.isPurchased = false;
           res.send(response);
 
 

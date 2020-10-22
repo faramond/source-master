@@ -3,7 +3,7 @@ const app = express();
 app.use(express.json());
 
 function avgRating(ratings) {
-    
+
     let ratingArray = JSON.stringify(ratings);
     ratingArray = JSON.parse(ratingArray);
     console.log("ratingArray", ratingArray.reviews);
@@ -16,7 +16,7 @@ function avgRating(ratings) {
     let numberOfTwos = 0;
     let numberOfOnes = 0;
     for (let key in ratingArray.reviews) {
-        console.log(key);
+        ratingArray.reviews[key].rating = JSON.stringify(parseFloat(ratingArray.reviews[key].rating))
         totalRating += parseInt(ratingArray.reviews[key].rating);
         if (parseInt(ratingArray.reviews[key].rating) == 5) numberOfFivies += 1;
         if (parseInt(ratingArray.reviews[key].rating) == 4) numberOfFours += 1;

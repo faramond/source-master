@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const { Customer } = require('../models/customer');
+const { Booking } = require('../models/booking');
 const express = require('express');
 const router = express.Router();
 const app = express();
@@ -96,7 +97,7 @@ function getEmployee(callback) {
         return callback(result)
       };
       console.log("Connected!");
-      var sql = "select FullName,StylistID,PhoneNumber,Password,RegionCode,Usernm,PhotoDir,Email,DOB,Gender,CreatedOn,UpdatedOn,Salon_ID,Branch_ID,HeaderImage,DateReg,DateResign,Address,AboutMe from Employee where Usernm!='admin'";
+      var sql = "select FullName,StylistID,PhoneNumber,Password,RegionCode,Usernm,PhotoDir,Email,DOB,Gender,CreatedOn,UpdatedOn,Salon_ID,Branch_ID,HeaderImage,DateReg,DateResign,Address,AboutMe from Employee where Usernm!='admin' and ShowInApps = 1";
       connection.query(sql, function (err, result, fields) {
         if (err) {
           console.log('get employee', err.message)
@@ -126,7 +127,7 @@ async function bookingUpload(bookingData) {
       id = parseInt(bookingData.StylistID);
     }
     id_1 = parseInt(bookingData.salonID);
-    id_2 = parseInt(bookingData.salonid);
+    id_2 = parseInt(bookingData.branchID);
     if (bookingData.dealID != null && bookingData.dealID != '') {
       id_3 = parseInt(bookingData.dealID);
     }
@@ -153,13 +154,27 @@ async function bookingUpload(bookingData) {
           console.log('booking upload', err.message)
         };
         console.log("Connected!");
-        var sql = "INSERT INTO Appointment ( App_Date, StylistID, Customer, Service, Done, PhoneNumber, Salon_ID, Branch_ID, Status, CreatedOn) VALUES ( ?,?,?,?,?,?,?,?,?,?)";
-        connection.query(sql, [date, id, customer, data, 0, bookingData.mobileNumber, id_2, id_1, 0, date_1], function (err, result, fields) {
+        var sql = "INSERT INTO Appointment ( App_Date, StylistID, Customer, Service, Done, PhoneNumber, Salon_ID, Branch_ID, Status, CreatedOn,StartTime,EndTime) VALUES ( ?,?,?,?,?,?,?,?,?,?,?,?)";
+        connection.query(sql, [date, id, customer, data, 0, bookingData.mobileNumber, id_1, id_2, 0, date_1, bookingData.startTime, bookingData.endTime], async function (err, result, fields) {
           if (err) {
             console.log('booking upload', err.message)
           };
           console.log("fetch successful");
           connection.release();
+
+          if (result != null && result != [] && result != "") {
+            const booking = await Booking.findByIdAndUpdate({ _id: bookingData._id },
+              {
+                AppID: result.insertId,
+                updated: new Date(),
+
+              }, { new: true });
+
+            if (!booking) console.log({ 'message': 'The booking with the given _id  was not found upload booking.' });
+          }
+          else {
+            console.log({ 'message': 'not uploded to sql booking' });
+          }
 
         });
 
@@ -174,18 +189,35 @@ async function bookingUpload(bookingData) {
         };
         console.log("Connected!");
         var sql = "INSERT INTO Appointment ( App_Date,DealID, Customer, Done, PhoneNumber, Salon_ID, Branch_ID, Status, CreatedOn) VALUES ( ?,?,?,?,?,?,?,?,?)";
-        connection.query(sql, [date, id_3, customer, 0, bookingData.mobileNumber, id_2, id_1, 0, date_1], function (err, result, fields) {
+        connection.query(sql, [date, id_3, customer, 0, bookingData.mobileNumber, id_1, id_2, 0, date_1], async function (err, result, fields) {
           if (err) {
             console.log('booking upload', err.message)
           };
           console.log("fetch successful");
           connection.release();
 
+          if (result != null && result != [] && result != "") {
+            const booking = await Booking.findByIdAndUpdate({ _id: bookingData._id },
+              {
+                AppID: result.insertId,
+                updated: new Date(),
+
+              }, { new: true });
+
+            if (!booking) console.log({ 'message': 'The booking with the given _id  was not found upload booking deal' });
+          }
+          else {
+            console.log({ 'message': 'not uploded to sql booking deal' });
+          }
+
         });
 
 
       });
 
+    }
+    else {
+      console.log('booking upload failed: neither service nor deal is passed')
     }
 
 
@@ -196,8 +228,43 @@ async function bookingUpload(bookingData) {
   }
 }
 
+function bookingUpdate(done, status, id) {
+
+  let con = createNewConnection();
+
+  let done = 0;
+  let status = 0;
+
+  if (done) {
+    status = 1;
+    done = 1;
+  }
+  else if (status) {
+    done = 0;
+    status = 1;
+  }
+
+
+  con.getConnection(function (err, connection) {
+    if (err) {
+      console.log('customer upload', err.message)
+    };
+    console.log("Connected!");
+    var sql = "UPDATE Appointment Set Done = ?, Status = ? where AppID = ? ";
+    connection.query(sql, [done, status, id], function (err, result) {
+      if (err) {
+        console.log('booking update', err.message)
+        connection.release();
+      }
+    });
+
+
+  });
+}
+
 
 exports.customerUpload = customerUpload;
 exports.customerUpdate = customerUpdate;
 exports.getEmployee = getEmployee;
 exports.bookingUpload = bookingUpload;
+exports.bookingUpdate = bookingUpdate;

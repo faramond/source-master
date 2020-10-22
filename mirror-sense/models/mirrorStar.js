@@ -5,10 +5,12 @@ const mongoose = require('mongoose');
 const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
 
     salonID: {
-        type: String,
+        type: Number,
         required: true
-
-
+    },
+    branchID: {
+        type: Number,
+        required: true
     },
     starName: {
         type: String,
@@ -20,7 +22,7 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
         default: null
 
     },
-    avgRating:{
+    avgRating: {
         type: Number,
         default: 0
     },
@@ -54,7 +56,7 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
         ref: 'employee',
         default: null
     },
-    StylistID : {
+    StylistID: {
         type: Number,
         default: null,
         minlength: 1,
@@ -79,20 +81,25 @@ const MirrorStar = mongoose.model('MirrorStar', new mongoose.Schema({
         default: null
     },
     likes: [{
-        image: {type: String},
-        name: {type: String,
-          default: null,
-          minlength: 2,
-          maxlength: 50},
-          customer:{type: String,
-              default: null,
-              minlength: 2,
-              maxlength: 50}
+        image: { type: String },
+        name: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        },
+        customer: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        }
 
-  }],
-  likeCounter: {type: Number,
-                 default: 0
-              }
+    }],
+    likeCounter: {
+        type: Number,
+        default: 0
+    }
 }));
 
 

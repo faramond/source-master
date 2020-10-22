@@ -110,6 +110,12 @@ router.get('/ongoing', async (req, res) => {
                                 result = JSON.parse(result);
                                 result[i].mainDishes = result_1;
                                 result[i].sideDishes = result_2;
+                                if (result[i].payment_status = 1) {
+                                    result[i].payment_status = "Paid";
+                                }
+                                else {
+                                    result[i].payment_status = "Unpaid";
+                                }
                                 response.push(result[i])
                                 if (response.length == length) res.send(response);
                             });
@@ -181,6 +187,12 @@ router.get('/served', async (req, res) => {
                                 result = JSON.parse(result);
                                 result[i].mainDishes = result_1;
                                 result[i].sideDishes = result_2;
+                                if (result[i].payment_status = 1) {
+                                    result[i].payment_status = "Paid";
+                                }
+                                else {
+                                    result[i].payment_status = "Unpaid";
+                                }
                                 response.push(result[i])
                                 if (response.length == length) res.send(response);
                             });
@@ -280,6 +292,7 @@ router.get('/sideDishes', async (req, res) => {
 
 router.post('/updateStatus', async (req, res) => {
     try {
+        let response;
         let con = createNewConnectionMerchant();
         id = req.query.transactionNO;
         id2 = parseInt(req.query.salonID);
@@ -302,7 +315,10 @@ router.post('/updateStatus', async (req, res) => {
                 console.log("fetch successful");
                 if (result != [] && result != "" && result != null) {
                     if (result[0].ShippingStatus == 3) {
-                        res.send({ "message": "Order Already Served" })
+                        res.send({
+                            "status": false,
+                            "message": "Order Already Served"
+                        })
                     }
                     else {
                         connection.query(sql2, [result[0].DeliveryStatusID], function (err, result_1, fields_1) {
@@ -312,13 +328,24 @@ router.post('/updateStatus', async (req, res) => {
                             };
                             console.log("fetch successful");
 
-
-                            res.send(result_1.affectedRows);
+                            result_1 = JSON.stringify(result_1);
+                            result_1 = JSON.parse(result_1);
+                            if (result_1.changedRows == 1) {
+                                response = {
+                                    status: true
+                                }
+                            }
+                            else {
+                                response = {
+                                    status: false
+                                }
+                            }
+                            res.send(response);
                         })
                     }
                 }
                 else {
-                    res.send({ "message": "Not yet Delivered" })
+                    res.send({ "status": false, "message": "Not yet Delivered" })
                 }
                 connection.release();
             });
@@ -331,6 +358,109 @@ router.post('/updateStatus', async (req, res) => {
     catch (err) {
         res.send({ 'message': err.message });
         console.log('updateStatus merchant', err.message)
+    }
+
+});
+
+router.get('/ongoingDetails', async (req, res) => {
+    try {
+        let response;
+        let con = createNewConnectionMerchant();
+        id2 = req.query.transactionNO;
+        id = parseInt(req.query.restaurantBranchID);
+
+        con.getConnection(function (err, connection) {
+            if (err) {
+                console.log('ongoing details merchant', err.message)
+                return res.status(400).send({ 'message': err.message });
+            };
+            console.log("Connected!");
+            var sql = "SELECT hdr.TransactionNo as transaction_no,hdr.Salon_ID as salon_id,hdr.RestaurantBranch_ID as restaurant_branch_id , hdr.TransDate as order_date ,pay.Amount as paid_amount, pay.PaidStatus as payment_status,pay.PaymentMethod as payment_method ,sts.RecipientName as ordered_by,sts.RecipientContact as recipient_contact, sts.SelfCollectAddress as address_if_self_collected , sts.Address as delivery_address , sts.Remarks as receipent_remarks , sts.IsSelfCollect as is_self_collected FROM SO_Header hdr , SO_Payment pay , DeliveryStatus sts WHERE hdr.RestaurantBranch_ID=? and sts.ShippingStatus=1 AND hdr.TransactionNo=pay.TransactionNo and hdr.Salon_ID=pay.Salon_ID AND sts.Salon_ID=hdr.Salon_ID and sts.TransactionNo=hdr.TransactionNo and hdr.TransactionNo=? order by hdr.TransactionNo";
+            var sql_1 = "SELECT DISTINCT serv.ServicesName FROM SO_Details det, Services serv  where det.TransactionNo=? and det.Salon_ID=? and serv.ServicesID=det.ProductID";
+            var sql_2 = "SELECT servD.AsstServicesName FROM SO_Details det ,ServicesDetails servD where det.ProductID=servD.ServicesID and det.OptionID=servD.ServicesDetailsID and det.TransactionNo=? and det.Salon_ID=?";
+            var sql_3 = "SELECT hdr.TransactionNo as transaction_no,hdr.Salon_ID as salon_id,hdr.RestaurantBranch_ID as restaurant_branch_id , hdr.TransDate as order_date ,pay.Amount as paid_amount, pay.PaidStatus as payment_status,pay.PaymentMethod as payment_method ,sts.RecipientName as ordered_by,sts.RecipientContact as recipient_contact, sts.SelfCollectAddress as address_if_self_collected , sts.Address as delivery_address , sts.Remarks as receipent_remarks , sts.IsSelfCollect as is_self_collected FROM SO_Header hdr , SO_Payment pay , DeliveryStatus sts WHERE hdr.RestaurantBranch_ID=? and sts.ShippingStatus=3 AND hdr.TransactionNo=pay.TransactionNo and hdr.Salon_ID=pay.Salon_ID AND sts.Salon_ID=hdr.Salon_ID and sts.TransactionNo=hdr.TransactionNo and hdr.TransactionNo=? order by hdr.TransactionNo";
+            connection.query(sql, [id, id2], function (err, result, fields) {
+                if (err) {
+                    console.log('ongoing details merchant', err.message)
+                    return res.status(400).send({ 'message': err.message });
+                };
+                console.log("fetch successful");
+
+                if (result != [] && result != "" && result != null) {
+                    response = result[0]
+                    connection.query(sql_1, [response.transaction_no, response.salon_id], function (err, result_1, fields) {
+                        if (err) {
+                            console.log('ongoing details merchant', err.message)
+                            return res.status(400).send({ 'message': err.message });
+                        };
+                        console.log("fetch successful");
+
+                        connection.query(sql_2, [response.transaction_no, response.salon_id], function (err, result_2, fields) {
+                            if (err) {
+                                console.log('ongoing details merchant', err.message)
+                                return res.status(400).send({ 'message': err.message });
+                            };
+                            console.log("fetch successful");
+                            response = JSON.stringify(response);
+                            response = JSON.parse(response);
+                            response.mainDishes = result_1;
+                            response.sideDishes = result_2;
+                            response.isServed = false;
+                            res.send(response)
+                        });
+                    });
+                }
+                else {
+                    connection.query(sql_3, [id, id2], function (err, result_3, fields) {
+                        if (err) {
+                            console.log('ongoing details merchant', err.message)
+                            return res.status(400).send({ 'message': err.message });
+                        };
+                        console.log("fetch successful");
+                        if (result_3 != [] && result_3 != "" && result_3 != null) {
+                            response = result_3[0]
+                            connection.query(sql_1, [response.transaction_no, response.salon_id], function (err, result_1, fields) {
+                                if (err) {
+                                    console.log('ongoing details merchant', err.message)
+                                    return res.status(400).send({ 'message': err.message });
+                                };
+                                console.log("fetch successful");
+
+                                connection.query(sql_2, [response.transaction_no, response.salon_id], function (err, result_2, fields) {
+                                    if (err) {
+                                        console.log('ongoing details merchant', err.message)
+                                        return res.status(400).send({ 'message': err.message });
+                                    };
+                                    console.log("fetch successful");
+                                    response = JSON.stringify(response);
+                                    response = JSON.parse(response);
+                                    response.mainDishes = result_1;
+                                    response.sideDishes = result_2;
+                                    response.isServed = true;
+                                    res.send(response)
+                                });
+                            });
+
+                        }
+                        else {
+                            res.send({ 'message': 'Order Corresponding to Given Transaction Number Not Found' });
+                        }
+
+                    });
+
+                }
+                connection.release();
+
+            });
+
+
+
+        });
+    }
+
+    catch (err) {
+        res.send({ 'message': err.message });
+        console.log('mainServices merchant', err.message)
     }
 
 });
@@ -352,7 +482,7 @@ router.post('/firebase/notification', async (req, res) => {
     });
 
 
-})
+});
 
 
 

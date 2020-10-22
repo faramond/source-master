@@ -47,10 +47,10 @@ router.get('/', async (req, res) => {
                 console.log("fetch successful");
                 connection.release();
                 if (result) {
-                    res.send(result);
+                    res.status(200).send(result);
                 }
                 else {
-                    res.send({ 'message': 'leave not applied ' });
+                    res.status(200).send(result);
                 }
             });
 
@@ -60,7 +60,7 @@ router.get('/', async (req, res) => {
     }
 
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
         console.log('Leave History', err.message)
     }
 
@@ -171,7 +171,7 @@ router.post('/', async (req, res) => {
                         var d3 = new Date(req.body.from + "T00:00:00.000Z");
                         var d4 = new Date(req.body.to + "T00:00:00.000Z");
                         if (((d3.getTime() >= d1.getTime()) && (d3.getTime() <= d2.getTime())) || ((d4.getTime() >= d1.getTime()) && (d4.getTime() <= d2.getTime()))) {
-                            res.send({ 'message': 'leave is already applied for the given dates' });
+                            res.status(201).send({ 'message': 'leave is already applied for the given dates' });
                             flag = false;
                             break;
                         }
@@ -188,7 +188,7 @@ router.post('/', async (req, res) => {
                         result = JSON.stringify(result);
                         result = JSON.parse(result);
                         result.message = "success";
-                        res.send(result);
+                        res.status(201).send(result);
                     });
 
                 }
@@ -204,7 +204,7 @@ router.post('/', async (req, res) => {
 
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
     }
 
 });
@@ -241,7 +241,7 @@ router.post('/leaveTypeList', async (req, res) => {
         }
 
 
-        res.send(leaveType);
+        res.status(201).send(leaveType);
     }
     catch (err) {
         res.send({ 'message': err.message });
@@ -279,7 +279,7 @@ router.get('/leaveTypeList', async (req, res) => {
                     return res.status(400).send({ 'message': err.message });
                 };
                 console.log("fetch successful");
-                res.send(result)
+                res.status(200).send(result)
                 connection.release();
             });
         });

@@ -21,7 +21,7 @@ router.get('/blog', async (req, res) => {
           return res.status(400).send({ 'message': err.message });
         };
         console.log("fetch successful");
-        res.send(result);
+        res.status(200).send(result);
         connection.release();
       });
 
@@ -72,10 +72,10 @@ router.get('/blogDetails', async (req, res) => {
             else {
               result[0].Images = [];
             }
-            res.send(result[0]);
+            res.status(200).send(result[0]);
           }
           else {
-            res.send(result);
+            res.status(200).send(result);
           }
           connection.release();
         });
@@ -110,7 +110,7 @@ router.get('/', async (req, res) => {
           return res.status(400).send({ 'message': err.message });
         };
         console.log("fetch successful");
-        res.send(result);
+        res.status(200).send(result);
         connection.release();
       });
 
@@ -161,10 +161,10 @@ router.get('/details', async (req, res) => {
             else {
               result[0].Images = [];
             }
-            res.send(result[0]);
+            res.status(200).send(result[0]);
           }
           else {
-            res.send(result);
+            res.status(200).send(result);
           }
           connection.release();
         });

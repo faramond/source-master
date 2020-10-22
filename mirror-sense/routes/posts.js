@@ -1,16 +1,11 @@
-const { Employee } = require('../models/employee');
-const { Booking } = require('../models/booking');
-const { Salary } = require('../models/salary');
 const { Post } = require('../models/post');
-const { Leave } = require('../models/leave');
-const { MirrorStar } = require('../models/mirrorStar');
-const { Notification } = require('../models/notification');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const upload = require('../storage/image');
 const moment = require("moment");
+const { createNewConnection } = require('../lib/connection');
 
 let data;
 router.get('/', async (req, res) => {
@@ -37,11 +32,11 @@ router.get('/', async (req, res) => {
             }
         }
 
-        res.send(post);
+        res.status(200).send(post);
     }
 
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
     }
 
 });
@@ -71,11 +66,11 @@ router.get('/all', async (req, res) => {
         }
 
 
-        res.send(post);
+        res.status(200).send(post);
     }
 
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
     }
 
 });
@@ -101,10 +96,10 @@ router.patch('/:id', upload.array('photos'), async (req, res) => {
             }, { new: true });
         if (!post) return res.status(404).send({ 'message': 'Post not found.' });
 
-        res.send(post);
+        res.status(200).send(post);
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
     }
 
 });
@@ -115,11 +110,11 @@ router.delete('/:id', async (req, res) => {
 
         if (!post) return res.status(404).send({ 'message': 'The post with the given ID was not found.' });
 
-        res.send(post);
+        res.status(200).send(post);
 
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
     }
 });
 
@@ -127,25 +122,52 @@ router.delete('/:id', async (req, res) => {
 router.post('/', upload.array('photos'), async (req, res) => {
 
     try {
-        let imageData = await MirrorStar.findOne({ _id: req.body.mirrorstar }).select({ image: 1 });
+        let con = createNewConnection();
+        let ID = parseInt(req.body.mirrorstar)
+        let image = ""
+        con.getConnection(async function (err, connection) {
+            if (err) {
+                console.log('booking get error', err.message)
+                return res.status(400).send({ 'message': err.message });
 
-        let pics = [];
-        for (i = 0; i < req.files.length; i++)
-            pics.push(req.files[i].path);
-        let post = new Post({
-            fullName: req.body.fullName,
-            mobileNumber: req.body.mobileNumber,
-            description: req.body.description,
-            employee: req.body.employee,
-            mirrorstar: req.body.mirrorstar,
-            photos: pics,
-            image: imageData.image
+            };
+            var sql = "Select PhotoDir as image from Employee where StylistID = ?";
+            connection.query(sql, [ID], async function (err, result, fields) {
+                if (err) {
+                    console.log('booking get error', err.message)
+                    return res.status(400).send({ 'message': err.message });
+
+                };
+                if (result != [] && result != "" && result != null) {
+                    image = result[0].image
+                }
+                else {
+                    return res.status(400).send({ 'message': 'star not found in post post' });
+                }
+
+                let pics = [];
+                for (i = 0; i < req.files.length; i++)
+                    pics.push(req.files[i].path);
+                let post = new Post({
+                    fullName: req.body.fullName,
+                    mobileNumber: req.body.mobileNumber,
+                    description: req.body.description,
+                    employee: req.body.employee,
+                    mirrorstar: req.body.mirrorstar,
+                    photos: pics,
+                    image: image
+                });
+                post = await post.save();
+                res.status(200).send(post);
+
+            })
+            connection.release();
+
+
         });
-        post = await post.save();
-        res.send(post);
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
     }
 
 }
@@ -156,7 +178,6 @@ router.patch('/likes/:id', async (req, res) => {
     let flag = false;
 
     try {
-        console.log(req.query.mirrorStar, "m");
         let check = await Post.find({ _id: req.params.id }).select({ likes: 1 });
         if (check != [] && check != "" && check != null) {
             for (i = 0; i < check[0].likes.length; i++) {
@@ -172,38 +193,66 @@ router.patch('/likes/:id', async (req, res) => {
                     if (!post) return res.status(404).send({ 'message': 'post not found' });
 
                     flag = true
-                    res.send({ 'message': 'post unliked' });
+                    res.status(200).send({ 'message': 'post unliked' });
                     //res.send(post);
                     break;
                 }
             }
         }
         if (flag == false) {
-            let starName = await MirrorStar.findOne({ _id: req.query.mirrorStar }).select({ starName: 1 });
-            let image = await MirrorStar.findOne({ _id: req.query.mirrorStar }).select({ image: 1 });
-            let post = await Post.findByIdAndUpdate(req.params.id,
-                {
-                    $addToSet: {
-                        likes: {
-                            name: starName.starName,
-                            image: image.image,
-                            mirrorStar: req.query.mirrorStar
+            let con = createNewConnection();
+            let ID = parseInt(req.query.mirrorStar)
+            let image = "";
+            let starName = "";
+            con.getConnection(async function (err, connection) {
+                if (err) {
+                    console.log('booking get error', err.message)
+                    return res.status(400).send({ 'message': err.message });
+
+                };
+                var sql = "Select HeaderImage as image,FullName as starName from Employee where StylistID = ?";
+                connection.query(sql, [ID], async function (err, result, fields) {
+                    if (err) {
+                        console.log('booking get error', err.message)
+                        return res.status(400).send({ 'message': err.message });
+
+                    };
+                    if (result != [] && result != "" && result != null) {
+                        image = result[0].image
+                        starName = result[0].starName
+                    }
+                    else {
+                        return res.status(400).send({ 'message': 'star not found in post like ' });
+                    }
+                    let post = await Post.findByIdAndUpdate(req.params.id,
+                        {
+                            $addToSet: {
+                                likes: {
+                                    name: starName,
+                                    image: image,
+                                    mirrorStar: req.query.mirrorStar
+                                },
+                            },
+                            $inc: { likeCounter: 1 }
                         },
-                    },
-                    $inc: { likeCounter: 1 }
-                },
 
-                { new: true });
-            if (!post) return res.status(404).send({ 'message': 'post not found' });
+                        { new: true });
+                    if (!post) return res.status(404).send({ 'message': 'post not found' });
 
 
-            res.send({ 'message': 'post liked' });
+                    res.status(200).send({ 'message': 'post liked' });
+                })
+                connection.release();
+
+
+            });
 
         }
+
     }
 
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(201).send({ 'message': err.message });
     }
 
 });
@@ -211,28 +260,55 @@ router.patch('/likes/:id', async (req, res) => {
 
 router.patch('/comments/:id', async (req, res) => {
     try {
-        let temp = (req.body.comment);
-        let starName = await MirrorStar.findOne({ _id: req.query.mirrorStar }).select({ starName: 1 });
-        let image = await MirrorStar.findOne({ _id: req.query.mirrorStar }).select({ image: 1 });
+        let con = createNewConnection();
+        let ID = parseInt(req.query.mirrorStar)
+        let image = "";
+        let starName = "";
+        con.getConnection(async function (err, connection) {
+            if (err) {
+                console.log('booking get error', err.message)
+                return res.status(400).send({ 'message': err.message });
 
-        let post = await Post.findByIdAndUpdate(req.params.id,
-            {
-                $addToSet: {
-                    comments: {
-                        name: starName.starName,
-                        image: image.image,
-                        mirrorStar: req.query.mirrorStar,
-                        comment: temp
-                    }
+            };
+            var sql = "Select HeaderImage as image,FullName as starName from Employee where StylistID = ?";
+            connection.query(sql, [ID], async function (err, result, fields) {
+                if (err) {
+                    console.log('booking get error', err.message)
+                    return res.status(400).send({ 'message': err.message });
 
-                },
-                $inc: { commentCounter: 1 }
-            }, { new: true });
-        if (!post) return res.status(404).send({ 'message': 'Post not found.' });
-        res.send(post);
+                };
+                if (result != [] && result != "" && result != null) {
+                    image = result[0].image
+                    starName = result[0].starName
+                }
+                else {
+                    return res.status(400).send({ 'message': 'star not found in post comment ' });
+                }
+                let temp = (req.body.comment);
+
+                let post = await Post.findByIdAndUpdate(req.params.id,
+                    {
+                        $addToSet: {
+                            comments: {
+                                name: starName,
+                                image: image,
+                                mirrorStar: req.query.mirrorStar,
+                                comment: temp
+                            }
+
+                        },
+                        $inc: { commentCounter: 1 }
+                    }, { new: true });
+                if (!post) return res.status(404).send({ 'message': 'Post not found.' });
+                res.status(200).send(post);
+            })
+            connection.release();
+
+
+        });
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(201).send({ 'message': err.message });
     }
 
 });
@@ -248,10 +324,10 @@ router.patch('/deleteComments/:id', async (req, res) => {
                 $inc: { commentCounter: -1 }
             }, { new: true });
         if (!post) return res.status(404).send({ 'message': 'Post not found.' });
-        res.send({ 'message': 'comment deleted.' });
+        res.status(200).send({ 'message': 'comment deleted.' });
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
     }
 
 });
@@ -287,11 +363,11 @@ router.get('/comments/:id', async (req, res) => {
         }
 
 
-        res.send(post);
+        res.status(200).send(post);
     }
 
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
     }
 
 });

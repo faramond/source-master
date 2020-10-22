@@ -21,12 +21,15 @@ router.post('/', async (req, res) => {
         }
 
         if (!EducationCourseID || EducationCourseID == "" || EducationCourseID == null) {
-            req.body.salon = req.body.Company_ID;
-            if (!req.body.customer || req.body.customer == "") {
-                res.send({ 'message': 'cusotomerId mandatory' });
-            }
-            if (!req.body.salon || req.body.salon == "") {
-                res.send({ 'message': 'salon mandatory' });
+
+            if (req.body.wallet == false) {
+
+                if (!req.body.customer || req.body.customer == "") {
+                    return res.status(400).send({ 'message': 'cusotomerId mandatory' });
+                }
+                if (!req.body.salon || req.body.salon == "") {
+                    return res.status(400).send({ 'message': 'salon mandatory' });
+                }
             }
             if (req.body.dealID != null) {
                 data = new Payment({
@@ -48,7 +51,8 @@ router.post('/', async (req, res) => {
                     mobile: req.body.mobile,
                     customer: req.body.customer,
                     booking: req.body.booking,
-                    salon: req.body.salon,
+                    salonID: req.body.salonid,
+                    branchID: req.body.Company_ID,
                     StylistID: req.body.StylistID
 
 
@@ -237,7 +241,7 @@ router.post('/receipt', async (req, res) => {
         doc.end();
 
         response.push(path)
-        res.send(response);
+        res.status(200).send(response);
     }
     catch (err) {
         res.status(400).send({ 'message': err.message });

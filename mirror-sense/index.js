@@ -3,9 +3,9 @@ require('./models/user_model')
 const winston = require('winston');
 const mysql = require('mysql')
 
-const cron = require("node-cron");
-let shell = require("shelljs");
-var request = require('request');
+//const cron = require("node-cron");
+//let shell = require("shelljs");
+//var request = require('request');
 
 
 const express = require('express');
@@ -82,7 +82,7 @@ const port = process.env.PORT1 || 3000;
 const server = app.listen(port, () => winston.info(`Listening on port ${port}...`));
 
 
-cron.schedule('* * * * *', () => {
+/*cron.schedule('* * * * *', () => {
     console.log('sheduler running....');
     request.post('http://159.89.155.62:3000/mirror/api/salons/sync')
 
@@ -93,7 +93,7 @@ cron.schedule('* * * * *', () => {
     request.post('http://159.89.155.62:3000/mirror/api/registration/employee')
 
 
-});
+});*/
 
 
 module.exports = server;

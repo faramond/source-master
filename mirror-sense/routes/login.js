@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
+const { createNewConnection } = require('../lib/connection');
 let { getEmployee } = require('../lib/uploadToSQL');
 let { customerUpload } = require('../lib/uploadToSQL');
 
@@ -15,10 +16,10 @@ router.get('/', async (req, res) => {
     try {
         const customers = await Customer.find().or([{ mobileNumber: req.query.mobileNumber }])
             .sort('name');
-        res.send(customers);
+        res.status(200).send(customers);
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
         console.log('login Get', err.message)
     }
 
@@ -36,10 +37,10 @@ router.patch('/:id', async (req, res) => {
 
         if (!user) return res.status(404).send({ 'message': 'Login not found.' });
 
-        res.send(user);
+        res.status(200).send(user);
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
         console.log('Customer Patch', err.message)
     }
 });
@@ -107,349 +108,92 @@ router.post('/', async (req, res) => {
         console.log('Login Post', err.message)
     }
 });
-router.get('/employee', async (req, res) => {
-    try {
-        const employee = await Employee.find().or([{ mobileNumber: req.query.mobileNumber }])
-            .sort('name');
-        res.send(employee);
-    }
-    catch (err) {
-        res.send({ 'message': err.message });
-        console.log('login Get', err.message)
-    }
 
-});
+
 router.patch('/employee/:id', async (req, res) => {
     try {
-        const salt = await bcrypt.genSalt(10);
-        req.body.password = await bcrypt.hash(req.body.password, salt);
-        const employee = await Employee.findByIdAndUpdate(req.params.id,
-            {
-                password: req.body.password,
-                updated: new Date(),
 
-            }, { new: true });
+        let con = createNewConnection();
 
-        if (!employee) return res.status(404).send({ 'message': 'Login not found.' });
+        let ID = parseInt(req.params.id)
 
-        res.send(employee);
+        con.getConnection(function (err, connection) {
+            if (err) {
+                console.log('employee login', err.message)
+                return res.status(400).send({ 'message': err.message });
+            };
+
+            var sql_2 = 'Update Employee set password = ? where StylistID = ?'
+            connection.query(sql_2, [req.body.password, ID], function (err_2, result_2, fields) {
+                if (err_2) {
+                    console.log('employee login', err_2.message)
+                    return res.status(400).send({ 'message': err_2.message });
+                };
+
+                if (result_2 != null && result_2 != "" && result_2 != [] && result_2 != {}) {
+                    if (result_2.affectedRows != 0) {
+
+                        var sql_3 = 'SELECT Gender as gender,Usernm, Password as password,DateReg as dateReg,UpdatedOn, AboutMe as bio,RegionCode as countryCode,CreatedOn as created,DOB as dob,FullName as fullName, Email as email, HeaderImage as image, Salon_ID as salonID, Branch_ID as branchID, DeviceID as deviceID,PhoneNumber as mobileNumber,Address as address,PhotoDir as profile from Employee where StylistID = ?';
+                        connection.query(sql_3, [ID], function (err_3, result_3, fields) {
+                            if (err_3) {
+                                console.log('employee login', err_3.message)
+                                return res.status(400).send({ 'message': err_3.message });
+                            };
+
+                            if (result_3 != null && result_3 != "" && result_3 != [] && result_3 != {}) {
+
+
+                                result_3 = JSON.stringify(result_3);
+                                result_3 = JSON.parse(result_3);
+                                result_3[0].mirrorstar = req.params.id;
+                                result_3[0]._id = req.params.id;
+                                result_3[0].countryCode = JSON.stringify(result_3[0].countryCode);
+                                result_3[0].StylistID = parseInt(req.params.id);
+                                result_3[0].followers = [];
+                                result_3[0].salonName = null;
+                                result_3[0].salon = null;
+                                result_3[0].speciality = [];
+                                result_3[0].likeCounter = 0;
+                                result_3[0].likes = [];
+                                result_3[0].dateReg = (new Date(result_3[0].dateReg)).toISOString();
+                                result_3[0].UpdatedOn = (new Date(result_3[0].UpdatedOn)).toISOString();
+                                result_3[0].created = (new Date(result_3[0].created)).toISOString();
+                                result_3[0].dob = (new Date(result_3[0].dob)).toISOString();
+                                if (result_3[0].gender === 'M') {
+                                    result_3[0].gender = "male";
+                                }
+                                if (result_3[0].gender === 'F') {
+                                    result_3[0].gender = "female";
+                                }
+                                res.status(201).send(result_3[0])
+                            }
+                            else {
+                                return res.status(404).send({ 'message': 'Employee Login not found.' });
+                            }
+
+                        })
+
+                    }
+                    else {
+                        return res.status(404).send({ 'message': 'Employee Login not found.' });
+                    }
+                }
+                else {
+                    return res.status(404).send({ 'message': 'Employee Login not found.' });
+                }
+
+
+
+            })
+
+            connection.release();
+        })
+
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
         console.log('Employee Patch', err.message)
     }
 });
-router.post('/employee', async (req, res) => {
-    try {
-        let response;
-        let data = [];
-        getEmployee(async function (result) {
-            response = result;
-            if (response.err) {
-                console.log('Employee sync', response.err)
-                return res.status(400).send({ 'message': response.err.message });
-            }
-            if (response != [] && response != "" && response != null) {
-                const employee_1 = await Employee.find()
 
-                for (i = 0; i < response.length; i++) {
-                    flag = false;
-                    ID = response[i].StylistID
-                    if (employee_1 != [] && employee_1 != "" && employee_1 != null) {
-                        for (j = 0; j < employee_1.length; j++) {
-                            if (employee_1[j].StylistID == ID) {
-                                flag = true;
-                                break;
-                            }
-                        }
-                        if (!flag) {
-                            req.body.fullName = response[i].FullName;
-                            req.body.Usernm = response[i].Usernm;
-                            req.body.StylistID = response[i].StylistID;
-                            req.body.countryCode = response[i].RegionCode;
-                            req.body.dob = response[i].DOB
-                            req.body.profile = response[i].PhotoDir;
-                            req.body.bio = response[i].AboutMe;
-                            req.body.address = response[i].Address;
-                            req.body.salonID = response[i].Salon_ID;
-                            req.body.branchID = response[i].Branch_ID;
-                            req.body.image = response[i].HeaderImage;
-                            req.body.dateReg = (new Date(response[i].DateReg)).toISOString();
-                            req.body.created = (new Date(response[i].CreatedOn)).toISOString();
-                            req.body.UpdatedOn = (new Date(response[i].UpdatedOn)).toISOString();
-                            if (response[i].PhoneNumber === null || response[i].PhoneNumber === '') {
-                                req.body.mobileNumber = '00000' + response[i].StylistID;
-                            }
-                            else {
-                                req.body.mobileNumber = response[i].PhoneNumber;
-                            }
-                            if (response[i].Email === null || response[i].Email === '') {
-                                req.body.email = req.body.mobileNumber + '@null_email';
-                            }
-                            else {
-                                req.body.email = response[i].Email;
-                            }
-                            req.body.password = response[i].Password;
-                            if (response[i].Gender === 'M')
-                                req.body.gender = "male";
-                            if (response[i].Gender === 'F')
-                                req.body.gender = "female";
-
-
-                            let employee = await Employee.findOne({ Usernm: req.body.Usernm });
-                            if (employee) return res.status(400).send({ 'message': 'username already registered.' });
-                            employee = new Employee(_.pick(req.body, ['fullName', 'mobileNumber', 'dob', 'countryCode', 'Usernm', 'password', 'email', 'bio', 'salon', 'gender', 'StylistID', 'profile', 'image', 'address', 'dateReg', 'created', 'UpdatedOn', 'salonID', 'branchID']));
-                            const salt = await bcrypt.genSalt(10);
-                            await employee.save();
-                            let mirrorStar = await MirrorStar.findOne({ employee: employee.id })
-                            if (mirrorStar) return res.send({ 'message': 'mirrorstar for the given employee already exists' });
-                            if (mirrorStar == undefined) {
-                                mirrorStar = new MirrorStar({
-                                    salonID: req.body.salonID,
-                                    starName: req.body.fullName,
-                                    bio: req.body.bio,
-                                    StylistID: response[i].StylistID,
-                                    employee: employee.id,
-                                    image: req.body.profile,
-                                    coverImage: req.body.image
-                                })
-                                await mirrorStar.save();
-                            }
-                            employee.mirrorstar = mirrorStar.id
-
-                            employee = await Employee.findByIdAndUpdate(employee.id,
-                                {
-                                    mirrorstar: employee.mirrorstar,
-                                    updated: new Date(),
-
-                                }, { new: true });
-                        }
-                    }
-                    else {
-                        req.body.fullName = response[i].FullName;
-                        req.body.Usernm = response[i].Usernm;
-                        req.body.StylistID = response[i].StylistID;
-                        req.body.countryCode = response[i].RegionCode;
-                        req.body.dob = response[i].DOB
-                        req.body.profile = response[i].PhotoDir;
-                        req.body.bio = response[i].AboutMe;
-                        req.body.address = response[i].Address;
-                        req.body.salonID = response[i].Salon_ID;
-                        req.body.branchID = response[i].Branch_ID;
-                        req.body.image = response[i].HeaderImage;
-                        req.body.dateReg = (new Date(response[i].DateReg)).toISOString();
-                        req.body.created = (new Date(response[i].CreatedOn)).toISOString();
-                        req.body.UpdatedOn = (new Date(response[i].UpdatedOn)).toISOString();
-                        if (response[i].PhoneNumber === null || response[i].PhoneNumber === '') {
-                            req.body.mobileNumber = '00000' + response[i].StylistID;
-                        }
-                        else {
-                            req.body.mobileNumber = response[i].PhoneNumber;
-                        }
-                        if (response[i].Email === null || response[i].Email === '') {
-                            req.body.email = req.body.mobileNumber + '@null_email';
-                        }
-                        else {
-                            req.body.email = response[i].Email;
-                        }
-                        req.body.password = response[i].Password;
-                        if (response[i].Gender === 'M')
-                            req.body.gender = "male";
-                        if (response[i].Gender === 'F')
-                            req.body.gender = "female";
-
-
-                        let employee = await Employee.findOne({ Usernm: req.body.Usernm });
-                        if (employee) return res.status(400).send({ 'message': 'username already registered.' });
-                        employee = new Employee(_.pick(req.body, ['fullName', 'mobileNumber', 'dob', 'Usernm', 'countryCode', 'password', 'email', 'bio', 'salon', 'gender', 'StylistID', 'profile', 'image', 'address', 'dateReg', 'created', 'UpdatedOn', 'salonID', 'branchID']));
-                        const salt = await bcrypt.genSalt(10);
-                        employee.password = await bcrypt.hash(employee.password, salt);
-                        await employee.save();
-                        let mirrorStar = await MirrorStar.findOne({ employee: employee.id })
-                        if (mirrorStar) return res.send({ 'message': 'mirrorstar for the given employee already exists' });
-                        if (mirrorStar == undefined) {
-                            mirrorStar = new MirrorStar({
-                                salonID: req.body.salonID,
-                                starName: req.body.fullName,
-                                bio: req.body.bio,
-                                StylistID: response[i].StylistID,
-                                employee: employee.id,
-                                image: req.body.profile,
-                                coverImage: req.body.image
-                            })
-                            await mirrorStar.save();
-                        }
-                        employee.mirrorstar = mirrorStar.id
-
-                        employee = await Employee.findByIdAndUpdate(employee.id,
-                            {
-                                mirrorstar: employee.mirrorstar,
-                                updated: new Date(),
-
-                            }, { new: true });
-
-                    }
-
-
-                }
-                if (employee_1 != [] && employee_1 != "" && employee_1 != null) {
-                    for (k = 0; k < employee_1.length; k++) {
-                        ID_ = employee_1[k].StylistID
-                        updated = employee_1[k].UpdatedOn
-                        flag_1 = false;
-                        flag_2 = false;
-                        for (l = 0; l < response.length; l++) {
-                            if (response[l].StylistID == ID_) {
-                                flag_1 = true;
-                                break;
-                            }
-                        }
-                        if (!flag_1) {
-                            var data_ = await Employee.findByIdAndDelete(employee_1[k]._id);
-                            var data1_ = await MirrorStar.findByIdAndDelete(employee_1[k].mirrorstar);
-                        }
-                        if (flag_1) {
-                            for (m = 0; m < response.length; m++) {
-                                if ((response[m].UpdatedOn).toString() === (updated).toString()) {
-                                    flag_2 = true;
-                                    break;
-                                }
-
-                            }
-                        }
-
-                        if (!flag_2 && flag_1) {
-                            for (n = 0; n < response.length; n++) {
-                                if (ID_ == response[n].StylistID) {
-                                    req.body.fullName = response[n].FullName;
-                                    req.body.Usernm = response[n].Usernm;
-                                    req.body.StylistID = response[n].StylistID;
-                                    req.body.countryCode = response[n].RegionCode;
-                                    req.body.dob = response[n].DOB
-                                    req.body.profile = response[n].PhotoDir;
-                                    req.body.bio = response[n].AboutMe;
-                                    req.body.address = response[n].Address;
-                                    req.body.salonID = response[n].Salon_ID;
-                                    req.body.branchID = response[n].Branch_ID;
-                                    req.body.image = response[n].HeaderImage;
-                                    req.body.dateReg = (new Date(response[n].DateReg)).toISOString();
-                                    req.body.created = (new Date(response[n].CreatedOn)).toISOString();
-                                    req.body.UpdatedOn = (new Date(response[n].UpdatedOn)).toISOString();
-                                    if (response[n].PhoneNumber === null || response[n].PhoneNumber === '') {
-                                        req.body.mobileNumber = '00000' + response[n].StylistID;
-                                    }
-                                    else {
-                                        req.body.mobileNumber = response[n].PhoneNumber;
-                                    }
-                                    if (response[n].Email === null || response[n].Email === '') {
-                                        req.body.email = req.body.mobileNumber + '@null_email';
-                                    }
-                                    else {
-                                        req.body.email = response[n].Email;
-                                    }
-                                    const salt = await bcrypt.genSalt(10);
-                                    req.body.password = response[n].Password;
-                                    req.body.password = await bcrypt.hash(req.body.password, salt);
-                                    if (response[n].Gender === 'M')
-                                        req.body.gender = "male";
-                                    if (response[n].Gender === 'F')
-                                        req.body.gender = "female";
-                                    const update = await Employee.findByIdAndUpdate(employee_1[k]._id,
-                                        {
-                                            fullName: req.body.fullName,
-                                            Usernm: req.body.Usernm,
-                                            StylistID: req.body.StylistID,
-                                            countryCode: req.body.countryCode,
-                                            bio: req.body.bio,
-                                            address: req.body.address,
-                                            salonID: req.body.salonID,
-                                            branchID: req.body.branchID,
-                                            image: req.body.image,
-                                            dateReg: req.body.dateReg,
-                                            created: req.body.created,
-                                            UpdatedOn: req.body.UpdatedOn,
-                                            mobileNumber: req.body.mobileNumber,
-                                            password: req.body.password,
-                                            email: req.body.email,
-                                            dob: req.body.dob,
-                                            gender: req.body.gender,
-                                            profile: req.body.profile,
-
-                                        }, { new: true });
-                                    const updatem = await MirrorStar.findByIdAndUpdate(employee_1[k].mirrorstar,
-                                        {
-                                            salonID: req.body.salonID,
-                                            starName: req.body.fullName,
-                                            bio: req.body.bio,
-                                            StylistID: req.body.StylistID,
-                                            image: req.body.profile,
-                                            coverImage: req.body.image
-
-                                        }, { new: true });
-                                }
-
-                            }
-                        }
-
-                    }
-                }
-                res.send({ 'message': 'Employee Synced' })
-            }
-            else {
-                res.send({ 'message': 'No employee found' })
-            }
-
-        });
-
-    }
-    catch (err) {
-        res.status(400).send({ 'message': err.message });
-        console.log('Login Post', err.message)
-    }
-});
-
-
-router.post('/employee/local', async (req, res) => {
-    try {
-        let employee = await Employee.findOne({ mobileNumber: req.body.mobileNumber });
-        if (employee) return res.status(400).send({ 'message': 'MobileNumber already registered.' });
-        employee = new Employee(_.pick(req.body, ['fullName', 'mobileNumber', 'dob', 'countryCode', 'password', 'email', 'bio', 'salon', 'gender', 'StylistID', 'profile', 'image', 'address', 'dateReg', 'created', 'UpdatedOn', 'salonID', 'branchID']));
-        const salt = await bcrypt.genSalt(10);
-        employee.password = await bcrypt.hash(employee.password, salt);
-        console.log(employee.password);
-        await employee.save();
-        let mirrorStar = await MirrorStar.findOne({ employee: employee.id })
-        if (mirrorStar) return res.send({ 'message': 'mirrorstar for the given employee already exists' });
-        if (mirrorStar == undefined) {
-            mirrorStar = new MirrorStar({
-                salonID: req.body.salonID,
-                starName: req.body.fullName,
-                bio: req.body.bio,
-                StylistID: req.body.StylistID,
-                employee: employee.id,
-                image: req.body.profile,
-                coverImage: req.body.image
-            })
-            await mirrorStar.save();
-        }
-        employee.mirrorstar = mirrorStar.id
-
-        employee = await Employee.findByIdAndUpdate(employee.id,
-            {
-                mirrorstar: employee.mirrorstar,
-                updated: new Date(),
-
-            }, { new: true });
-
-
-        res.send(employee)
-
-
-
-    }
-    catch (err) {
-        res.status(400).send({ 'message': err.message });
-        console.log('Login Post', err.message)
-    }
-});
 module.exports = router;

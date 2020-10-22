@@ -15,84 +15,92 @@ const Post = mongoose.model('Post', new mongoose.Schema({
         minlength: 5,
         maxlength: 15
     },
-  description: {
+    description: {
         type: String,
         default: null,
         maxlength: 400
     },
     likes: [{
-          image: {type: String},
-          name: {type: String,
-            default: null,
-            minlength: 2,
-            maxlength: 50},
-            mirrorStar:{type: String,
-                default: null,
-                minlength: 2,
-                maxlength: 50}
-
-    }],
-    likeCounter: {type: Number,
-                   default: 0
-                },
-    comments: [{
-        name: {type: String,
-               default: null,
-               minlength: 2,
-               maxlength: 50
-              },
-        comment: {type: String,
+        image: { type: String },
+        name: {
+            type: String,
             default: null,
             minlength: 2,
             maxlength: 50
-           },
-           mirrorStar:{type: String,
+        },
+        mirrorStar: {
+            type: String,
             default: null,
             minlength: 2,
-            maxlength: 50},
-        image: {type: String},
+            maxlength: 50
+        }
+
+    }],
+    likeCounter: {
+        type: Number,
+        default: 0
+    },
+    comments: [{
+        name: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        },
+        comment: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        },
+        mirrorStar: {
+            type: String,
+            default: null,
+            minlength: 2,
+            maxlength: 50
+        },
+        image: { type: String },
         created: {
             type: Date, default: Date.now
         }
     }],
-    commentCounter: {type: Number,
-                  default: 0
-                 },
+    commentCounter: {
+        type: Number,
+        default: 0
+    },
     employee: {
 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'employee',
+        type: String,
         default: null
     },
     mirrorstar: {
 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'mirrorstar',
+        type: String,
         default: null
     },
     created: {
         type: Date, default: Date.now
     },
     image: {
-        type: String 
-   },
-   photos:[{
-    
-           type: String
-       
+        type: String
+    },
+    photos: [{
+
+        type: String
+
     }]
 
 }));
 
 function validatePost(post) {
     const schema = {
-      fullName: Joi.string(),
-      mobileNumber: Joi.string().min(5).max(15).required(),
-      countryCode: Joi.string().min(2).max(15).required()
+        fullName: Joi.string(),
+        mobileNumber: Joi.string().min(5).max(15).required(),
+        countryCode: Joi.string().min(2).max(15).required()
     };
-  
+
     return Joi.validate(post, schema);
-  }
+}
 
 exports.Post = Post;
 exports.validatePost = validatePost;

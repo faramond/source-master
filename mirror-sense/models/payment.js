@@ -24,7 +24,7 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         minlength: 0,
         maxlength: 100
     }],
-    dealID : {
+    dealID: {
         type: Number,
         default: null,
         minlength: 0,
@@ -36,7 +36,7 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         minlength: 0,
         maxlength: 100
     },
-    educationCourseID : {
+    educationCourseID: {
         type: Number,
         default: null,
         minlength: 0,
@@ -114,12 +114,15 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         ref: 'mirrorstar',
         default: null
     },
-    salon: {
-
+    salonID: {
         type: Number,
-        default: null
+        required: true
     },
-    StylistID : {
+    branchID: {
+        type: Number,
+        required: true
+    },
+    StylistID: {
         type: Number,
         default: null,
         minlength: 1,
@@ -127,7 +130,7 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
     },
     created: {
 
-       type: Date, default: Date.now
+        type: Date, default: Date.now
     },
 
 }));

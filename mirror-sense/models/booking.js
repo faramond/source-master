@@ -8,10 +8,16 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 100
     },
-    salonid: {
+    branchID: {
         type: Number,
         required: true,
         minlength: 1,
+        maxlength: 100
+    },
+    AppID: {
+        type: Number,
+        minlength: 1,
+        default: null,
         maxlength: 100
     },
     salonName: {
@@ -31,7 +37,7 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 0,
         maxlength: 100
     }],
-    dealID : {
+    dealID: {
         type: Number,
         default: null,
         minlength: 0,
@@ -51,13 +57,23 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
     },
     appointmentDate: {
         type: Date,
+        required: false
+    },
+    startTime: {
+        type: String,
         required: false,
+        default: null
+    },
+    endTime: {
+        type: String,
+        required: false,
+        default: null
     },
     modeOfPayment: {
         type: String,
         required: false,
         minlength: 1,
-        maxlength: 10
+        maxlength: 100
     },
     amountToPay: {
         type: String,
@@ -85,12 +101,18 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         minlength: 1,
         maxlength: 15
     },
+    countryCode: {
+        type: Number,
+        required: false,
+        minlength: 1,
+        maxlength: 5
+    },
     email: {
         type: String,
         required: false,
 
     },
-    StylistID : {
+    StylistID: {
         type: Number,
         default: null,
         minlength: 1,
@@ -99,8 +121,8 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
     mirrorStar: {
         type: String,
         required: false,
-        default: null 
-        
+        default: null
+
     },
     customer: {
 
@@ -108,7 +130,7 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
         ref: 'Customer',
         default: null
     },
-     created: {
+    created: {
         type: Date, default: Date.now
     }
 
@@ -116,12 +138,12 @@ const Booking = mongoose.model('Booking', new mongoose.Schema({
 
 function validateBooking(booking) {
     const schema = {
-      fullName: Joi.string(),
-      mobileNumber: Joi.string().min(5).max(15).required()
+        fullName: Joi.string(),
+        mobileNumber: Joi.string().min(5).max(15).required()
     };
-  
+
     return Joi.validate(booking, schema);
-  }
+}
 
 exports.Booking = Booking;
 exports.validateBooking = validateBooking;

@@ -1,4 +1,6 @@
 const { Customer } = require('../models/customer');
+const { MirrorStar } = require('../models/mirrorStar');
+const { Salon } = require('../models/salon');
 const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
@@ -16,11 +18,11 @@ router.get('/', async (req, res) => {
 
         const customers = await Customer.find().or([{ mobileNumber: req.query.mobileNumber }, { email: req.query.email }])
             .sort('name');
-        res.status(200).send(customers);
+        res.send(customers);
     }
 
     catch (err) {
-        res.status(400).send({ 'message': err.message });
+        res.send({ 'message': err.message });
         console.log('Customer Get', err.message)
     }
 
@@ -47,10 +49,10 @@ router.post('/', async (req, res) => {
         });
         customer = await customer.save();
 
-        res.status(201).send(customer);
+        res.send(customer);
     }
     catch (err) {
-        res.status(400).send({ 'message': err.message });
+        res.send({ 'message': err.message });
         console.log('Customer Post', err.message)
     }
 
@@ -71,7 +73,7 @@ router.patch('/:id', upload.single('profile'), async (req, res) => {
             if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
 
             // customerUpdate(customer);
-            res.status(200).send(customer);
+            res.send(customer);
 
         }
 
@@ -90,7 +92,7 @@ router.patch('/:id', upload.single('profile'), async (req, res) => {
             if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
 
             //  customerUpdate(customer);
-            res.status(200).send(customer);
+            res.send(customer);
         }
 
 
@@ -99,7 +101,7 @@ router.patch('/:id', upload.single('profile'), async (req, res) => {
     }
 
     catch (err) {
-        res.status(400).send({ 'message': err.message });
+        res.send({ 'message': err.message });
         console.log('Customer Patch', err.message)
     }
 
@@ -111,10 +113,10 @@ router.delete('/:id', async (req, res) => {
 
         if (!customer) return res.status(404).send({ 'message': 'The customer with the given ID was not found.' });
 
-        res.status(200).send(customer);
+        res.send(customer);
     }
     catch (err) {
-        res.status(400).send({ 'message': err.message });
+        res.send({ 'message': err.message });
         console.log('Customer Delete', err.message)
     }
 });
@@ -122,32 +124,20 @@ router.delete('/:id', async (req, res) => {
 router.get('/favourite/:id', async (req, res) => {
     try {
         let response = [];
-        let conn = await createNewConnection2();
 
-
-        var sql = "Select FullName as starName,avgRating,  PhotoDir as image from Employee where StylistID = ?"
         const customer = await Customer.findOne().or({ _id: req.params.id }).select({ likedMirrorStar: 1 });
         if (!customer) return res.status(404).send({ 'message': 'Customer not found' });
         for (i = 0; i < customer.likedMirrorStar.length; i++) {
             ID = customer.likedMirrorStar[i];
-
-            let [rows, fields] = await conn.execute(sql, [ID]);
-
-            if (rows != [] && rows != "" && rows != null) {
-                rows = JSON.stringify(rows);
-                rows = JSON.parse(rows);
-                rows[0]._id = ID;
-                rows[0].avgRating = parseFloat(rows[0].avgRating)
-                response.push(rows[0]);
-            }
+            const star = await MirrorStar.findOne().or({ _id: ID }).select({ starName: 1, avgRating: 1, image: 1 });
+            response.push(star);
         }
 
-        res.status(200).send(response);
-
+        res.send(response);
     }
 
     catch (err) {
-        res.status(400).send({ 'message': err.message });
+        res.send({ 'message': err.message });
         console.log('Customer Get', err.message)
     }
 
@@ -158,27 +148,48 @@ router.get('/favouriteSalon/:id', async (req, res) => {
         let photo = "";
         var response = [];
         let conn = await createNewConnection2();
-        var sql = "Select Logo ,Company_ID, Company_Name, avgRating  from Company_Profile  where Company_ID= ?";
+        var sql = "Select Logo  from Company_Profile  where Company_ID= ?";
 
         const customer = await Customer.findOne().or({ _id: req.params.id }).select({ likedSalon: 1 });
         if (!customer) return res.status(404).send({ 'message': 'Customer not found' });
         for (i = 0; i < customer.likedSalon.length; i++) {
             ID = parseInt(customer.likedSalon[i]);
+            let salon = await Salon.findOne().or({ salonzyID: ID }).select({ salonName: 1, avgRating: 1, salonID: 1 });
             let [rows, fields] = await conn.execute(sql, [ID]);
             if (rows != null && rows != [] && rows != '') {
-
-                temp = JSON.stringify(rows[0]);
-                temp = JSON.parse(temp);
-                temp.avgRating = parseFloat(temp.avgRating)
+                for (j = 0; j < rows.length; j++) {
+                    photo = (rows[j].Logo);
+                }
             }
+            else {
+                photo = "";
+            }
+            if (salon) {
+                temp = {
+                    'Company_ID': salon.salonID,
+                    'Company_Name': salon.salonName,
+                    'avgRating': salon.avgRating,
+                    'Logo': photo
+                }
+            }
+            else {
+                temp = {
+                    'Company_ID': '',
+                    'Company_Name': '',
+                    'avgRating': '',
+                    'image': photo
+                }
+            }
+            temp = JSON.stringify(temp);
+            temp = JSON.parse(temp);
             response[i] = (temp);
 
         }
-        res.status(200).send(response);
+        res.send(response);
     }
 
     catch (err) {
-        res.status(400).send({ 'message': err.message });
+        res.send({ 'message': err.message });
         console.log('Customer Get', err.message)
     }
 
@@ -194,11 +205,11 @@ router.get('/isLiked/:id', async (req, res) => {
                 return res.send({ 'message': 'True' });
             }
         }
-        res.status(200).send({ 'message': 'False' });
+        res.send({ 'message': 'False' });
     }
 
     catch (err) {
-        res.status(400).send({ 'message': err.message });
+        res.send({ 'message': err.message });
         console.log('Customer Get', err.message)
     }
 

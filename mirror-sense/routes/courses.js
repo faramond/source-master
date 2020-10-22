@@ -137,18 +137,18 @@ router.get('/details/:id', async (req, res) => {
 
 
           }
-          let course = await MirrorStar.findOne({ _id: req.query._id })
-            .select({ courses: 1 })
-          if (course != [] && course != "" && course != null) {
-            for (key in course.courses) {
-              if (id == course.courses[key]) {
-                isPurchased = true;
-                break;
-              }
-
-            }
-          }
-          response.isPurchased = isPurchased;
+          /* let course = await MirrorStar.findOne({ _id: req.query._id })
+             .select({ courses: 1 })
+           if (course != [] && course != "" && course != null) {
+             for (key in course.courses) {
+               if (id == course.courses[key]) {
+                 isPurchased = true;
+                 break;
+               }
+ 
+             }
+           }*/
+          response.isPurchased = false;
           res.send(response);
 
           if (!isPurchased) {

@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const mysql2 = require('mysql2/promise');
+const mysql2 = require('./node_modules/mysql2/promise');
 const express = require('express');
 const router = express.Router();
 const app = express();
@@ -836,9 +836,30 @@ router.get('/:lat/:long', (req, res) => {
 });
 
 
+router.get('/rating', (req, res) => {
+   con.getConnection(function (err, connection) {
+      if (err) {
+         console.log('other branches', err.message)
+         return res.status(400).send({ 'message': err.message });
+      };
+
+      var sql = "SELECT review,reviewer,rating,image from Reviews ";
+      connection.query(sql, function (err, result, fields) {
+         if (err) {
+            console.log('other branches', err.message)
+            return res.status(400).send({ 'message': err.message });
+         };
+
+         res.send(result);
+         connection.release();
+      });
+
+
+   });
+})
 
 
 
 
-module.exports = router;
 
+module.exports = router; 
