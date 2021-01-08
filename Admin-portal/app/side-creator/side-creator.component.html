@@ -1,0 +1,63 @@
+
+<div *ngIf="isLoggedin">
+  <button mat-raised-button (click)="openDialog()" class="createButton">Create</button>
+  <button mat-raised-button (click)="resetDialog()" class="resetButton">Reset Password</button>
+    <div class="example">
+
+      <mat-table [dataSource]="dataSource">
+        
+
+     <ng-container matColumnDef="Select">
+      <mat-header-cell *matHeaderCellDef="let row">
+        <mat-checkbox
+        (change)="$event ? masterToggle() : null" 
+        [checked]="selection.hasValue() && isAllSelected()" 
+        [indeterminate]="selection.hasValue() && !isAllSelected()">
+      </mat-checkbox>
+     </mat-header-cell>
+    
+     <mat-cell *matCellDef="let row">
+      <mat-checkbox (click)="$event.stopPropagation()" 
+      (change)="$event ? selection.toggle(row) : null" 
+      [checked]="selection.isSelected(row)">
+     </mat-checkbox>
+  </mat-cell>
+  
+</ng-container>
+
+<ng-container matColumnDef="fullname">
+  <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+  <mat-cell *matCellDef="let post">{{post.fullname}}</mat-cell>
+</ng-container>
+
+<ng-container matColumnDef="email">
+  <mat-header-cell *matHeaderCellDef> Email </mat-header-cell>
+  <mat-cell *matCellDef="let post">{{post.email}} </mat-cell>
+</ng-container>
+  
+
+<ng-container matColumnDef="role">
+  <mat-header-cell *matHeaderCellDef> Role </mat-header-cell>
+  <mat-cell *matCellDef="let post">{{post.role}}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="edit">
+    <mat-header-cell *matHeaderCellDef> Edit </mat-header-cell>
+   <mat-cell *matCellDef="let row">
+   <a (click)="edit(row)">Edit</a>
+  </mat-cell>
+ </ng-container>
+    
+    <mat-header-row *matHeaderRowDef="displayedColumns;sticky:true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"(click)="selection.toggle(row)"></mat-row>
+  </mat-table>
+  <mat-paginator [length]="dataSource.data.length"
+               [pageSize]="7" ></mat-paginator>
+</div>
+
+  <button mat-raised-button type="button" class = "button button3" (click)="deletingRow()">Delete</button>
+  
+</div>
+<div *ngIf="!isLoggedin">
+  <h2>You are not logged in.</h2>
+  </div>

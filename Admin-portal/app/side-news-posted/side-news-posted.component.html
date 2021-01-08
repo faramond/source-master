@@ -1,0 +1,169 @@
+<div *ngIf="isLoggedin">
+
+  <div class="container-fluid">
+    <div class="header">
+     </div>
+   <div class="row">
+
+    <div class="col-xl-6 col-xxl-7 d-flex">
+    <div class="w-100">
+      <div class="row">
+        <div class="card2">
+          <mat-card class="card">
+            <mat-card-header>
+              <span class="glyphicon glyphicon-bookmark"></span>
+              <h5 class="card-details1">Total articles posted today</h5>
+            </mat-card-header>
+            <span    
+             
+            [style.color]="getColor()"
+            class="totalNews">{{totalNews}}</span>
+           </mat-card>
+           
+           <mat-card class="card">
+             <mat-card-header>
+              <span class="glyphicon glyphicon-bookmark"></span>
+              <h5 class="card-details1">Articles pending for approval</h5>
+               </mat-card-header>
+             <span 
+             [@showhide]="heading"
+             [style.color]="pendingArticleColor()"
+             class="totalNews1">{{pendingNews}}</span>
+            </mat-card>
+          </div> 
+          <div class="card3">
+            <mat-card class="card">
+              <mat-card-header>
+                <span class="glyphicon glyphicon-bookmark"></span>
+                <h5 class="card-details1">Total articles</h5>
+              </mat-card-header>
+              <span 
+              [style.color]="totalArticleColor()"
+              class="totalNews">{{overallNews}}</span>
+              </mat-card>
+            <mat-card class="card">
+              <mat-card-header>
+                <span class="glyphicon glyphicon-bookmark"></span>
+                <h5 class="card-details1">Articles approved</h5></mat-card-header>
+                <span
+                [style.color]="approvedArticleColor()"
+                class="totalNews">{{approvedNews}}</span>
+            </mat-card>
+          </div> 
+        </div>
+        
+      </div>
+      </div>
+      
+    
+        <div class="col-xl-6 col-xxl-5">
+        <mat-card class="example-card">
+          <div class="header-example">
+          <h5 class="card-title">Overall Trend</h5>
+          </div>
+          <div style="display:inline-block;" class="canvas"  >
+          <canvas baseChart
+          height="380px"
+          width="440px"
+          [data]="barChartData" 
+          [legend]="barChartLegend"
+          [labels]="barChartLabels"
+          [chartType]="barChartType"
+          [plugins]="barChartPlugins"
+          [options]="barChartOptions"
+          [colors]="barChartColors">
+        </canvas>
+      </div>
+      
+    </mat-card>
+    </div>
+   </div>
+   </div>
+   <br>
+
+
+
+
+     <div class="row">
+   <div class="col-12 col-md-6 col-xxl-3 d-flex order-1 order-xxl-1">
+    <mat-card class="card-example">
+      
+       <div>
+        <h5 class="card-title">Calendar</h5>
+         <span class="glyphicon glyphicon-chevron-left"
+         mwlCalendarPreviousView
+         [view]="view" 
+         [(viewDate)]="viewDate"
+         (viewDateChange)="closeOpenMonthViewDay()"
+         >
+        </span>
+        <!--<div
+          class="btn btn-outline-secondary"
+          mwlCalendarToday
+          [(viewDate)]="viewDate"
+          >
+          Today
+        </div>-->
+        
+        <h3 class="month">{{ viewDate | date:'dd/MM/yyyy' }}</h3>
+        <span
+        class="glyphicon glyphicon-chevron-right"
+        mwlCalendarNextView
+        [view]="view"
+        [(viewDate)]="viewDate"
+        (viewDateChange)="closeOpenMonthViewDay()"
+        >
+      </span>
+    </div>
+      
+
+    <!--<h3 *ngIf=""> {{ transformDate | date: 'dd/M/yyyy' }}</h3>-->
+    
+     <h3 *ngIf=clickedDate #dateClicked>{{clickedDate | date:'dd/MM/yyyy'}}</h3>
+    
+   <div [ngSwitch]="view" class="example-calendar">
+   <mwl-calendar-month-view
+   #monthView
+   *ngSwitchCase="CalendarView.Month"
+    [viewDate]="viewDate"
+    [refresh]="refresh"
+    [activeDayIsOpen]="activeDayIsOpen"
+    (dayClicked)="dayClicked($event.day)" 
+   >
+    </mwl-calendar-month-view>
+   </div>
+    </mat-card>
+   </div>
+      <div class="col-12 col-md-6 col-xxl-3 d-flex order-2 order-xxl-3">
+        <mat-card class="example-cards">
+        
+          <div>
+            <h5 class="card-title">Today's Trend</h5>
+            </div>
+        
+        <div style="display:inline-block;">
+          <canvas baseChart
+          background-color="blue"
+          height = "380px"
+          width  = "400px"
+          [data]="barChartData_1" 
+          [labels]="barChartLabels_1"
+          [chartType]="barChartType"
+          [options]="barChartOptions_1"
+          [plugins]="barChartPlugins"
+          [legend]="barChartLegend"
+          [colors]="barChartColors">
+        </canvas>
+      </div>
+        </mat-card>
+    </div>
+    </div>
+   </div>
+
+<div *ngIf="!isLoggedin">
+  <h2>You are not logged in.</h2>
+  </div>
+
+  
+  
+  

@@ -1,0 +1,86 @@
+.row{
+    overflow: hidden;
+    margin-left: 0;
+    margin-right: 0;
+}
+mat-toolbar{
+    background-color: #153d77;
+    padding: 40px;
+}
+.example-grid{
+background-color: #f5f5f5;
+}
+.logo{
+    position:absolute;
+    left:20px;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 500;
+}
+.heading{
+position:absolute;
+left:500px;
+color:#fff;
+font-size:40px;
+font-weight: 450;
+}
+mat-grid-tile{
+    background-color:#bbdefb;
+}
+
+::ng-deep .mat-form-field-flex > .mat-form-field-infix { padding: 1em 0px !important;}
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-label { margin-top:-15px; }
+h2{
+    position: absolute;
+    top:20px;
+    font-size: 30px;
+    font-weight: 700px;
+}
+#Email{
+    position:absolute;
+    top:17%;
+    left:40%;
+}
+.example-input1{
+    position:absolute;
+    top:80px;
+    left:46%;
+}
+#Password{
+    position:absolute;
+    top:33%;
+    left:40%;
+}
+.example-input2{
+    position:absolute;
+    top:180px;
+    left:46%;
+}
+.button2{
+  position: absolute;
+  top:250px;
+  left:50%;
+  background-color:#153d77;
+  color:white;
+}
+a{
+    position:absolute;
+    bottom:250px;
+    left:630px;
+}
+mat-error{
+    color: red;
+    position: absolute;
+    left:46%;
+}
+
+#error{
+    position:absolute;
+    left:570px;
+    top:300px; 
+}
+.name{
+    position:absolute;
+    left:0px;
+    bottom:0px;
+}

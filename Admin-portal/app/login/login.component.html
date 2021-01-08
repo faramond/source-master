@@ -1,0 +1,52 @@
+
+
+ 
+
+    <mat-toolbar>
+
+        <span class = "logo">Tiny Buzz</span>
+            <span class = "heading">Content Editing Portal</span>
+        </mat-toolbar>
+        
+       
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm.value)">
+                <mat-grid-list cols = "1" rowHeight ="614px">
+                    <mat-grid-tile class="example-grid">
+                    
+                        <h2>Login</h2>
+                        <div class = "form-group">
+                            
+                            <label id = "Email">Email</label>
+                            <mat-form-field appearance = "outline" class = "example-input1">
+                                <input  matInput type="text" placeholder = "" formControlName="email">
+                                <mat-error *ngIf="email.touched && email.invalid">
+                                    <mat-error *ngIf="email.errors.required">Field should not be empty!</mat-error>
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                
+
+                        <div class = "form-group">
+                            <label id = "Password">Password</label>
+        <mat-form-field appearance = "outline" class = "example-input2">
+            <input  matInput   placeholder = "" id="password" formControlName="password">
+             <mat-error *ngIf="password.touched && password.invalid">
+                 <mat-error *ngIf="password.errors.required">Field should not be empty!</mat-error>
+             </mat-error>
+        </mat-form-field>
+    </div>
+    
+    <button mat-raised-button color = "accent" [disabled]="loginForm.invalid" class = "button button2" >Login</button>
+    
+    <mat-error *ngIf="this.services.errorMessage">
+        Invalid username or password</mat-error>
+
+        <div class="name">
+            
+            <h5>Powered By: © 2019 Faramond Technologies Private Limited</h5>
+        </div>
+    </mat-grid-tile>
+</mat-grid-list>
+
+</form>
+

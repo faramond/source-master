@@ -1,0 +1,120 @@
+
+.example{
+  position: absolute;
+  top:30%;
+  margin-left: 100px;
+  height: 450px;
+  width:640px;
+  overflow-x: hidden;
+  overflow: hidden;
+}
+mat-table{
+  background-color: lavender;
+  border-bottom:1px solid grey;
+}
+mat-row {
+  border-top: 1px solid grey;
+}
+.mat-column-Select{
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 8% !important;
+  width: 30px !important;
+  padding-right: 50px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+.mat-column-fullname {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 30% !important;
+  width: 30px !important;
+  padding-right: 10px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+.mat-column-email {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 40% !important;
+  width: 40px !important;
+  padding-right: 10px;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+.mat-column-role {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 10% !important;
+  width: 100px !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+.mat-column-edit {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 10% !important;
+  width: 10px !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+mat-header-cell{
+  min-height:25px;
+  font-weight:20px;
+  font-size:13px;
+  color: black;
+  margin-bottom:5px;
+   top: 0;
+    position:auto;
+    z-index: 1;
+    background-color: inherit;
+}
+mat-label {
+  font-weight: bold;
+}
+.createButton{
+  position: absolute;
+  top:22%;
+  margin-left: 100px;
+  background-color:#153d77;
+  color:white;
+}
+.resetButton{
+  position: absolute;
+  top:22%;
+  left:18%;
+  background-color:#153d77;
+  color:white;
+}
+.button3{
+  position: absolute;
+  top:22%;
+  left:31%;
+  background-color:#153d77;
+  color:white; 
+}

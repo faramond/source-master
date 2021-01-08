@@ -1,0 +1,21 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <mat-form-field class="example-full-width">
+    <mat-label>Username</mat-label>
+    <input matInput placeholder="" id="username" formControlName="username">
+  <mat-error *ngIf="username.touched && username.invalid">
+    <mat-error *ngIf="username.errors.required">Field should not be empty.</mat-error>
+  </mat-error>
+  </mat-form-field>
+
+<div class="item"> 
+      <input type="file" multiple (change)=onSelectFiles($event) id="image" formControlName="image">
+</div>
+
+ <button mat-raised-button color= "primary">Post</button>
+ <button mat-raised-button color= "primary" >Fetch</button>
+
+ <p>No Post Available!</p>
+ 
+ 
+ <button mat-raised-button color= "primary">Clear Post</button>
+</form>

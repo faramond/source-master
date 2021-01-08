@@ -1,0 +1,52 @@
+<div class="row">
+  <div  class="col-md-12">
+    <h2 class="heading">Register</h2>
+      <form [formGroup]="creatorForm" (ngSubmit)="onSubmit(creatorForm.value)">
+          
+      
+      <div class="example-container">
+      
+            
+
+                <mat-label id="nameLabel">Full Name</mat-label>
+                <mat-form-field class="fullname" appearance = "outline" class="newsTitle1" >
+                    <input matInput placeholder="" id="fullname" name="fullname" formControlName="fullname">
+                </mat-form-field>
+            
+            
+            
+            <mat-label id="emailLabel">Email</mat-label>
+            <mat-form-field class="email" appearance = "outline">
+                <input matInput placeholder="" id="email" name="email" formControlName="email">
+        </mat-form-field>
+        
+        <mat-label id="passwordLabel">Password</mat-label>
+        <mat-form-field class="password" appearance = "outline">
+            <input matInput placeholder="" id="password" name="password" formControlName="password">
+        </mat-form-field>
+        
+        <mat-form-field class="role">
+            <mat-label id="roleLabel">Role</mat-label>
+            <mat-select (selectionChange)="changeData($event.value)" [(ngModel)]="selectedValue" formControlName="role">
+                <mat-option *ngFor="let item of items" [value]="item.value">
+                    {{item.role}}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+        
+          <div class = "image1">
+              <label id="insert">Insert Image</label>
+                <input #myInput type = 'file'  multiple  (change) = "onSelectFile($event)" class="image" formControlName="image">
+                <img [src]="imageSrc" width="150px" class="carousel">
+                </div>
+           
+
+               <button mat-raised-button type="submit" (click)= "all()" class = "button button2" >Create</button>
+       
+      
+    </form>
+
+    
+</div>
+</div>

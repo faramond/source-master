@@ -1,0 +1,70 @@
+<div *ngIf="isLoggedin">
+
+  <div class="example">
+    <mat-table [dataSource]="dataSource1"> 
+        <ng-container matColumnDef="Select">
+         <mat-header-cell *matHeaderCellDef="let row">
+           <mat-checkbox
+           (change)="$event ? masterToggle() : null" 
+                 [checked]="selection.hasValue() && isAllSelected()" 
+                 [indeterminate]="selection.hasValue() && !isAllSelected()">
+               </mat-checkbox>
+              </mat-header-cell>
+     
+       <mat-cell *matCellDef="let row">
+         <mat-checkbox (click)="$event.stopPropagation()" 
+         (change)="$event ? selection.toggle(row) : null" 
+                       [checked]="selection.isSelected(row)">
+         </mat-checkbox>
+       </mat-cell>
+     
+     </ng-container>
+     
+   
+     <ng-container matColumnDef="NewsID" >
+         <mat-header-cell *matHeaderCellDef>News ID </mat-header-cell>
+         <mat-cell *matCellDef="let post">{{post.newsID}}</mat-cell>
+       </ng-container>
+
+  <ng-container matColumnDef="CategoryName" >
+         <mat-header-cell *matHeaderCellDef>Category Name </mat-header-cell>
+         <mat-cell *matCellDef="let item">{{item.category_name}}</mat-cell>
+       </ng-container>  
+     
+          <ng-container matColumnDef="NewsTitle">
+            <mat-header-cell *matHeaderCellDef>News Title</mat-header-cell>
+           <mat-cell *matCellDef="let post">{{post.news_title}}</mat-cell>
+         </ng-container>
+         
+         <ng-container matColumnDef="PostedBy">
+           <mat-header-cell *matHeaderCellDef >Posted By</mat-header-cell>
+           <mat-cell *matCellDef="let post">{{post.created_by}}</mat-cell>
+         </ng-container>
+         
+         <ng-container matColumnDef="Edit">
+           <mat-header-cell *matHeaderCellDef>Edit </mat-header-cell>
+           <mat-cell *matCellDef="let row">
+           <a (click)="editPost(row)">Edit</a>
+           </mat-cell>
+         </ng-container>
+         
+          <ng-container matColumnDef="View" width="10px">
+           <mat-header-cell *matHeaderCellDef>View </mat-header-cell>
+           <mat-cell *matCellDef="let row">
+             <a (click)="viewDialog(row)">View</a>
+           </mat-cell>
+          </ng-container>
+              
+          <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: columnsToDisplay;"(click)="selection.toggle(row)">
+ </mat-row>
+ </mat-table>
+ <mat-paginator [length]="dataSource1.data.length"
+               [pageSize]="7" ></mat-paginator>
+</div>
+
+
+</div>
+<div *ngIf="!isLoggedin">
+  <h2>You are not logged in.</h2>
+  </div>
