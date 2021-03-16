@@ -116,7 +116,7 @@ router.get('/booking', async (req, res) => {
         return res.status(400).send({ 'message': err.message });
       };
       console.log("Connected!");
-      var sql = "select subject as deal_name,OriPrice as original_price ,Offer_ID as deal_id, OfferPrice from Offer where Salon_ID=?";
+      var sql = "select subject as deal_name,OriPrice as original_price ,Offer_ID as deal_id, OfferPrice from Offer where Salon_ID=? and OfferType = 2 and blnAppointment = 1";
       connection.query(sql, [id], function (err, result, fields) {
         if (err) {
           console.log('hot booking', err.message)

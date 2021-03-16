@@ -232,17 +232,7 @@ function bookingUpdate(done, status, id) {
 
   let con = createNewConnection();
 
-  let done = 0;
-  let status = 0;
 
-  if (done) {
-    status = 1;
-    done = 1;
-  }
-  else if (status) {
-    done = 0;
-    status = 1;
-  }
 
 
   con.getConnection(function (err, connection) {

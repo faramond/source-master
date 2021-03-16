@@ -1,17 +1,24 @@
-const { Salon } = require('../models/salon');
+
 const { Payment } = require('../models/payment');
-const { Customer } = require('../models/customer');
-const _ = require('lodash');
-const mongoose = require('mongoose');
+const { Booking } = require('../models/booking');
 const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const PDF = require('pdfkit');
+const crypto = require("crypto");
 const { createNewConnection2 } = require('../lib/connection');
+const { createNewConnection } = require('../lib/connection');
+var request = require('request');
 
 let data;
 router.post('/', async (req, res) => {
     try {
+        console.log(req.body)
+        let status = "Payment Failed";
+        if (req.body.status == "Success") {
+            status = "requested"
+        }
+
         let EducationCourseID;
         if (req.body.course) {
             EducationCourseID = parseInt(req.body.course);
@@ -27,7 +34,7 @@ router.post('/', async (req, res) => {
                 if (!req.body.customer || req.body.customer == "") {
                     return res.status(400).send({ 'message': 'cusotomerId mandatory' });
                 }
-                if (!req.body.salon || req.body.salon == "") {
+                if (!req.body.salonid || req.body.salonid == "") {
                     return res.status(400).send({ 'message': 'salon mandatory' });
                 }
             }
@@ -42,18 +49,17 @@ router.post('/', async (req, res) => {
                     txn_ID: req.body.txn_ID,
                     pInstruction: req.body.pInstruction,
                     msgType: req.body.msgType,
-                    status_code: req.body.status_code,
-                    status_code: req.body.status_code,
+                    status: req.body.status,
                     order_id: req.body.order_id,
                     channel: req.body.channel,
                     chksum: req.body.chksum,
-                    mp_secured_verified: req.body.mp_secured_verified,
                     mobile: req.body.mobile,
                     customer: req.body.customer,
                     booking: req.body.booking,
                     salonID: req.body.salonid,
                     branchID: req.body.Company_ID,
-                    StylistID: req.body.StylistID
+                    StylistID: req.body.StylistID,
+                    wallet: req.body.wallet
 
 
                 });
@@ -65,6 +71,27 @@ router.post('/', async (req, res) => {
                 await data.save();
                 res.status(201).send(data)
             }
+            if (!req.body.wallet && req.body.channel != "Cash") {
+                const booking = await Booking.findByIdAndUpdate({ _id: req.body.booking },
+                    {
+                        status: status,
+                        updated: new Date(),
+
+                    }, { new: true });
+
+                if (!booking) console.log({ 'message': 'The booking with the given _id  was not found in booking update after payment.' });
+
+                if (req.body.status == "Success") {
+                    let bookingData = {
+                        StylistID: req.body.StylistID,
+                        servicesName: req.body.services,
+                        userName: req.body.customerName,
+                        _id: req.body.booking,
+                        appointmentDate: req.body.appointmentDate
+                    }
+                    notification(true, bookingData)
+                }
+            }
         }
         else {
             data = new Payment({
@@ -74,16 +101,15 @@ router.post('/', async (req, res) => {
                 txn_ID: req.body.txn_ID,
                 pInstruction: req.body.pInstruction,
                 msgType: req.body.msgType,
-                status_code: req.body.status_code,
-                status_code: req.body.status_code,
+                status: req.body.status,
                 order_id: req.body.order_id,
                 channel: req.body.channel,
                 chksum: req.body.chksum,
-                mp_secured_verified: req.body.mp_secured_verified,
                 mobile: req.body.mobile,
                 employee: req.body.employee,
                 educationCourseID: EducationCourseID,
-                StylistID: req.body.StylistID
+                StylistID: req.body.StylistID,
+                wallet: req.body.wallet
 
 
             });
@@ -105,6 +131,19 @@ router.get('/', async (req, res) => {
     catch (err) {
         res.status(400).send({ 'message': err.message });
         console.log('Payment Error', err.message)
+    }
+});
+
+router.get('/transactionID', async (req, res) => {
+    try {
+        let id = crypto.randomBytes(10).toString("hex");
+        let data = await Payment.find();
+        id = id + "-" + data.length;
+        res.status(200).send({ TransactionID: id })
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('Payment trxn id Error', err.message)
     }
 });
 
@@ -248,6 +287,123 @@ router.post('/receipt', async (req, res) => {
         console.log('Payment receipt', err.message)
     }
 });
+
+function notification(flag, bookingData) {
+
+    try {
+        let con = createNewConnection();
+
+        con.getConnection(function (err, connection) {
+            if (err) {
+                console.log('appointment error', err.message)
+                return console.log({ 'message': err.message });
+
+            };
+            let ID = parseInt(bookingData.StylistID)
+            let device;
+            var sql = "Select DeviceID  from Employee where StylistID = ?"
+            connection.query(sql, [ID], async function (err, result, fields) {
+                if (err) {
+                    console.log('appointment error', err.message)
+                    return console.log({ 'message': err.message });
+
+                };
+                if (result != [] && result != "" && result != null) {
+                    device = result[0].DeviceID
+                }
+                else {
+                    console.log({ 'message': 'device id not fpound for employee in new booking notification' });
+                }
+
+                let service = "";
+                let flg = true;
+
+                for (i = 0; i < bookingData.servicesName.length; i++) {
+                    if (flg) {
+                        service = bookingData.servicesName[0]
+                        flg = false;
+                    }
+                    else {
+                        service = service + ", " + bookingData.servicesName[i];
+                    }
+                }
+
+                let Body = {};
+
+                if (flag) {
+                    Body = {
+                        "title": "New Booking Recieved: Sheduled at " + bookingData.appointmentDate,
+                        "body": bookingData.userName + " Booked for " + service
+                    }
+                }
+                else {
+                    Body = {
+                        "title": "Booking Sheduled at " + bookingData.appointmentDate + " is Cancelled",
+                        "body": bookingData.userName + " Cancelled Booking for " + service
+                    }
+                }
+
+
+                request.post({
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'key=AAAA_ec3JCs:APA91bEPs29D2Lh0imGMIIej0n8c2-_aLll0ie52s3XbzrXFvMtaXmRYgpAGkPvmRvVrhyl2C3S5KkutNDdpsKPGny1onY5yaVpSQJGImvWRFyXeETiiQBYYl_EffQ36GhaFLyEF0YtY'
+                    },
+                    url: 'https://fcm.googleapis.com/fcm/send',
+                    body: JSON.stringify({
+                        "to": device,
+                        "notification": Body,
+                        "data": {
+                            "click_action": "FLUTTER_NOTIFICATION_CLICK",
+                            "body": {
+                                "code": 100,
+                                "codeTitle": "New Booking",
+                                "_id": bookingData._id
+                            }
+                        }
+
+                    })
+                }, function (error, response, body) {
+                    if (error) {
+                        console.log('Booking created by customer notification', error.message)
+                    }
+                });
+
+                request.post({
+                    headers: { 'Content-Type': 'application/json' },
+                    url: 'http://159.89.155.62:3000/mirror/api/notification',
+                    body: JSON.stringify({
+                        "employee": JSON.stringify(bookingData.StylistID),
+                        "data": JSON.stringify({
+                            "click_action": "FLUTTER_NOTIFICATION_CLICK",
+                            "body": {
+                                "code": 100,
+                                "codeTitle": "New Booking",
+                                "_id": bookingData._id
+                            }
+                        })
+
+                    })
+                }, function (error, response, body) {
+                    if (error) {
+                        console.log('Booking created by customer notification save ', error.message)
+                    }
+                });
+            })
+            connection.release();
+
+
+        });
+
+
+
+
+    }
+    catch
+    (err) {
+        console.log('Bookings notification', err.message)
+    }
+}
 
 
 module.exports = router;

@@ -10,17 +10,14 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
     },
     customerName: {
         type: String,
-        minlength: 1,
-        maxlength: 100
+        default: null
     },
     employeeName: {
         type: String,
-        minlength: 1,
-        maxlength: 100
+        default: null
     },
     services: [{
         type: String,
-        required: false,
         minlength: 0,
         maxlength: 100
     }],
@@ -59,12 +56,7 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
         type: String,
         default: null
     },
-    status_code: {
-        type: Number,
-        default: null
-    },
-
-    status_code: {
+    status: {
         type: String,
         default: null
     },
@@ -79,10 +71,6 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
     chksum: {
         type: String,
         default: null
-    },
-    mp_secured_verified: {
-        type: Boolean,
-        default: false
     },
 
     mobile: {
@@ -104,29 +92,30 @@ const Payment = mongoose.model('Payment', new mongoose.Schema({
     },
     employee: {
 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Employee',
+        type: String,
         default: null
     },
     mirrorstar: {
 
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'mirrorstar',
+        type: String,
         default: null
     },
     salonID: {
         type: Number,
-        required: true
+        default: null
     },
     branchID: {
         type: Number,
-        required: true
+        default: null
     },
     StylistID: {
         type: Number,
         default: null,
         minlength: 1,
         maxlength: 10
+    },
+    wallet: {
+        type: Boolean
     },
     created: {
 

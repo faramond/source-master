@@ -46,14 +46,14 @@ router.patch('/:id', async (req, res) => {
 });
 router.post('/', async (req, res) => {
     try {
-        const { error } = validate(req.body);
-        if (error) return res.status(400).send(
-            { 'message': error.details[0].message });
+        // const { error } = validate(req.body);
+        // if (error) return res.status(400).send(
+        //  { 'message': error.details[0].message });
 
         let user = await Customer.findOne({ mobileNumber: req.body.mobileNumber });
         if (user) return res.status(400).send({ 'message': 'MobileNumber already registered.' });
         req.body.email = req.body.email === undefined ? req.body.mobileNumber + '@null_email' : req.body.email;
-        user = new Customer(_.pick(req.body, ['fullName', 'mobileNumber', 'countryCode', 'password', 'email']));
+        user = new Customer(_.pick(req.body, ['fullName', 'mobileNumber', 'countryCode', 'password', 'email', 'deviceID']));
 
         // user =  new Customer({
 
@@ -86,7 +86,7 @@ router.post('/', async (req, res) => {
             res.status(400).send({ 'message': "Wallet" + err.message });
             console.log('Wallet Error', err.message)
         }
-        res.status(201).send(_.pick(user, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email']));
+        res.status(201).send(_.pick(user, ['_id', 'countryCode', 'mobileNumber', 'fullName', 'email', 'deviceID']));
 
         //customerUpload(user, async function(result){
 

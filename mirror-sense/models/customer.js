@@ -34,6 +34,10 @@ const Customer = mongoose.model('Customer', new mongoose.Schema({
         minlength: 2,
         maxlength: 255
     },
+    currencyCode: {
+        type: String,
+        default: null
+    },
     email: {
         type: String,
         unique: true,
