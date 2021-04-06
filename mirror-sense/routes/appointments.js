@@ -13,11 +13,10 @@ router.get('/', async (req, res) => {
 
         console.log(req.query.mirrorStar)
         let queryString = req.query.mirrorStar
-        console.log('query Name:', queryString);
 
         const employee = await Booking.find().or([{ mirrorStar: req.query.mirrorStar, status: "requested" }])
             .or([{ mirrorStar: req.query.mirrorStar, status: "accepted" }])
-            .select({ bookingID: 1, appointmentDate: 1, userName: 1, mobileNumber: 1, email: 1, servicesName: 1, dealName: 1, amountToPay: 1, startTime: 1, endTime: 1 })
+            .select({ bookingID: 1, appointmentDate: 1, userName: 1, mobileNumber: 1, email: 1, servicesName: 1, dealName: 1, amountToPay: 1, startTime: 1, endTime: 1, status: 1 })
             .sort('appointmentDate');
         res.status(200).send(employee);
     }
@@ -58,13 +57,13 @@ router.patch('/accept/:id', async (req, res) => {
 
         res.send(booking);
 
-        bookingUpdate(false, true, booking.AppID);
+        bookingUpdate(0, 2, booking.AppID);
 
         notification(0, booking);
 
     }
     catch (err) {
-        res.send({ 'message': err.message });
+        res.status(400).send({ 'message': err.message });
         console.log('appointments accept error', err.message)
     }
 
@@ -86,7 +85,7 @@ router.patch('/complete/:id', async (req, res) => {
 
         res.status(200).send(booking);
 
-        bookingUpdate(true, true, booking.AppID);
+        bookingUpdate(1, 2, booking.AppID);
 
         notification(1, booking);
 
@@ -104,7 +103,8 @@ router.patch('/reject/:id', async (req, res) => {
         let con = createNewConnection();
         let booking = await Booking.findByIdAndUpdate(req.params.id,
             {
-                status: "cancelled"
+                status: "cancelled",
+                isServed: true
 
 
             }, { new: true });
@@ -113,7 +113,7 @@ router.patch('/reject/:id', async (req, res) => {
 
         res.status(200).send(booking);
 
-        bookingUpdate(false, false, booking.AppID);
+        bookingUpdate(0, 1, booking.AppID);
 
         notification(2, booking)
     }

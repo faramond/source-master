@@ -1,8 +1,6 @@
 const { Booking } = require('../models/booking');
-const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const app = express();
 app.use(express.json());
 const { createNewConnection } = require('../lib/connection');
@@ -10,7 +8,6 @@ let { bookingUpload } = require('../lib/uploadToSQL');
 let { bookingUpdate } = require('../lib/uploadToSQL');
 const { createNewConnection2 } = require('../lib/connection');
 var request = require('request');
-const bcrypt = require('bcrypt');
 
 
 
@@ -167,8 +164,7 @@ router.get('/', async (req, res) => {
       return res.status(400).send({ 'message': 'isServed is mandatory' });
     }
     if (req.query.status === "requested") {
-      const bookings = await Booking.find().or([{ mobileNumber: req.query.mobileNumber, status: "requested" }])
-        .or([{ mobileNumber: req.query.mobileNumber, staus: "accepted" }])
+      const bookings = await Booking.find().or([{ mobileNumber: req.query.mobileNumber, isServed: false }])
         .sort('appointmentDate');
       res.send(bookings);
     }
@@ -272,6 +268,7 @@ router.patch('/:id', async (req, res) => {
     const booking = await Booking.findByIdAndUpdate({ _id: req.params.id },
       {
         status: "cancelled",
+        isServed: "true",
         updated: new Date(),
 
       }, { new: true });
@@ -280,7 +277,7 @@ router.patch('/:id', async (req, res) => {
 
     res.status(200).send(booking);
 
-    bookingUpdate(false, false, booking.AppID);
+    bookingUpdate(0, 1, booking.AppID);
 
     notification(false, booking);
 
@@ -307,7 +304,10 @@ router.post('/', async (req, res) => {
     let booking = await Booking.find()
     req.body.bookingID = '#' + (000000 + booking.length),
       req.body.isServed = false;
-    req.body.status = "requested";
+    req.body.status = "payment pending";
+    if (req.body.modeOfPayment == "Cash") {
+      req.body.status = "requested";
+    }
     req.body.branchID = req.body.Company_ID;
     req.body.salonID = req.body.salonid;
     req.body.salonName = req.body.Company_Name;
@@ -322,8 +322,10 @@ router.post('/', async (req, res) => {
 
 
     if (bookingData.servicesName != null && bookingData.servicesName != []) {
+      if (req.body.status == "requested") {
 
-      notification(true, bookingData);
+        notification(true, bookingData);
+      }
 
 
     }
@@ -350,7 +352,7 @@ router.get('/slots', async (req, res) => {
     let dateTimeSql = (dateTime).slice(0, 19).replace('T', ' ');
     salonID = parseInt(req.query.salonID);
     branchID = parseInt(req.query.Company_ID);
-    stylistID = parseInt(2455);
+    stylistID = parseInt(req.query.stylistID);
     let salonSlots = [];
     let appointmentSlots = [];
     let tempSlots = [];
@@ -387,125 +389,128 @@ router.get('/slots', async (req, res) => {
 
       };
       console.log("Connected!");
-      var sql = "select " + dayName + " from Company_Profile where Company_ID = ? and not exists  ( select OffDayID from OffDay where Offdate= ? and Salon_ID = ? )";
+      var sql = "select " + dayName + " as dayName from Company_Profile where Company_ID = ? and not exists  ( select OffDayID from OffDay where Offdate= ? and Salon_ID = ? )";
       var sql_2 = "select LeaveTransactionID from LeaveTransaction where StylistID = ? and ? between LeaveFrom and LeaveTo ";
       var sql_3 = "select TimeSlot from TimeSlot where Day=? and Salon_ID=? and StylistID=?";
       var sql_4 = "select TimeSlot from TimeSlot where Day=? and Salon_ID=? and StylistID= 0";
       var sql_5 = "select TimeSlot from TimeSlot where Day=? and Salon_ID=0 and StylistID= 0";
       var sql_6 = "select TimeSlot from TimeSlot where Day='' and Salon_ID=0 and StylistID= 0";
-      var sql_7 = "select StartTime from Appointment  where StylistID = ? and Salon_ID = ? and App_Date > ? and App_Date < ? and Status = 0 and Done = 0";
+      var sql_7 = "select StartTime from Appointment  where StylistID = ? and Salon_ID = ? and App_Date > ? and App_Date < ? and Status != 1 and Done = 0 and DealID = 0";
       connection.query(sql, [branchID, date, salonID], async function (err, result, fields) {
         if (err) {
           console.log('Booking slot', err.message)
           return res.status(400).send({ 'message': err.message });
 
         };
+        console.log(result)
         console.log("fetch successful");
         if (result != [] && result != "" && result != null) {
+          if (result[0].dayName == 1) {
 
-          connection.query(sql_2, [stylistID, date], async function (err_2, result_2, fields) {
-            if (err_2) {
-              console.log('Booking slot', err_2.message)
-              return res.status(400).send({ 'message': err_2.message });
+            connection.query(sql_2, [stylistID, date], async function (err_2, result_2, fields) {
+              if (err_2) {
+                console.log('Booking slot', err_2.message)
+                return res.status(400).send({ 'message': err_2.message });
 
-            };
+              };
 
-            if (result_2 == null || result_2.length == 0) {
+              if (result_2 == null || result_2.length == 0) {
 
-              const [rows, fields] = await conn.execute(sql_3, [day, salonID, stylistID])
-              if (rows == null || rows.length == 0) {
+                const [rows, fields] = await conn.execute(sql_3, [day, salonID, stylistID])
+                if (rows == null || rows.length == 0) {
 
-                const [rows_1, fields] = await conn.execute(sql_4, [day, salonID])
-                if (rows_1 == null || rows_1.length == 0) {
+                  const [rows_1, fields] = await conn.execute(sql_4, [day, salonID])
+                  if (rows_1 == null || rows_1.length == 0) {
 
-                  const [rows_2, fields] = await conn.execute(sql_5, [day])
-                  if (rows_2 == null || rows_2.length == 0) {
+                    const [rows_2, fields] = await conn.execute(sql_5, [day])
+                    if (rows_2 == null || rows_2.length == 0) {
 
-                    const [rows_3, fields] = await conn.execute(sql_6)
-                    if (rows_3 == null || rows_3.length == 0) {
-                      return res.status(200).send({ 'message': 'No Slots Found for The Selected Date' })
+                      const [rows_3, fields] = await conn.execute(sql_6)
+                      if (rows_3 == null || rows_3.length == 0) {
+                        return res.status(200).send({ 'message': 'No Slots Found for The Selected Date' })
+                      }
+                      else {
+                        tempSlots.push(rows_3)
+                      }
                     }
                     else {
-                      tempSlots.push(rows_3)
+                      tempSlots.push(rows_2)
                     }
                   }
                   else {
-                    tempSlots.push(rows_2)
+                    tempSlots.push(rows_1)
                   }
                 }
                 else {
-                  tempSlots.push(rows_1)
+                  tempSlots.push(rows)
                 }
               }
               else {
-                tempSlots.push(rows)
-              }
-            }
-            else {
-              return res.status(200).send({ 'message': 'Sorry!! Employee is on Leave on The Selected Date' })
-            }
-
-            for (i = 0; i < tempSlots[0].length; i++) {
-              salonSlots.push(tempSlots[0][i].TimeSlot)
-            }
-
-            connection.query(sql_7, [stylistID, salonID, dateTimeSql, date + ' 23:59:59'], async function (err_7, result_7, fields) {
-              if (err_7) {
-                console.log('Booking slot', err_7.message)
-                return res.status(400).send({ 'message': err_7.message });
-
+                return res.status(200).send({ 'message': 'Sorry!! Employee is on Leave on The Selected Date' })
               }
 
-              if (result_7 != [] && result_7 != "" && result_7 != null) {
+              for (i = 0; i < tempSlots[0].length; i++) {
+                salonSlots.push(tempSlots[0][i].TimeSlot)
+              }
 
-                for (i = 0; i < result_7.length; i++) {
-                  appointmentSlots.push(result_7[i].StartTime.substring(0, 5))
+              connection.query(sql_7, [stylistID, salonID, dateTimeSql, date + ' 23:59:59'], async function (err_7, result_7, fields) {
+                if (err_7) {
+                  console.log('Booking slot', err_7.message)
+                  return res.status(400).send({ 'message': err_7.message });
+
                 }
-              }
 
-              let currentDate = new Date();
-              console.log(currentDate)
+                if (result_7 != [] && result_7 != "" && result_7 != null) {
+
+                  for (i = 0; i < result_7.length; i++) {
+                    appointmentSlots.push(result_7[i].StartTime.substring(0, 5))
+                  }
+                }
 
 
-              temp = parseInt(dateTime.substring(11, 13))
-              if (parseInt(dateTimeSql.substring(14, 16)) >= 30) {
-                temp = temp + 1;
-                temp = temp + ":" + "00";
-              }
-              else {
-                temp = temp + ":" + "30";
-              }
-
-              if (parseInt(salonSlots[0].substring(0, 2)) <= parseInt(temp.substring(0, 2))) {
-                if ((parseInt(salonSlots[salonSlots.length - 1].substring(0, 2)) > parseInt(temp.substring(0, 2)))
-                  || ((parseInt(salonSlots[salonSlots.length - 1].substring(0, 2)) == parseInt(temp.substring(0, 2)))
-                    && (parseInt(salonSlots[salonSlots.length - 1].substring(3, 5)) > parseInt(temp.substring(3, 5))))) {
-
-                  index = salonSlots.indexOf(temp)
-                  salonSlots = salonSlots.slice(index)
+                temp = parseInt(dateTime.substring(11, 13))
+                if (parseInt(dateTimeSql.substring(14, 16)) >= 30) {
+                  temp = temp + 1;
+                  temp = temp + ":" + "00";
                 }
                 else {
-                  return res.status(200).send({ 'message': " Sorry!!  Salon is Now Closed" });
+                  temp = temp + ":" + "30";
                 }
-              }
+
+                if (parseInt(salonSlots[0].substring(0, 2)) <= parseInt(temp.substring(0, 2))) {
+                  if ((parseInt(salonSlots[salonSlots.length - 1].substring(0, 2)) > parseInt(temp.substring(0, 2)))
+                    || ((parseInt(salonSlots[salonSlots.length - 1].substring(0, 2)) == parseInt(temp.substring(0, 2)))
+                      && (parseInt(salonSlots[salonSlots.length - 1].substring(3, 5)) > parseInt(temp.substring(3, 5))))) {
+
+                    index = salonSlots.indexOf(temp)
+                    salonSlots = salonSlots.slice(index)
+                  }
+                  else {
+                    return res.status(200).send({ 'message': " Sorry!!  Salon is Now Closed" });
+                  }
+                }
+
+                console.log(appointmentSlots, "kl")
+                for (i = 0; i < appointmentSlots.length; i++) {
+                  ind = salonSlots.indexOf(appointmentSlots[i]);
+                  salonSlots.splice(ind, 1);
+                }
+
+                if (salonSlots.length == 0) {
+                  return res.status(200).send({ 'message': " Sorry!!  all Slots are Booked for The Selected Date " })
+                }
 
 
-              for (i = 0; i < appointmentSlots.length; i++) {
-                ind = salonSlots.indexOf(appointmentSlots[i]);
-                salonSlots.splice(ind, 1);
-              }
-
-              if (salonSlots.length == 0) {
-                return res.status(200).send({ 'message': " Sorry!!  all Slots are Booked for The Selected Date " })
-              }
+                res.status(200).send(salonSlots)
 
 
-              res.status(200).send(salonSlots)
-
+              })
 
             })
-
-          })
+          }
+          else {
+            res.status(200).send({ 'message': 'Salon is Closed on The Selected Date' })
+          }
         }
         else {
           res.status(200).send({ 'message': 'Salon is Closed on The Selected Date' })
@@ -524,6 +529,7 @@ router.get('/slots', async (req, res) => {
   }
 
 });
+
 
 
 

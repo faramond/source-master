@@ -12,7 +12,6 @@ const { createNewConnection } = require('../lib/connection');
 router.get('/servicesType', async (req, res) => {
     try {
         let con = createNewConnection();
-        console.log("chala")
 
         con.getConnection(function (err, connection) {
             if (err) {
@@ -42,6 +41,39 @@ router.get('/servicesType', async (req, res) => {
     }
 
 });
+
+router.get('/images', async (req, res) => {
+    try {
+        let con = createNewConnection();
+
+        con.getConnection(function (err, connection) {
+            if (err) {
+                console.log('home screen images get error', err.message)
+                return res.status(400).send({ 'message': err.message });
+            };
+
+            var sql = "SELECT Image from AppHeader";
+            connection.query(sql, function (err, result, fields) {
+                if (err) {
+                    console.log('home screen images get error', err.message)
+                    return res.status(400).send({ 'message': err.message });
+                };
+
+                res.status(200).send(result);
+                connection.release();
+            });
+
+
+        });
+
+
+    }
+    catch (err) {
+        res.status(400).send({ 'message': err.message });
+        console.log('home screen images get error', err.message)
+    }
+
+})
 
 
 router.get('/serviceDisplay', async (req, res) => {
@@ -735,6 +767,9 @@ router.get('/rating/:Company_ID', async (req, res) => {
         console.log('Salon Rating Get', err)
     }
 });
+
+
+
 
 module.exports = router;
 
