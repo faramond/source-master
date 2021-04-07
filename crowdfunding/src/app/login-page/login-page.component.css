@@ -12,8 +12,7 @@ body{
 }
 .container{
     width: 40vw;
-    height: 45vw;
-    flex-wrap: wrap;
+    height: 45vh;
     background:#ede7f6;
     padding:2vw 4vw;
     border-radius: 0.4vw;
@@ -28,6 +27,7 @@ body{
     width: 30vw;
 }
 .container ._form .input-box{
+    
     margin-bottom: 0.4vw;
 }
 .container ._form .input-box .details{
@@ -55,19 +55,22 @@ padding-left: 0.2vw;
 padding-right: 0.2vw;
 }
 .container ._form .input-box p{
-    margin-top: 1vw;
- margin-left: 0.4vw;
- margin-right: 0.4vw;
+    position: relative;
+
 }
 .container ._form .input-box p a{
+    position: relative;
 width: 28vw;
 }
 @media only screen and (max-width:767px){
     .container{
-        width: 100vw;
+        min-width: 100vw;
         height: 100vh;
         background-color: #ede7f6;
         border-radius: 0.4vw;
+        padding-top: 10vw;
+        padding-bottom: 10vw;
+
     }
     .container .title{
         margin-top:8vw;
@@ -124,6 +127,7 @@ width: 28vw;
             background:#ede7f6;
             padding:2vw 4vw;
             border-radius: 0.4vw;
+        
         }
         .container .title{
             margin-top: 5vw;

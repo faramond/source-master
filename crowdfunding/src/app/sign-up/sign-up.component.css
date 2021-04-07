@@ -1,0 +1,290 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+}
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 160vh;
+    padding: 10vw;
+}
+.container{
+    background:#ede7f6;
+    padding: 2.5vw;
+    max-width:45vw;
+    max-height: 240vh;
+    border-radius: 0.4vw;
+}
+.container ._form{
+  padding: 0.6vw;  
+}
+.container ._form h1{
+    font-size: 2.5vw;
+    font-weight: bold;
+    text-align: center;
+}
+.container ._form h2{
+    font-size: 2vw;
+    font-weight: normal;
+    text-align: center;  
+}
+.container ._form .input-box{
+    margin-bottom: 0.4vw;
+}
+.container .input-box .details{
+    font-size:1.2vw;
+    display: block;
+    margin-bottom: 0.2vw;
+    font-weight:normal;
+    align-items: center;
+}
+.container ._form .input-box{
+    margin-bottom: 0.4vw;
+}
+.container ._form .input-box ._details{
+    font-size:1.2vw;
+    display: block;
+    margin-bottom: 0.2vw;
+    font-weight:normal;
+    align-items: center;
+}
+.container ._form .input-box ._input-cnt{
+width: 18vw;
+}
+td {
+    padding-right: 1vw;
+}
+
+.container .input-box .img{
+    margin-bottom: 0.4vw;
+    padding:0.2vw;
+}
+
+.container ._form .input-box .input-cnt{
+    width: 25vw;
+    outline: none;
+}
+.mat-radio-button ~ .mat-radio-button {
+    margin-left: 1vw;
+    padding:1vw;
+  }
+
+  .wrapper{
+      text-align: center;
+  }
+  .container ._form .input-box p{
+    margin-top: 1vw;
+    text-align: left;
+}
+@media only screen and (max-width:767px){
+    .container{
+      min-width: 100vw;
+      min-height: 160vh;
+      border-radius: 0.4vw;
+      background: white;
+    }
+    .container ._form{
+        min-width: 70vw;
+        min-height: 150vh;
+        padding-top: 10vw;
+        padding-right: 0.6vw;
+        padding-left: 0.6vw;
+     
+      }
+      .container ._form h1{
+        font-size: 7vw;
+        font-weight: bold;
+        text-align: center;
+        margin-top: 0.1vw;
+    }
+    .container ._form h2{
+        font-size: 5vw;
+        font-weight: normal;
+        text-align: center;  
+    }
+    .container ._form .input-box{
+        margin-bottom: 0.4vw;
+    }
+    .container ._form .input-box ._details{
+        font-size:4vw;
+        display: block;
+        margin-bottom: 0.2vw;
+        font-weight:normal;
+        align-items: center;
+    }
+    .container ._form .input-box ._input-cnt{
+        width: 40vw;
+    }
+    td {
+        padding-right: 5vw;
+      }
+      .container .input-box .details{
+        font-size:4vw;
+        display: block;
+        margin-bottom: 0.2vw;
+        font-weight:normal;
+        align-items: center;
+      }
+      .container ._form .input-box .input-cnt{
+        width: 70vw;
+        outline: none;
+    }
+    .container .input-box .img{
+        margin-bottom: 6vw;
+    }
+    .mat-radio-button ~ .mat-radio-button {
+        margin-left: 4vw;
+      }
+      .wrapper{
+        text-align: center;
+    }
+    .container ._form .input-box p{
+        margin-top: 3vw;
+        text-align: left;
+    }
+}
+    @media only screen and (min-width:768px) and (max-width:991px){
+      .container{
+          padding-top:20vw;
+          padding-left: 10vw;
+          padding-right: 10vw;
+          padding-bottom: 20vw;
+            min-width:100vw;
+            min-height: 160vh;
+        background: white;
+    }
+    .container ._form{
+
+        padding-top: 25vw;
+        padding-left: 2vw;
+        min-width:60vw;
+        min-height: 120vh;
+    background: white;
+
+      }
+      .container ._form h1{
+        font-size: 6vw;
+        font-weight: bold;
+        text-align: center;
+    }
+    .container ._form h2{
+        padding: 1vw;
+        font-size: 3.5vw;
+        font-weight: normal;
+        text-align: center;  
+    }
+    .container ._form .input-box{
+        margin-bottom: 0.4vw;
+    }
+    .container ._form .input-box ._details{
+        font-size:3vw;
+        display: block;
+        margin-bottom: 0.2vw;
+        font-weight:normal;
+        align-items: center;
+    }
+    .container ._form .input-box ._input-cnt{
+        width: 36vw;
+    }
+    input{
+        padding:1vw;
+    }
+    .container ._form .input-box .details{
+        font-size:3vw;
+        display: block;
+        margin-bottom: 0.2vw;
+        font-weight:normal;
+        align-items: center;
+    }
+    .container ._form .input-box .input-cnt{
+        width: 45vw;
+        padding: 1vw;
+    }
+    td {
+        padding-right: 2vw;
+      }
+      .mat-radio-button ~ .mat-radio-button {
+        margin-left: 2vw;
+        padding: 4vw;
+    
+      }
+      .wrapper{
+        text-align: center;
+    }
+    .container ._form .input-box p{
+        margin-top: 1vw;
+        text-align: left;
+        font-size: 3vw;
+    }
+}
+@media only screen and (min-width:992px){
+    .container{
+        background:#ede7f6;
+        padding: 2.5vw;
+        max-width:45vw;
+        max-height: 260vh;
+        border-radius: 0.4vw;
+    }
+    .container ._form{
+      padding: 0.6vw;  
+    }
+    .container ._form h1{
+        font-size: 2.5vw;
+        font-weight: bold;
+        text-align: center;
+    }
+    .container ._form h2{
+        font-size: 2vw;
+        font-weight: normal;
+        text-align: center;  
+    }
+    .container ._form .input-box{
+        margin-bottom: 0.4vw;
+    }
+    .container .input-box .details{
+        font-size:1.2vw;
+        display: block;
+        margin-bottom: 0.2vw;
+        font-weight:normal;
+        align-items: center;
+    }
+    .container ._form .input-box{
+        margin-bottom: 0.4vw;
+    }
+    .container ._form .input-box ._details{
+        font-size:1.2vw;
+        display: block;
+        margin-bottom: 0.2vw;
+        font-weight:normal;
+        align-items: center;
+    }
+    .container ._form .input-box ._input-cnt{
+    width: 18vw;
+    }
+    td {
+        padding-right: 1vw;
+      }
+    
+    .container .input-box .img{
+        margin-bottom: 0.4vw;
+    }
+    
+    .container ._form .input-box .input-cnt{
+        width: 25vw;
+        outline: none;
+    }
+    .mat-radio-button ~ .mat-radio-button {
+        margin-left: 1vw;
+        padding:1vw;
+      }
+    
+      .wrapper{
+          text-align: center;
+      }
+      .container ._form .input-box p{
+        margin-top: 1vw;
+        text-align: left;
+    }
+}
