@@ -1,0 +1,102 @@
+
+    <body>
+    <div class="container">
+        
+        <form [formGroup]="signUp" class="_form">
+            <h1>Register</h1>
+            <h2>Create your account</h2>  
+<table>
+<tr>
+<td>
+
+    <div class="input-box">
+        <span class="_details">First Name</span>
+        <mat-form-field appearance="outline" class="_input-cnt">
+            <input matInput type="text" placeholder="" formControlName="first_name">
+            <mat-error *ngIf="firstName.touched && firstName.invalid">
+                <mat-error *ngIf="firstName.errors.required">Field should not be empty!</mat-error>
+              </mat-error>
+        </mat-form-field>
+    </div> 
+</td>
+   <td>
+
+       <div class="input-box">
+           <span class="_details">Last Name</span>
+           <mat-form-field appearance="outline" class="_input-cnt">
+               <input matInput type="text" placeholder="" formControlName="last_name">
+               <mat-error *ngIf="lastName.touched && lastName.invalid">
+                <mat-error *ngIf="lastName.errors.required">Field should not be empty!</mat-error>
+              </mat-error>
+            </mat-form-field>
+        </div> 
+    </td> 
+    
+</tr>
+</table>
+            <div class="input-box">
+                <span class="details">Email</span>
+                <mat-form-field appearance="outline" class="input-cnt">
+                   <input matInput type="text" placeholder="" formControlName="email">
+                   <mat-error *ngIf="email.touched && email.invalid">
+                    <mat-error *ngIf="email.errors.required">Field should not be empty!</mat-error>
+                  
+                  </mat-error>
+                </mat-form-field>
+            </div> 
+
+            <div class="input-box">
+                <span class="details">Mobile</span>
+                <mat-form-field appearance="outline" class="input-cnt">
+                   <input matInput type="text" placeholder="" formControlName="mobile">
+                </mat-form-field>
+            </div>
+
+            <div class="input-box">
+                <span class="details">Date of birth</span>
+                <mat-form-field appearance="outline" class="input-cnt">
+                    <input matInput [matDatepicker]="picker" formControlName="date">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </mat-form-field>
+            </div>
+            <div class="input-box">
+                <span class="details">Password</span>
+                <mat-form-field appearance="outline" class="input-cnt">
+                   <input matInput type="text" placeholder="" formControlName="password">
+                </mat-form-field>
+            </div>
+
+            <div class="input-box">
+                <span class="details">Gender</span>
+                <mat-radio-group aria-label="Select an option" class="input_cnt" formControlName="gender">
+                    <mat-radio-button value="1">Male</mat-radio-button>
+                    <mat-radio-button value="2">Female</mat-radio-button>
+                  </mat-radio-group>
+            </div>
+
+            <div class = "input-box">
+                <span class="details">Insert Image</span>
+                <input type = 'file'  (change) = "onSelectFile($event)" class="img" formControlName="images">
+                <img [src]="imgURL" height="100" *ngIf="imgURL" class="img-view">
+            </div>
+
+            <div class="input-box">
+                <span class="details">Address</span>
+                <mat-form-field appearance="outline" class="input-cnt">
+                    <textarea matInput placeholder="" formControlName="address"></textarea>
+                </mat-form-field>
+            </div>
+
+           
+            
+            <div class="wrapper">
+                <button mat-raised-button type="submit" color="primary" class = "input-box">Sign In</button>
+            </div>
+            <div class="input-box">
+                <p>Do you already have an account? <a>Log In</a></p>
+            </div>
+
+        </form>
+    </div>
+</body>

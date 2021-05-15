@@ -1,0 +1,64 @@
+.row{
+    overflow: hidden;
+  }
+  .example-container {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .example-container > * {
+      width: 40%;
+    }
+    
+    .example-container form {
+      margin-bottom: 40px;
+    }
+    
+    .example-container form > * {
+      margin: 5px 0;
+    }
+  .heading{
+    text-align: center;
+    font-weight: bold;
+  }
+    #nameLabel{
+      font-weight: bold;
+    }
+    #emailLabel{
+      font-weight: bold;
+    }
+    #passwordLabel{
+      font-weight: bold;
+      color:black;
+    }
+    #roleLabel{
+      font-weight: bold;
+      color:black;
+    }
+    #insert{
+      position: absolute;
+      top:10%;
+      left:60%;
+      font-weight:bold;
+      }
+    .image{
+        position: absolute;
+        top:14%;
+        left:60%;
+    }
+    .carousel{
+      position: absolute;
+      right:14%;
+      top:24%;
+      box-sizing: border-box;
+}
+.role{
+  margin-bottom: 140px;
+}
+.button2{
+    position: absolute;
+      left:44%;
+      bottom:1px;
+      background-color:#153d77;
+      color:white;
+}

@@ -1,0 +1,79 @@
+.row{
+  overflow: hidden;
+}
+.text-center{
+  font-weight: 30px;
+  font-size: 30px;
+}
+.example-container {
+    display: flex;
+    flex-direction: column;
+   
+  }
+  #heading{
+    font-weight: bolder;
+    }
+  
+  .example-container > * {
+    width: 40%;
+  }
+  
+  .example-container form {
+    margin-bottom: 50px;
+  }
+ #nameLabel{
+   font-weight: bold;
+ }
+ #emailLabel{
+   font-weight: bold;
+ }
+  #roleLabel{
+    font-weight: bold;
+    color:black;
+    font-size: large;
+  }
+  .example-container form > * {
+    margin: 5px 0;
+  }
+  mat-form-field{
+    margin-bottom: 20px;
+  }
+  #insert{
+    position: absolute;
+    top:12%;
+    left:60%;
+    font-weight:bold;
+    }
+  .image{
+      position: absolute;
+      top:18%;
+      left:60%;
+  }
+  .role{
+    padding-bottom: 100px;
+  }
+.closeButton{
+position: absolute;
+left:50%;
+bottom:1px;
+background-color:#153d77;
+color:white;
+
+}
+.glyphicon-remove{
+  position: absolute;
+  top:26%;
+  right:37%;
+}
+.carousel{
+position: absolute;
+top:30%;
+right:14%;
+}
+.button2{
+  position: absolute;
+  left:35%;
+  bottom:1px;
+  background-color:#153d77;
+  color:white;
+}

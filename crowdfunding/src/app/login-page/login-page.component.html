@@ -1,0 +1,39 @@
+<body>
+
+    <div class="container">
+        
+        <h2 class="title">Login</h2>
+        <form [formGroup]="loginForm" class="_form">
+            <div class="input-box">
+                <span class="details">Email</span>
+                <mat-form-field appearance="outline" class="input-cnt">
+                    <input matInput type="text" placeholder="" formControlName="email">
+                    <mat-error *ngIf="email.touched && email.invalid">
+                        <mat-error *ngIf="email.errors.required">Field should not be empty!</mat-error>
+                      </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="input-box">
+                <span class="details">Password</span>
+                <mat-form-field appearance="outline" class="input-cnt">
+                    <input matInput type="text" placeholder="" formControlName="password" class="input-block">
+                    <mat-error *ngIf="password.touched && password.invalid">
+                        <mat-error *ngIf="password.errors.required">Field should not be empty!</mat-error>
+                      </mat-error>
+                </mat-form-field>
+            </div>
+            <div class="wrapper">
+                <button mat-raised-button type="submit" color="primary" class = "input-box">Log In</button>
+            </div>
+            <div class="input-box">
+                <p>Don't have an account? <a>Sign up</a></p>
+            </div>
+            <h3>Login with social media</h3>
+            <ul class="social">
+                <li><mat-icon aria-hidden="false" aria-label="Example home icon">facebook</mat-icon></li>
+                <li></li>
+                <li><span></span></li>
+            </ul>
+        </form>
+</div>
+</body>

@@ -1,0 +1,227 @@
+<div *ngIf="isLoggedin">
+
+ <form [formGroup] = "mainForm" (ngSubmit)="onSubmit(mainForm.value)">
+    <mat-toolbar class="toolbar">
+        <span class = "logo">Tiny Buzz</span>
+        <span class = "heading">Content Editing Portal</span>
+        <span class = "user">{{create}}</span>
+        <span class="glyphicon glyphicon-off" (click)="logoutUser()" ></span>
+      <mat-form-field class="country">
+        <mat-label id="countryLabel">Select Country</mat-label>
+        <mat-select  (selectionChange)="changeCountry($event.value)" [(ngModel)]="selectedCountry" formControlName="country_ID">
+          <mat-option *ngFor="let country of countries" [value]="country._id">
+            {{country.country_name}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="country_ID.touched && country_ID.invalid">
+         <mat-error *ngIf="country_ID.errors.required">Make a selection.</mat-error>
+        </mat-error>
+      </mat-form-field>
+    </mat-toolbar>
+
+
+ 
+    <mat-grid-list [cols] = "2" rowHeight = "614px">
+          <mat-grid-tile class="tile">
+              <h2 id="newsDetails">News Details</h2>
+                <mat-form-field class="language">
+                <mat-label id="langLabel">Select Language</mat-label>
+                <mat-select (selectionChange)="changeLanguage($event.value)" [(ngModel)]="selectedLanguage" formControlName="language_ID">
+                  <mat-option *ngFor="let language of languages" [value]="language._id">
+                    {{language.language_name}}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="language_ID.touched && language_ID.invalid">
+                  <mat-error *ngIf="language_ID.errors.required">Make a selection.</mat-error>
+                </mat-error>
+              </mat-form-field>
+     
+              <mat-form-field class="category">
+                <mat-label id="categoryLabel">Select Category</mat-label>
+                  <mat-select  (selectionChange)="changeClient($event.value)" [(ngModel)]="selectedValue" formControlName="category_ID">
+                    <mat-option *ngFor="let item of selectedCategory" [value]="item._id" >
+                      {{item.category_name}}
+                    </mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="category_ID.touched && category_ID.invalid">
+        
+                    <mat-error *ngIf="category_ID.errors.required">Make a selection.</mat-error>
+                  </mat-error>
+                </mat-form-field> 
+                
+                <section class="example-section">
+                  <mat-checkbox class="example-margin"
+                  
+                  (click)="isBreakingNews()" formControlName="isBreaking">Breaking News!</mat-checkbox>
+                </section>
+        
+                
+        
+                    <div class = "form-group">
+                      <label id = "newstitle">News Title</label>
+                      <mat-form-field appearance = "outline" class = "example-input1">
+                        <input  matInput type="text" placeholder = "" id = "news_title" formControlName = "news_title">
+                        <mat-error *ngIf="news_title.touched && news_title.invalid">
+                          <mat-error *ngIf="news_title.errors.required">Field should not be empty!</mat-error>
+                        <mat-error *ngIf="news_title.errors['data']">Maximum length should be 13.</mat-error>
+                        </mat-error>
+                        </mat-form-field>
+                      </div>
+            
+                  
+                    <div class = "form-group">
+                    <label id = "newsbody">News Body</label>
+                    <mat-form-field appearance = "outline" class = "example-input2">
+                      <textarea
+                      matInput
+                      type="text"
+                      rows = "7"
+                      cols = "50"
+                      placeholder = "" id = "news_description" formControlName = "news_description"></textarea>
+                      <mat-error *ngIf="news_description.touched && news_description.invalid">
+                        <mat-error *ngIf="news_description.errors.required">Field should not be empty!</mat-error>
+                      <mat-error *ngIf="news_description.errors['length']">Maximum length should be 70.</mat-error>
+                      </mat-error>
+                  </mat-form-field>
+                </div>
+            <div>
+        
+              <div class = "image1">
+                <label>Insert Image</label>
+                <input #myInput type = 'file'  multiple  (change) = "onSelectFile($event)" formControlName="images">
+              </div>
+              
+              
+              <ngx-slick-carousel class="carousel" #slickModal="slick-carousel" [config]="slideConfig">  
+                <div ngxSlickItem *ngFor="let url of urls" class="slide">  
+                  <img src="{{ url }}" width="100%">  
+                </div>  
+              </ngx-slick-carousel> 
+            </div>
+                
+                
+            
+                <div>
+                  <label id = "sourceimage">Image Source</label>
+                  <mat-form-field appearance = "outline" class = "example-input3">
+                    <input matInput placeholder = "" id = "image_source" formControlName = "image_source" >
+                    <mat-error *ngIf="image_source.touched && image_source.invalid">
+        
+                      <mat-error *ngIf="image_source.errors.required">Field should not be empty!</mat-error>
+                    </mat-error>
+                 
+                </mat-form-field>
+            </div>
+            
+            <div>
+              <label id = "sourcenews">News Source</label>
+                <mat-form-field appearance = "outline" class = "example-input4">
+                <input matInput placeholder = ""  id = "news_source"   formControlName = "news_source">
+                <mat-error *ngIf="news_source.touched && news_source.invalid">
+        
+                  <mat-error *ngIf="news_source.errors.required">Field should not be empty!</mat-error>
+                </mat-error>
+              
+                </mat-form-field>
+              </div> 
+              
+              <div>
+                <label id = "newsurl">News Url</label>
+                  <mat-form-field appearance = "outline" class = "urlnews">
+                  <input matInput placeholder = "" type="url" id = "url"  formControlName="news_url">
+                  <mat-error *ngIf="news_url.touched && news_url.invalid">
+                   <mat-error *ngIf="news_url.errors.required">Field should not be empty!</mat-error>
+                  </mat-error>  
+                   </mat-form-field>
+              </div> 
+        
+               
+            
+              <button mat-raised-button type="submit" [disabled]="mainForm.invalid" class = "button button2" >Save</button>
+      
+    </mat-grid-tile>
+    <mat-grid-tile class="tile">
+      
+      <h2 id="upload">Uploaded Content</h2>
+      <div class="example">
+        <mat-table [dataSource]="dataSource1"> 
+                   <ng-container matColumnDef="Select">
+                    <mat-header-cell *matHeaderCellDef="let row">
+                      <mat-checkbox
+                      (change)="$event ? masterToggle() : null" 
+                            [checked]="selection.hasValue() && isAllSelected()" 
+                            [indeterminate]="selection.hasValue() && !isAllSelected()">
+                          </mat-checkbox>
+                  </mat-header-cell>
+                
+                  <mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)="$event.stopPropagation()" 
+                    (change)="$event ? selection.toggle(row) : null" 
+                                  [checked]="selection.isSelected(row)">
+                    </mat-checkbox>
+                  </mat-cell>
+                
+                </ng-container>
+                
+              
+                  <ng-container matColumnDef="NewsID" >
+                    <mat-header-cell *matHeaderCellDef>News ID</mat-header-cell>
+                    <mat-cell *matCellDef="let post">{{post.newsID}}</mat-cell>
+                  </ng-container>
+
+             <ng-container matColumnDef="CategoryName" >
+                    <mat-header-cell *matHeaderCellDef>Category Name</mat-header-cell>
+                    <mat-cell *matCellDef="let item">{{item.category_name}}</mat-cell>
+                  </ng-container>  
+                
+                     <ng-container matColumnDef="NewsTitle">
+                       <mat-header-cell *matHeaderCellDef>News Title</mat-header-cell>
+                      <mat-cell *matCellDef="let post">{{post.news_title}}</mat-cell>
+                    </ng-container>
+                    
+                    <ng-container matColumnDef="PostedBy">
+                      <mat-header-cell *matHeaderCellDef >Posted By</mat-header-cell>
+                      <mat-cell *matCellDef="let post">{{post.created_by}}</mat-cell>
+                    </ng-container>
+                    
+                         <ng-container matColumnDef="Edit">
+                           <mat-header-cell *matHeaderCellDef>Edit</mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                          <a (click)="editPost(row)">Edit </a>
+                          </mat-cell>
+                        </ng-container>
+
+                         <ng-container matColumnDef="View" width="10px">
+                          <mat-header-cell *matHeaderCellDef>View</mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                          <a (click)="viewDialog(row)">View</a>
+                          </mat-cell>
+                         </ng-container>
+
+                         <ng-container matColumnDef="Approve" width="10px">
+                          <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+                          <mat-cell *matCellDef="let post">
+                          {{post.isApproved}}
+                          </mat-cell>
+                         </ng-container>
+                         
+                         
+             <mat-header-row *matHeaderRowDef="columnsToDisplay; sticky:true"></mat-header-row>
+             <mat-row *matRowDef="let row; columns: columnsToDisplay;"(click)="selection.toggle(row)">
+            </mat-row>
+            </mat-table>
+            <mat-paginator [length]="dataSource1.data.length"
+            [pageSize]="6" ></mat-paginator>
+          </div>
+          
+        </mat-grid-tile>
+      </mat-grid-list>    
+      <button mat-raised-button type="button" class = "button button3" (click)="deletingRow()">Delete</button>
+    <button mat-raised-button type="button" class = "button button4" *ngIf="this.serviceLogin.result=='A'">Approve</button>
+    </form>
+  
+    
+</div>
+<div *ngIf="!isLoggedin">
+<h2>You are not logged in.</h2>
+</div>

@@ -1,0 +1,100 @@
+<div *ngIf="isLoggedin">
+    <div class="wrapper">
+      <mat-sidenav-container>
+       <mat-sidenav #sidenav mode="side" opened class="sidebar">
+        <h1 class="sidebar-brand">Tiny Buzz</h1>
+         <div class="sidebar-content">
+          <div class="sidebar-user">
+            <span class="glyphicon glyphicon-user"></span>
+            <div class="font-weight-bold">{{clicked}}</div>
+            <h3 class="admin">Admin</h3>
+          </div>
+         
+        <mat-list class="sidenav-nav">
+         
+            
+              
+              <mat-divider></mat-divider>
+              <mat-list-item routerLinkActive="selected"
+              [routerLinkActiveOptions]="{exact:true}">
+              <a [routerLink]="['page-1']">Dashboard</a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item routerLinkActive="selected">
+              <a  [routerLink]="['page-2']">Pending for approval</a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item routerLinkActive="selected">
+              <a  [routerLink]="['page-3']">Approved</a>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <mat-list-item routerLinkActive="selected">
+              <a [routerLink]="['page-4']">User Management</a>
+            </mat-list-item>
+            </mat-list>
+        </div>
+       </mat-sidenav>
+       <mat-sidenav-content class="sidenav-content1">
+         <div class="main">
+           <mat-toolbar class="toolbar">
+            <span class="header">Admin Portal</span>
+            <span class = "user">{{create}}</span>
+            <span class="glyphicon glyphicon-off"  (click)="logoutUser()" ></span>
+          </mat-toolbar> 
+          <!--<mat-toolbar class="toolbar">
+            <button mat-raised-button color="accent" type="button" class="button button1" (click)="logoutUser()">Logout</button>
+      <span class="header">Admin Portal</span>
+      <span class = "user">{{create}}</span>
+      <button mat-raised-button color="accent" type="button" class="button button1" (click)="logoutUser()">Logout</button>
+    </mat-toolbar>-->
+    <div class="content">
+        
+        <router-outlet></router-outlet>
+
+    </div>
+
+    
+  </div>
+  </mat-sidenav-content>
+  </mat-sidenav-container>
+ 
+</div>
+
+<!--<div class="main">
+  <mat-toolbar class="toolbar">
+    <h1 class="header">Admin Portal</h1>
+    <span class = "user">{{create}}</span>
+    <button mat-raised-button color="accent" type="button" class="button button1" (click)="logoutUser()">Logout</button>
+  </mat-toolbar>
+  
+</div>-->
+<!--<mat-drawer-container class="example-container">
+  <mat-drawer mode="side" opened>
+      
+      
+      <mat-list>
+        <mat-list-item routerLinkActive="active"
+      [routerLinkActiveOptions]="{exact:true}"
+      ><a [routerLink]="['page-1']">No.of news posted</a>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item routerLinkActive="active"><a [routerLink]="['page-2']">Aprroved</a>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <mat-list-item routerLinkActive="active"><a [routerLink]="['page-3']">Pending for approval</a>
+      </mat-list-item>
+    </mat-list>
+    
+  </mat-drawer>
+  <mat-drawer-content>
+    <router-outlet></router-outlet>
+  </mat-drawer-content>
+</mat-drawer-container>-->
+
+
+</div>
+<div *ngIf="!isLoggedin">
+  <h2>You are not logged in.</h2>
+  </div>
+  
+  
