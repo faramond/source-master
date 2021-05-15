@@ -8,6 +8,7 @@ var request = require('request');
 
 
 router.post('/login', async (req, res) => {
+    console.log(req.query, "ayiiii")
     try {
         let con = createNewConnectionMerchant();
 
@@ -40,10 +41,12 @@ router.post('/login', async (req, res) => {
                                 return res.status(400).send({ 'message': err.message });
                             };
                             res.send(result[0])
+                            console.log(result[0], "gyiiii")
                         });
                     }
                     else {
                         res.send(result[0])
+                        console.log(result[0], "gyiiii")
                     }
                 }
 
