@@ -1,8 +1,8 @@
 //const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const xx_usd_company = mongoose.model(
-  "xx_usd_company",
+const xx_cf_company = mongoose.model(
+  "xx_cf_company",
   new mongoose.Schema({
     companyName: {
       type: String,
@@ -29,7 +29,7 @@ const xx_usd_company = mongoose.model(
       type: String,
       default: null,
     },
-    user: {
+    userID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "xx_usd_user",
       default: null,
@@ -45,4 +45,4 @@ const xx_usd_company = mongoose.model(
   })
 );
 
-exports.xx_usd_company = xx_usd_company;
+exports.xx_cf_company = xx_cf_company;

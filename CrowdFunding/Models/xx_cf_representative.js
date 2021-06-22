@@ -1,8 +1,8 @@
 //const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const xx_usd_representative = mongoose.model(
-  "xx_usd_representative",
+const xx_cf_representative = mongoose.model(
+  "xx_cf_representative",
   new mongoose.Schema({
     firstName: {
       type: String,
@@ -19,12 +19,20 @@ const xx_usd_representative = mongoose.model(
       default: null,
       minlength: 1,
     },
+    countryCode: {
+      type: String,
+      unique: true,
+      required: true,
+      minlength: 2,
+      maxlength: 5,
+    },
     mobileNumber: {
       type: Number,
       default: null,
       minlength: 5,
+      maxlength: 15,
     },
-    company: {
+    companyID: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "xx_usd_company",
       default: null,
@@ -40,4 +48,4 @@ const xx_usd_representative = mongoose.model(
   })
 );
 
-exports.xx_usd_representative = xx_usd_representative;
+exports.xx_cf_representative = xx_cf_representative;

@@ -1,65 +1,150 @@
 //const Joi = require("joi");
 const mongoose = require("mongoose");
 
-const xx_usd_project = mongoose.model(
-  "xx_usd_project",
-  new mongoose.Schema({
-    projectName: {
+const schema = new mongoose.Schema({
+  projectName: {
+    type: String,
+    required: true,
+    minlength: 2,
+  },
+  projectLocation: {
+    type: String,
+    required: true,
+    minlength: 2,
+  },
+
+  maxFundTarget: {
+    type: Number,
+    default: null,
+    minlength: 1,
+  },
+  minFundTarget: {
+    type: Number,
+    default: null,
+    minlength: 2,
+  },
+  timePeriod: {
+    type: String,
+    default: null,
+  },
+  businessPlan: {
+    type: String,
+    default: null,
+  },
+  presentation: {
+    type: String,
+    default: null,
+  },
+  chamberOfCommerceRegistration: {
+    type: String,
+    default: null,
+  },
+  status: {
+    type: String,
+    default: null,
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "xx_usd_user",
+    default: null,
+  },
+  company: {
+    companyName: {
       type: String,
-      required: true,
+      default: null,
       minlength: 2,
     },
-    projectLocation: {
+    legalEntityType: {
       type: String,
       default: null,
       minlength: 2,
     },
 
-    maxFundTarget: {
-      type: Number,
+    VATNumber: {
+      type: String,
       default: null,
       minlength: 1,
     },
-    minFundTarget: {
-      type: Number,
+    investmentSector: {
+      type: String,
       default: null,
       minlength: 2,
     },
-    timePeriod: {
+    website: {
       type: String,
       default: null,
     },
-    businessPlan: {
+  },
+  representative: {
+    firstName: {
       type: String,
       default: null,
+      minlength: 2,
     },
-    presentation: {
+    lastname: {
       type: String,
       default: null,
+      minlength: 2,
     },
-    chamberOfCommerceRegistration: {
+    email: {
       type: String,
       default: null,
+      minlength: 1,
     },
-    company: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "xx_usd_company",
+    mobileNumber: {
+      type: Number,
       default: null,
+      minlength: 5,
     },
-    representative: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "xx_usd_representative",
-      default: null,
-    },
-    created: {
-      type: Date,
-      default: Date.now,
-    },
-    updated: {
-      type: Date,
-      default: Date.now,
-    },
-  })
-);
+  },
+  attribute_1: {
+    type: String,
+    default: null,
+  },
+  attribute_2: {
+    type: String,
+    default: null,
+  },
+  attribute_3: {
+    type: String,
+    default: null,
+  },
+  attribute_4: {
+    type: String,
+    default: null,
+  },
+  attribute_5: {
+    type: String,
+    default: null,
+  },
+  attribute_6: {
+    type: String,
+    default: null,
+  },
+  attribute_7: {
+    type: String,
+    default: null,
+  },
+  attribute_8: {
+    type: String,
+    default: null,
+  },
+  attribute_9: {
+    type: String,
+    default: null,
+  },
+  attribute_10: {
+    type: String,
+    default: null,
+  },
+  created: {
+    type: Date,
+    default: Date.now,
+  },
+  updated: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
 exports.xx_usd_project = xx_usd_project;
