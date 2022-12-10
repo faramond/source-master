@@ -9,7 +9,7 @@
   "author": "prabhat",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "jshint": "^2.10.2",
     "mongoose": "^5.5.7",
     "request": "^2.88.0"
